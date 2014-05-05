@@ -178,6 +178,14 @@
   </dock>
   <keyboard>
     <chainQuitKey>C-g</chainQuitKey>
+ <keybind key="C-Menu">
+    <action name="ShowMenu">
+      <menu>root-menu</menu>
+    </action>
+  </keybind>
+  <keybind key="C-F10">
+    <action name="ToggleMaximizeFull"/>
+  </keybind>
     <!-- Keybindings for desktop switching -->
     <keybind key="C-A-Left">
       <action name="GoToDesktop">
@@ -322,13 +330,9 @@
       </action>
     </keybind>
     <!-- Keybindings for running applications -->
-    <keybind key="W-e">
+    <keybind key="A-F2">
       <action name="Execute">
-        <startupnotify>
-          <enabled>true</enabled>
-          <name>Konqueror</name>
-        </startupnotify>
-        <command>kfmclient openProfile filemanagement</command>
+        <command>gmrun</command>
       </action>
     </keybind>
     <!-- Launch gnome-screenshot when Print is pressed -->
