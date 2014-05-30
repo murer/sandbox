@@ -8,6 +8,6 @@
   "permissions": [],
   "browser_action": {
     "default_icon": "sockster-icon.png",
-    "default_popup": "sockester.html"
+    "default_popup": "sockster.html"
   }
 }
