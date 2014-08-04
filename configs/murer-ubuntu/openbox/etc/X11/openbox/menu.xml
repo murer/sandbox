@@ -14,7 +14,7 @@
   </item>
   <item label="Home">
     <action name="Execute">
-      <execute>nautilus --no-desktop</execute>
+      <execute>pcmanfm</execute>
     </action>
   </item>
   <separator label="Browser"/>
