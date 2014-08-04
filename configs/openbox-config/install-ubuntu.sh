@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-sudo apt-get install openbox nitrogen tint2 xfce4-power-manager volti xscreensaver gnome-keyring
+sudo apt-get install openbox nitrogen tint2 xfce4-power-manager volti xscreensaver 
 
 if [ ! -f /etc/X11/openbox.original.tar.gz ]; then
 	cd /etc/X11
