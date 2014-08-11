@@ -14,20 +14,10 @@ sudo cp /etc/hosts chroot/etc/hosts
 sudo cp /etc/resolv.conf chroot/etc/resolv.conf
 sudo cp /etc/apt/sources.list chroot/etc/apt/sources.list
 
+mkdir -p chroot/tmp/prepare | cat
+
 if [ ! -f chroot/tmp/prepare/basic.sh ]; then
-	mkdir chroot/tmp/prepare
-	tee chroot/tmp/prepare/basic.sh 1> /dev/null 2>&1 <<-EOF
-#!/bin/bash -xe
-mount none -t proc /proc
-mount none -t sysfs /sys
-mount none -t devpts /dev/pts
-export HOME=/root
-export LC_ALL=C
-apt-get update
-apt-get install -y dbus
-dbus-uuidgen > /var/lib/dbus/machine-id
-dpkg-divert --local --rename --add /sbin/initctl
-	EOF
+	cp ../../src/rt/basic.sh chroot/tmp/prepare/basic.sh
 	chmod +x chroot/tmp/prepare/basic.sh
 	sudo chroot chroot /tmp/prepare/basic.sh
 fi;
