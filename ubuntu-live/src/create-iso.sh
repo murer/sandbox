@@ -21,3 +21,13 @@ if [ ! -f chroot/tmp/prepare/basic.sh ]; then
 	chmod +x chroot/tmp/prepare/basic.sh
 	sudo chroot chroot /tmp/prepare/basic.sh
 fi;
+
+if [ ! -f chroot/tmp/prepare/close.sh ]; then
+	cp ../../src/rt/close.sh chroot/tmp/prepare/close.sh
+	chmod +x chroot/tmp/prepare/close.sh
+	sudo chroot chroot /tmp/prepare/close.sh
+fi;
+
+sudo umount chroot/dev
+
+cd -
