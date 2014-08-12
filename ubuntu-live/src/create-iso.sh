@@ -20,6 +20,27 @@ for i in ubiquity ubiquity-frontend-gtk ubiquity-frontend-kde casper lupin-caspe
 done
 
 
+sudo rm image/casper/filesystem.squashfs | cat
+sudo mksquashfs chroot image/casper/filesystem.squashfs
+printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
+sudo mksquashfs chroot image/casper/filesystem.squashfs -e boot
+
+cp ../../src/README.diskdefines image/README.diskdefines
+
+touch image/ubuntu
+mkdir image/.disk | cat
+touch image/.disk/base_installable
+echo "full_cd/single" > image/.disk/cd_type
+echo "Ubuntu Remix" > image/.disk/info
+echo "https://github.com/murer" > image/.disk/release_notes_url
+
+cd -
+
+cd target/work/image
+find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" | sudo tee md5sum.txt
+
+sudo mkisofs -r -V "ubuntu-murer-live" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-murer-live.iso .
+
 cd -
 
 
