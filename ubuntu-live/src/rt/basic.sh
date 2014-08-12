@@ -8,7 +8,10 @@ if ! mount | grep /dev/pts; then mount none -t devpts /dev/pts; fi;
 apt-get update
 sudo apt-get install -y dbus
 dbus-uuidgen > /var/lib/dbus/machine-id
+cp -v /sbin/initctl /sbin/initctl.bak
 dpkg-divert --local --rename --add /sbin/initctl
+ln -s /bin/true /sbin/initctl
+ls -l /sbin/initctl*
 
 sudo apt-get -y upgrade
 sudo apt-get install -y ubuntu-standard casper lupin-casper

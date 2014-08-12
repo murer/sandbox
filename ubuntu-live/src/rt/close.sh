@@ -2,6 +2,9 @@
 
 rm /var/lib/dbus/machine-id
 
+rm /sbin/initctl
+dpkg-divert --rename --remove /sbin/initctl
+cp -v /sbin/initctl.bak /sbin/initctl
 
 ls /boot/vmlinuz-**.**.**-**-generic > list.txt
 sum=$(cat list.txt | grep '[^ ]' | wc -l)
