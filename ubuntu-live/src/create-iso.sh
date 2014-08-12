@@ -1,5 +1,7 @@
 #!/bin/bash -xe
 
+export DEBIAN_FRONTEND=noninteractive
+
 if [ ! -d target/work/chroot ]; then 
 	sudo apt-get -y install debootstrap
 	mkdir -p target/work/chroot
@@ -16,13 +18,15 @@ sudo cp /etc/apt/sources.list chroot/etc/apt/sources.list
 
 mkdir -p chroot/tmp/prepare | cat
 
-if [ ! -f chroot/tmp/prepare/basic.sh ]; then
+if [ ! -f iso-basic ]; then
+	touch iso-basic
 	cp ../../src/rt/basic.sh chroot/tmp/prepare/basic.sh
 	chmod +x chroot/tmp/prepare/basic.sh
 	sudo chroot chroot /tmp/prepare/basic.sh
 fi;
 
-if [ ! -f chroot/tmp/prepare/close.sh ]; then
+if [ ! -f iso-close ]; then
+	touch iso-close
 	cp ../../src/rt/close.sh chroot/tmp/prepare/close.sh
 	chmod +x chroot/tmp/prepare/close.sh
 	sudo chroot chroot /tmp/prepare/close.sh
