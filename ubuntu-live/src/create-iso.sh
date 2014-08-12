@@ -21,9 +21,8 @@ done
 
 
 sudo rm image/casper/filesystem.squashfs | cat
-sudo mksquashfs chroot image/casper/filesystem.squashfs
-printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
 sudo mksquashfs chroot image/casper/filesystem.squashfs -e boot
+printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
 
 cp ../../src/README.diskdefines image/README.diskdefines
 

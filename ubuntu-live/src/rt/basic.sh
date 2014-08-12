@@ -5,7 +5,7 @@ export LC_ALL=C
 if ! mount | grep /proc; then mount none -t proc /proc; fi;
 if ! mount | grep /sys; then mount none -t sysfs /sys; fi;
 if ! mount | grep /dev/pts; then mount none -t devpts /dev/pts; fi;
-#apt-get update
+apt-get update
 sudo apt-get install -y dbus
 dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl

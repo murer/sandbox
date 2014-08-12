@@ -18,11 +18,8 @@ sudo cp /etc/apt/sources.list chroot/etc/apt/sources.list
 
 mkdir -p chroot/tmp/prepare | cat
 
-#if [ ! -f iso-basic ]; then
-	#touch iso-basic
-	cp ../../src/rt/basic.sh chroot/tmp/prepare/basic.sh
-	chmod +x chroot/tmp/prepare/basic.sh
-	sudo chroot chroot /tmp/prepare/basic.sh
-#fi;
+cp ../../src/rt/basic.sh chroot/tmp/prepare/basic.sh
+chmod +x chroot/tmp/prepare/basic.sh
+sudo chroot chroot /tmp/prepare/basic.sh
 
 cd -
