@@ -38,7 +38,7 @@ cd -
 cd target/work/image
 find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" | sudo tee md5sum.txt
 
-sudo mkisofs -r -V "ubuntu-murer-live" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-murer-live.iso .
+sudo mkisofs -r -V "ubuntu-live" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../ubuntu-live.iso .
 
 cd -
 
