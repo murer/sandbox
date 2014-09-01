@@ -1,4 +1,4 @@
 #!/bin/bash -e
 
-sudo docker images -qa | xargs sudo docker rmi -f
+sudo docker images -q --no-trunc | xargs sudo docker rmi -f
 
