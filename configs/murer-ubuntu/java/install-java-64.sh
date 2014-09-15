@@ -1,13 +1,22 @@
-#!/bin/bash -xe 
+#!/bin/bash -e 
+
+install() {
+	filename=$1
+	dirname=$2
+	if [ ! -f $filename ]; then
+	        sudo wget http://repoz.dextra.com.br/repoz/r/pub/jdk/oracle/$filename
+	fi
+	sudo rm -rf $dirname | cat
+	sudo tar xzvf $filename
+}
 
 cd /opt
-if [ ! -f jdk-8u20-linux-x64.tar.gz ]; then
-	sudo wget https://repoz.dextra.com.br/repoz/r/pub/jdk/oracle/jdk-8u20-linux-x64.tar.gz
-fi
-sudo rm -rf jdk1.8.0_20 | cat
-sudo tar xzvf jdk-8u20-linux-x64.tar.gz
+
+install jdk-8u20-linux-x64.tar.gz jdk1.8.0_20
+install jdk-7u67-linux-x64.tar.gz jdk1.7.0_67
+
 if [ ! -L jdk ]; then
-	sudo ln -s jdk1.8.0_20 jdk;
+	sudo ln -s jdk1.7.0_67 jdk;
 else
 	echo 'jdk link already exists. Maybe you want to change it';
 fi;
