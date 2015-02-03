@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sftp -o "StrictHostKeyChecking=no" -o ProxyCommand="connect -H $USER@172.16.129.4:3128 %h %p" $*
+sftp -o "StrictHostKeyChecking=no" -o ProxyCommand="connect -H $USER@172.16.120.1:3128 %h %p" $*
 
