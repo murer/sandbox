@@ -35,8 +35,8 @@ public class SubzResolver {
 	}
 
 	private void copy(File from, File to) {
-		System.out.println("copy " + to + " " + Util.human(from.length()));
-		Util.copy(from, to);
+		System.out.println("move " + to + " " + Util.human(from.length()));
+		from.renameTo(to);
 	}
 
 }
