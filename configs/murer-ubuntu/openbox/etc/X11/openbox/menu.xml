@@ -149,6 +149,11 @@
 	</item>
 
   </menu>
+  <item label="Lock">
+    <action name="Execute">
+         <command>xscreensaver-command -lock</command>
+    </action>
+  </item>
   <item label="Logout">
     <action name="Exit" />
   </item>
