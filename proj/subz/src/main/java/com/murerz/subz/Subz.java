@@ -106,8 +106,11 @@ public class Subz {
 				Thread t = new Thread("resolver") {
 					@Override
 					public void run() {
-						resolve();
-						setButtonsEnabled(true);
+						try {
+							resolve();
+						} finally {
+							setButtonsEnabled(true);
+						}
 					}
 				};
 				setButtonsEnabled(false);
