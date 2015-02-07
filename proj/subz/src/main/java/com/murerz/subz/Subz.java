@@ -3,8 +3,9 @@ package com.murerz.subz;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
@@ -19,6 +20,9 @@ import javax.swing.ListSelectionModel;
 public class Subz {
 
 	private String src;
+	private JList<File> first;
+	private JList<File> second;
+	private JList<FilePair> result;
 
 	public Subz src(String src) {
 		this.src = src;
@@ -49,15 +53,17 @@ public class Subz {
 		JPanel ret = new JPanel();
 		ret.setLayout(new BorderLayout());
 		Box box = Box.createVerticalBox();
-		box.add(createList(files));
+		first = createList(files);
+		box.add(new JScrollPane(first));
 		box.add(Box.createVerticalGlue());
-		box.add(createList(files));
+		second = createList(files);
+		box.add(new JScrollPane(second));
 		box.add(Box.createVerticalGlue());
 		ret.add(box, BorderLayout.CENTER);
 		return ret;
 	}
 
-	private JScrollPane createList(List<File> files) {
+	private JList<File> createList(List<File> files) {
 		JList<File> list = new JList<File>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
@@ -66,8 +72,7 @@ public class Subz {
 			model.addElement(file);
 		}
 		list.setModel(model);
-		JScrollPane ret = new JScrollPane(list);
-		return ret;
+		return list;
 	}
 
 	private JPanel createControl() {
@@ -76,19 +81,75 @@ public class Subz {
 
 		JPanel btnPanel = new JPanel();
 		btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-		btnPanel.add(new JButton("down"));
-		btnPanel.add(new JButton("up"));
+		btnPanel.add(createDownButton());
+		btnPanel.add(createUpButton());
 		ret.add(btnPanel, BorderLayout.NORTH);
 
-		JList<FilePair> list = new JList<FilePair>();
-		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		list.setLayoutOrientation(JList.VERTICAL);
+		result = new JList<FilePair>();
+		result.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		result.setLayoutOrientation(JList.VERTICAL);
 		DefaultListModel<FilePair> model = new DefaultListModel<FilePair>();
-		list.setModel(model);
-		JScrollPane scroll = new JScrollPane(list);
+		result.setModel(model);
+		JScrollPane scroll = new JScrollPane(result);
 		scroll.setPreferredSize(new Dimension(100, 70));
 		ret.add(scroll, BorderLayout.CENTER);
 		return ret;
+	}
+
+	private JButton createDownButton() {
+		JButton ret = new JButton("down");
+		ret.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				down();
+			}
+		});
+		return ret;
+	}
+
+	private JButton createUpButton() {
+		JButton ret = new JButton("up");
+		ret.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				up();
+			}
+		});
+		return ret;
+	}
+
+	private void up() {
+		FilePair pair = this.result.getSelectedValue();
+		if (pair == null) {
+			return;
+		}
+		listAdd(this.first, pair.getFirst(), pair.getSecond());
+		listAdd(this.second, pair.getFirst(), pair.getSecond());
+		listRemove(this.result, pair);
+	}
+
+	private void down() {
+		File first = this.first.getSelectedValue();
+		File second = this.second.getSelectedValue();
+		if (first == null || second == null || first.equals(second)) {
+			return;
+		}
+		FilePair pair = new FilePair().setFirst(first).setSecond(second);
+		listAdd(result, pair);
+		listRemove(this.first, first, second);
+		listRemove(this.second, first, second);
+	}
+
+	private <T> void listRemove(JList<T> list, T... elements) {
+		DefaultListModel<T> model = (DefaultListModel<T>) list.getModel();
+		for (T element : elements) {
+			model.removeElement(element);
+		}
+	}
+
+	private <T> void listAdd(JList<T> list, T... elements) {
+		DefaultListModel<T> model = (DefaultListModel<T>) list.getModel();
+		for (T element : elements) {
+			model.addElement(element);
+		}
 	}
 
 	public static void main(String[] args) {
