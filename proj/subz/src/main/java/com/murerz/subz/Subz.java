@@ -19,14 +19,14 @@ public class Subz {
 		return this;
 	}
 
-	private List<SubzFile> crawl() {
+	private List<File> crawl() {
 		SubzFileCrawler crawler = new SubzFileCrawler();
 		crawler.crawl(new File(src));
 		return crawler.getFiles();
 	}
 
 	private void show() {
-		List<SubzFile> files = crawl();
+		List<File> files = crawl();
 		JFrame frame = new JFrame("Subz: " + src);
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

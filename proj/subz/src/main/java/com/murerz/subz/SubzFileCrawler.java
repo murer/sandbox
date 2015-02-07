@@ -6,16 +6,15 @@ import java.util.List;
 
 public class SubzFileCrawler extends FileCrawler {
 
-	private List<SubzFile> files = new ArrayList<SubzFile>();
+	private List<File> files = new ArrayList<File>();
 
 	@Override
 	protected void found(File file) {
-		SubzFile subzFile = new SubzFile().setFile(file);
-		System.out.println(subzFile);
-		files.add(subzFile);
+		System.out.println(file);
+		files.add(file);
 	}
 
-	public List<SubzFile> getFiles() {
+	public List<File> getFiles() {
 		return files;
 	}
 
