@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.Box;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -67,7 +66,7 @@ public class Subz {
 		JList<File> list = new JList<File>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
-		DefaultListModel<File> model = new DefaultListModel<File>();
+		SubzModel<File> model = new SubzModel<File>();
 		for (File file : files) {
 			model.addElement(file);
 		}
@@ -88,7 +87,7 @@ public class Subz {
 		result = new JList<FilePair>();
 		result.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		result.setLayoutOrientation(JList.VERTICAL);
-		DefaultListModel<FilePair> model = new DefaultListModel<FilePair>();
+		SubzModel<FilePair> model = new SubzModel<FilePair>();
 		result.setModel(model);
 		JScrollPane scroll = new JScrollPane(result);
 		scroll.setPreferredSize(new Dimension(100, 70));
@@ -139,14 +138,14 @@ public class Subz {
 	}
 
 	private <T> void listRemove(JList<T> list, T... elements) {
-		DefaultListModel<T> model = (DefaultListModel<T>) list.getModel();
+		SubzModel<T> model = (SubzModel<T>) list.getModel();
 		for (T element : elements) {
 			model.removeElement(element);
 		}
 	}
 
 	private <T> void listAdd(JList<T> list, T... elements) {
-		DefaultListModel<T> model = (DefaultListModel<T>) list.getModel();
+		SubzModel<T> model = (SubzModel<T>) list.getModel();
 		for (T element : elements) {
 			model.addElement(element);
 		}
