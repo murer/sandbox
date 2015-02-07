@@ -56,4 +56,24 @@ public class SubzFile implements Comparable<SubzFile> {
 		return true;
 	}
 
+	public String getFileName() {
+		String name = file.getName();
+		int idx = name.lastIndexOf(".");
+		String ret = name.substring(0, idx);
+		if (ret.length() == 0) {
+			throw new RuntimeException("wrong: " + file);
+		}
+		return ret;
+	}
+
+	public String getFileExt() {
+		String name = file.getName();
+		int idx = name.lastIndexOf(".");
+		String ret = name.substring(idx + 1);
+		if (ret.length() == 0) {
+			throw new RuntimeException("wrong: " + file);
+		}
+		return ret;
+	}
+
 }

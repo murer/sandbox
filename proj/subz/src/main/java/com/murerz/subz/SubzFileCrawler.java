@@ -10,7 +10,6 @@ public class SubzFileCrawler extends FileCrawler {
 
 	@Override
 	protected void found(File file) {
-		System.out.println(file);
 		files.add(new SubzFile().setFile(file));
 	}
 

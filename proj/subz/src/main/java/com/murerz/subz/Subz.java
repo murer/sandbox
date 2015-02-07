@@ -1,11 +1,13 @@
 package com.murerz.subz;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -22,6 +24,7 @@ public class Subz {
 	private JList<SubzFile> first;
 	private JList<SubzFile> second;
 	private JList<FilePair> result;
+	private List<JButton> buttons = new ArrayList<JButton>();
 
 	public Subz src(String src) {
 		this.src = src;
@@ -82,6 +85,7 @@ public class Subz {
 		btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		btnPanel.add(createDownButton());
 		btnPanel.add(createUpButton());
+		btnPanel.add(createResolveButton());
 		ret.add(btnPanel, BorderLayout.NORTH);
 
 		result = new JList<FilePair>();
@@ -95,6 +99,32 @@ public class Subz {
 		return ret;
 	}
 
+	private Component createResolveButton() {
+		JButton ret = new JButton("Resolve");
+		ret.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				Thread t = new Thread("resolver") {
+					@Override
+					public void run() {
+						resolve();
+						setButtonsEnabled(true);
+					}
+				};
+				setButtonsEnabled(false);
+				t.start();
+			}
+
+		});
+		buttons.add(ret);
+		return ret;
+	}
+
+	private void setButtonsEnabled(boolean d) {
+		for (JButton b : buttons) {
+			b.setEnabled(d);
+		}
+	}
+
 	private JButton createDownButton() {
 		JButton ret = new JButton("down");
 		ret.addActionListener(new ActionListener() {
@@ -102,6 +132,7 @@ public class Subz {
 				down();
 			}
 		});
+		buttons.add(ret);
 		return ret;
 	}
 
@@ -112,6 +143,7 @@ public class Subz {
 				up();
 			}
 		});
+		buttons.add(ret);
 		return ret;
 	}
 
@@ -148,6 +180,16 @@ public class Subz {
 		SubzModel<T> model = (SubzModel<T>) list.getModel();
 		for (T element : elements) {
 			model.addElement(element);
+		}
+	}
+
+	private void resolve() {
+		File destination = new File(src, "_subz");
+		SubzModel<FilePair> pairs = (SubzModel<FilePair>) result.getModel();
+		while (!pairs.isEmpty()) {
+			FilePair pair = pairs.get(0);
+			new SubzResolver().dest(destination).pair(pair).resolve();
+			pairs.removeElementAt(0);
 		}
 	}
 

@@ -74,7 +74,7 @@ public class FilePair implements Comparable<FilePair> {
 
 	@Override
 	public String toString() {
-		return "[" + Util.name(first) + " - " + Util.name(second) + "]";
+		return "[" + Util.name(first) + " " + Util.human(first) + " - " + Util.name(second) + " " + Util.human(second) + "]";
 	}
 
 }
