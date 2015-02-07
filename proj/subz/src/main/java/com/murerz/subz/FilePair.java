@@ -1,29 +1,75 @@
 package com.murerz.subz;
 
-import java.io.File;
+public class FilePair implements Comparable<FilePair> {
 
-public class FilePair {
+	private SubzFile first;
 
-	private File first;
+	private SubzFile second;
 
-	private File second;
-
-	public File getFirst() {
+	public SubzFile getFirst() {
 		return first;
 	}
 
-	public FilePair setFirst(File first) {
+	public FilePair setFirst(SubzFile first) {
 		this.first = first;
 		return this;
 	}
 
-	public File getSecond() {
+	public SubzFile getSecond() {
 		return second;
 	}
 
-	public FilePair setSecond(File second) {
+	public FilePair setSecond(SubzFile second) {
 		this.second = second;
 		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((second == null) ? 0 : second.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FilePair other = (FilePair) obj;
+		if (first == null) {
+			if (other.first != null)
+				return false;
+		} else if (!first.equals(other.first))
+			return false;
+		if (second == null) {
+			if (other.second != null)
+				return false;
+		} else if (!second.equals(other.second))
+			return false;
+		return true;
+	}
+
+	public int compareTo(FilePair o) {
+		if (equals(o)) {
+			return 0;
+		}
+		int ret = first.compareTo(o.first);
+		if (ret == 0) {
+			ret = second.compareTo(o.second);
+		}
+		if (ret == 0) {
+			ret = first.compareTo(o.second);
+		}
+		if (ret == 0) {
+			ret = second.compareTo(o.first);
+		}
+		return ret;
 	}
 
 	@Override

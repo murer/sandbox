@@ -19,8 +19,8 @@ import javax.swing.ListSelectionModel;
 public class Subz {
 
 	private String src;
-	private JList<File> first;
-	private JList<File> second;
+	private JList<SubzFile> first;
+	private JList<SubzFile> second;
 	private JList<FilePair> result;
 
 	public Subz src(String src) {
@@ -28,14 +28,14 @@ public class Subz {
 		return this;
 	}
 
-	private List<File> crawl() {
+	private List<SubzFile> crawl() {
 		SubzFileCrawler crawler = new SubzFileCrawler();
 		crawler.crawl(new File(src));
 		return crawler.getFiles();
 	}
 
 	private void show() {
-		List<File> files = crawl();
+		List<SubzFile> files = crawl();
 		JFrame frame = new JFrame("Subz: " + src);
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -48,7 +48,7 @@ public class Subz {
 		frame.setVisible(true);
 	}
 
-	private JPanel createListPanel(List<File> files) {
+	private JPanel createListPanel(List<SubzFile> files) {
 		JPanel ret = new JPanel();
 		ret.setLayout(new BorderLayout());
 		Box box = Box.createVerticalBox();
@@ -62,12 +62,12 @@ public class Subz {
 		return ret;
 	}
 
-	private JList<File> createList(List<File> files) {
-		JList<File> list = new JList<File>();
+	private JList<SubzFile> createList(List<SubzFile> files) {
+		JList<SubzFile> list = new JList<SubzFile>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
-		SubzModel<File> model = new SubzModel<File>();
-		for (File file : files) {
+		SubzModel<SubzFile> model = new SubzModel<SubzFile>();
+		for (SubzFile file : files) {
 			model.addElement(file);
 		}
 		list.setModel(model);
@@ -126,8 +126,8 @@ public class Subz {
 	}
 
 	private void down() {
-		File first = this.first.getSelectedValue();
-		File second = this.second.getSelectedValue();
+		SubzFile first = this.first.getSelectedValue();
+		SubzFile second = this.second.getSelectedValue();
 		if (first == null || second == null || first.equals(second)) {
 			return;
 		}

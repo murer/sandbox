@@ -19,7 +19,7 @@ public class SubzModel<T> extends DefaultListModel<T> {
 		Enumeration<T> elements = elements();
 		while (elements.hasMoreElements()) {
 			T x = elements.nextElement();
-			if (compare(element, x) >= 0) {
+			if (compare(element, x) <= 0) {
 				super.add(idx, element);
 				return;
 			}

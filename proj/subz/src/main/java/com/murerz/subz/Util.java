@@ -8,4 +8,8 @@ public class Util {
 		return f == null ? null : f.getName();
 	}
 
+	public static String name(SubzFile file) {
+		return file == null ? null : name(file.getFile());
+	}
+
 }
