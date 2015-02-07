@@ -1,5 +1,15 @@
 package com.murerz.subz;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.border.Border;
+
 public class Subz {
 
 	private String src;
@@ -9,8 +19,27 @@ public class Subz {
 		return this;
 	}
 
-	public Subz subz() {
-		return this;
+	private List<SubzFile> crawl() {
+		SubzFileCrawler crawler = new SubzFileCrawler();
+		crawler.crawl(new File(src));
+		return crawler.getFiles();
+	}
+
+	private void show() {
+		List<SubzFile> files = crawl();
+		JFrame frame = new JFrame("Subz: " + src);
+		frame.setLayout(new BorderLayout());
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		SubzPanel panel = new SubzPanel();
+		panel.showFiles(files);
+		frame.add(panel, BorderLayout.CENTER);
+		frame.pack();
+		frame.setSize(300, 300);
+		frame.setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		new Subz().src("src/test/resources/com/murerz/subz").show();
 	}
 
 }
