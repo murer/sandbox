@@ -197,7 +197,7 @@ public class Subz {
 	}
 
 	public static void main(String[] args) {
-		new Subz().src("target/test-classes").show();
+		new Subz().src(".").show();
 	}
 
 }
