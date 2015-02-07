@@ -20,9 +20,11 @@ public class SubzPanel extends JPanel {
 	}
 
 	public void showFiles(List<File> files) {
-		Box box = Box.createHorizontalBox();
+		Box box = Box.createVerticalBox();
 		box.add(createListPanel(files));
-		box.add(Box.createHorizontalGlue());
+		box.add(Box.createVerticalGlue());
+		box.add(createListPanel(files));
+		box.add(Box.createVerticalGlue());
 		add(box, BorderLayout.CENTER);
 	}
 
@@ -30,7 +32,6 @@ public class SubzPanel extends JPanel {
 		JList<File> list = new JList<File>();
 		list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
-		list.setVisibleRowCount(-1);
 		DefaultListModel<File> model = new DefaultListModel<File>();
 		for (File file : files) {
 			model.addElement(file);

@@ -39,7 +39,7 @@ public class Subz {
 	}
 
 	public static void main(String[] args) {
-		new Subz().src("src/test/resources/com/murerz/subz").show();
+		new Subz().src("target").show();
 	}
 
 }
