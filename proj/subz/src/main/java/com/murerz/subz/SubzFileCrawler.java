@@ -40,10 +40,10 @@ public class SubzFileCrawler extends FileCrawler {
 	protected void found(File file) {
 		if (filter(file)) {
 			SubzFile subzFile = new SubzFile().setFile(file);
-//			List<Long> numbers = subzFile.getNumbers();
-//			if (numbers.isEmpty()) {
-//				return;
-//			}
+			List<Long> numbers = subzFile.getNumbers();
+			if (numbers.isEmpty()) {
+				return;
+			}
 			files.add(subzFile);
 		}
 	}
