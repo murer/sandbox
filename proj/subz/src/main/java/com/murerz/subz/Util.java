@@ -127,4 +127,8 @@ public class Util {
 		}
 		return name.substring(idx + 1);
 	}
+
+	public static String trim(String str) {
+		return str == null ? null : str.trim();
+	}
 }

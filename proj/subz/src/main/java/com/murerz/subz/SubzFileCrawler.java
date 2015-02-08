@@ -45,6 +45,10 @@ public class SubzFileCrawler extends FileCrawler {
 
 	private boolean filter(File file) {
 		String ext = Util.ext(file);
+		ext = Util.trim(ext);
+		if (ext == null) {
+			return false;
+		}
 		return EXTS.contains(ext);
 	}
 
