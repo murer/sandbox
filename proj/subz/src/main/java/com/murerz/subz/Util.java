@@ -33,15 +33,15 @@ public class Util {
 	}
 
 	public static String human(long length) {
-		BigDecimal ret = new BigDecimal(length).divide(new BigDecimal(1024 ^ 3), 2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal ret = new BigDecimal(length).divide(new BigDecimal(1024 * 1024 * 1024), 2, BigDecimal.ROUND_HALF_UP);
 		if (ret.compareTo(new BigDecimal(1l)) > 0) {
 			return "" + ret + "g";
 		}
-		ret = new BigDecimal(length).divide(new BigDecimal(1024 ^ 2), 2, BigDecimal.ROUND_HALF_UP);
+		ret = new BigDecimal(length).divide(new BigDecimal(1024 * 1024), 2, BigDecimal.ROUND_HALF_UP);
 		if (ret.compareTo(new BigDecimal(1l)) > 0) {
 			return "" + ret + "m";
 		}
-		ret = new BigDecimal(length).divide(new BigDecimal(1024 ^ 1), 2, BigDecimal.ROUND_HALF_UP);
+		ret = new BigDecimal(length).divide(new BigDecimal(1024), 2, BigDecimal.ROUND_HALF_UP);
 		if (ret.compareTo(new BigDecimal(1l)) > 0) {
 			return "" + ret + "k";
 		}

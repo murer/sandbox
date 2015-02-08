@@ -17,7 +17,7 @@ public class SubzFile implements Comparable<SubzFile> {
 
 	@Override
 	public String toString() {
-		return file == null ? "null" : "[" + file.getName() + " - " + file.getParent() + "]";
+		return file == null ? "null" : "" + file.getName() + " [" + file.getParent() + "]";
 	}
 
 	public int compareTo(SubzFile o) {
