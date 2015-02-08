@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -94,5 +98,24 @@ public class Util {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static List<Long> numbers(String str) {
+		return groups(str, "\\d+");
+	}
+
+	private static List<Long> groups(String str, String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(str);
+		List<Long> ret = new ArrayList<Long>();
+		while (matcher.find()) {
+			String numStr = matcher.group();
+			ret.add(new Long(numStr));
+		}
+		return ret;
+	}
+
+	public static List<Long> numbers(File file) {
+		return numbers(name(file));
 	}
 }
