@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -25,6 +28,7 @@ public class Subz {
 	private JList<SubzFile> second;
 	private JList<FilePair> result;
 	private List<JButton> buttons = new ArrayList<JButton>();
+	private JFrame frame;
 
 	public Subz src(String src) {
 		this.src = src;
@@ -42,7 +46,7 @@ public class Subz {
 			throw new RuntimeException("it is not a directory: " + src);
 		}
 		List<SubzFile> files = crawl();
-		JFrame frame = new JFrame("Subz: " + src);
+		frame = new JFrame("Subz: " + src);
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		JPanel panel = createListPanel(files);
@@ -77,7 +81,24 @@ public class Subz {
 			model.addElement(file);
 		}
 		list.setModel(model);
+
+		list.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+				showPath(evt);
+			}
+
+		});
+
 		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void showPath(MouseEvent evt) {
+		if (evt.getClickCount() == 2) {
+			JList<SubzFile> list = (JList<SubzFile>) evt.getSource();
+			SubzFile value = list.getSelectedValue();
+			JOptionPane.showInputDialog(frame, "Path", frame.getTitle(), JOptionPane.PLAIN_MESSAGE, null, null, value.getFile().getPath());
+		}
 	}
 
 	private JPanel createControl() {
