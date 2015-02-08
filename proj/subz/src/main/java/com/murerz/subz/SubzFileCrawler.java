@@ -39,7 +39,12 @@ public class SubzFileCrawler extends FileCrawler {
 	@Override
 	protected void found(File file) {
 		if (filter(file)) {
-			files.add(new SubzFile().setFile(file));
+			SubzFile subzFile = new SubzFile().setFile(file);
+//			List<Long> numbers = subzFile.getNumbers();
+//			if (numbers.isEmpty()) {
+//				return;
+//			}
+			files.add(subzFile);
 		}
 	}
 

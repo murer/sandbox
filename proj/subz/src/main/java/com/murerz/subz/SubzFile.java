@@ -1,6 +1,7 @@
 package com.murerz.subz;
 
 import java.io.File;
+import java.util.List;
 
 public class SubzFile implements Comparable<SubzFile> {
 
@@ -18,6 +19,10 @@ public class SubzFile implements Comparable<SubzFile> {
 	@Override
 	public String toString() {
 		return file == null ? "null" : "" + Util.numbers(file) + " " + file.getName() + " [" + file.getParent() + "]";
+	}
+
+	public List<Long> getNumbers() {
+		return Util.numbers(file);
 	}
 
 	public int compareTo(SubzFile o) {
