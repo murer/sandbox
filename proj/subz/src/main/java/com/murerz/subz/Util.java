@@ -118,4 +118,13 @@ public class Util {
 	public static List<Long> numbers(File file) {
 		return numbers(name(file));
 	}
+
+	public static String ext(File file) {
+		String name = file.getName();
+		int idx = name.lastIndexOf(".");
+		if (idx < 0) {
+			return null;
+		}
+		return name.substring(idx + 1);
+	}
 }
