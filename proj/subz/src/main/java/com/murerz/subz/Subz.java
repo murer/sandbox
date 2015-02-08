@@ -38,6 +38,9 @@ public class Subz {
 	}
 
 	private void show() {
+		if (!new File(src).isDirectory()) {
+			throw new RuntimeException("it is not a directory: " + src);
+		}
 		List<SubzFile> files = crawl();
 		JFrame frame = new JFrame("Subz: " + src);
 		frame.setLayout(new BorderLayout());
@@ -197,7 +200,19 @@ public class Subz {
 	}
 
 	public static void main(String[] args) {
-		new Subz().src(".").show();
+		String path = ".";
+		if (args.length > 0) {
+			path = args[0];
+			if ("--help".equals(path) || "-h".equals(path)) {
+				System.out.println("Subz [path]");
+				return;
+			}
+		}
+		File file = new File(path);
+		if (!file.isDirectory()) {
+			file = file.getParentFile();
+		}
+		new Subz().src(path).show();
 	}
 
 }
