@@ -77,4 +77,30 @@ public class FilePair implements Comparable<FilePair> {
 		return "[" + Util.name(first) + " " + Util.human(first) + " - " + Util.name(second) + " " + Util.human(second) + "]";
 	}
 
+	public SubzFile getVideo() {
+		if (first.isSub() && second.isSub()) {
+			throw new RuntimeException("wrong: " + toString());
+		}
+		if (first.isSub()) {
+			return second;
+		}
+		if (second.isSub()) {
+			return first;
+		}
+		throw new RuntimeException("wrong: " + toString());
+	}
+
+	public SubzFile getSub() {
+		if (first.isSub() && second.isSub()) {
+			throw new RuntimeException("wrong: " + toString());
+		}
+		if (first.isSub()) {
+			return first;
+		}
+		if (second.isSub()) {
+			return second;
+		}
+		throw new RuntimeException("wrong: " + toString());
+	}
+
 }

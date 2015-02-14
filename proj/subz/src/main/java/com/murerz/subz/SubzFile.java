@@ -75,4 +75,19 @@ public class SubzFile implements Comparable<SubzFile> {
 		return Util.ext(file);
 	}
 
+	public static void filter(List<SubzFile> files, List<SubzFile> videos, List<SubzFile> subs) {
+		for (SubzFile file : files) {
+			if (file.isSub()) {
+				subs.add(file);
+			} else {
+				videos.add(file);
+			}
+		}
+
+	}
+
+	public boolean isSub() {
+		return "srt".equals(getFileExt());
+	}
+
 }

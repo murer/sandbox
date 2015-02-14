@@ -62,10 +62,15 @@ public class Subz {
 		JPanel ret = new JPanel();
 		ret.setLayout(new BorderLayout());
 		Box box = Box.createVerticalBox();
-		first = createList(files);
+
+		List<SubzFile> videos = new ArrayList<SubzFile>();
+		List<SubzFile> subs = new ArrayList<SubzFile>();
+		SubzFile.filter(files, videos, subs);
+
+		first = createList(videos);
 		box.add(new JScrollPane(first));
 		box.add(Box.createVerticalGlue());
-		second = createList(files);
+		second = createList(subs);
 		box.add(new JScrollPane(second));
 		box.add(Box.createVerticalGlue());
 		ret.add(box, BorderLayout.CENTER);
@@ -179,8 +184,8 @@ public class Subz {
 		if (pair == null) {
 			return;
 		}
-		listAdd(this.first, pair.getFirst(), pair.getSecond());
-		listAdd(this.second, pair.getFirst(), pair.getSecond());
+		listAdd(this.first, pair.getVideo());
+		listAdd(this.second, pair.getSub());
 		listRemove(this.result, pair);
 	}
 

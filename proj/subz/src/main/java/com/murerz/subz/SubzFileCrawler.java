@@ -32,7 +32,7 @@ public class SubzFileCrawler extends FileCrawler {
 			"dvx", "mpj", "qtc", "jts", "xmv", "mjp", "crv", "sec", "bvz", "mpg2", "vivo", "m2s", "dvsd", "snd", "vp8", "vcs", "4xm", "pmp", "sfvidcap", "msh", "vprj", "svcd",
 			"cmproj", "nvavi", "tstream", "qvt", "vbs", "vp7", "mys", "dmf", "thp", "trt", "rmd", "lza", "flh", "am2", "d2v", "xlmv", "rts", "vfw", "261", "rec_part1", "fli_",
 			"s2e", "vtf", "h4v", "rvx", "drt", "scs", "met", "badongo", "ctd", "ctd", "mfp", "xwmv", "fbz", "snapfireshow", "siv", "mpv2", "olproj", "h263+", "dif", "mp", "zrb",
-			"w3d", "h-263", "wsv", "qtvr", "m4u", "Common", "srt"));
+			"w3d", "h-263", "wsv", "qtvr", "m4u", "srt"));
 
 	private List<SubzFile> files = new ArrayList<SubzFile>();
 
