@@ -1,0 +1,26 @@
+
+* { margin:0; padding:0; border:0; text-decoration:none; list-style-position: inside; }
+
+body { background:#eceff6; }
+
+.clear { clear: both; height: 0;  line-height: 0;  visibility: hidden; display: none }
+
+
+body,
+body * { font-family: "lucida grande", tahoma, verdana, arial, sans-serif; font-size: 13px; }
+
+body { color: #333333 }
+
+a { color: #3C69C4; outline-style: none; text-decoration: none; }
+
+a:hover { text-decoration: underline; }
+
+.wtf { margin-left: 10px; }
+
+.result { margin: 2px; width: 290px; height: 250px; padding: 5px; }
+.wtfPane { margin: 2px; width: 290px; height: 250px; padding: 5px; }
+
+.wtfPane li { padding: 5px; }
+
+.author { text-align:right; margin-top: 10px; margin-right: 10px; }
+
