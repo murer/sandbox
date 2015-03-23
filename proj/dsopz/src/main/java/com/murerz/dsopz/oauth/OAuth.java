@@ -1,6 +1,6 @@
 package com.murerz.dsopz.oauth;
 
-public class OAuth {
+public abstract class OAuth {
 
 	private static Object MUTEX = new Object();
 
@@ -10,19 +10,20 @@ public class OAuth {
 		if (me == null) {
 			synchronized (MUTEX) {
 				if (me == null) {
-					me = new OAuth();
+					me = new LinkOAuth();
 				}
 			}
 		}
 		return me;
 	}
 
-	public String getToken() {
-		return null;
-	}
+	public abstract String getToken();
+
+	protected abstract void login();
 
 	public static void main(String[] args) {
 		OAuth oauth = OAuth.create();
+		oauth.login();
 		System.out.println(oauth.getToken());
 	}
 
