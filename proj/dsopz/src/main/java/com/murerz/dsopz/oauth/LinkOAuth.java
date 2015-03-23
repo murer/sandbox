@@ -24,8 +24,11 @@ public class LinkOAuth extends OAuth {
 	@Override
 	public String getToken() {
 		readConfigFile();
-		if (expired()) {
+		if (expired() && isAutoLogin()) {
 			makeLogin();
+		}
+		if (expired()) {
+			return null;
 		}
 		return data.getAuthToken();
 	}
@@ -87,8 +90,7 @@ public class LinkOAuth extends OAuth {
 
 	@Override
 	protected void login() {
-		deleteConfigFile();
-		getToken();
+		makeLogin();
 	}
 
 	private void deleteConfigFile() {
@@ -102,6 +104,11 @@ public class LinkOAuth extends OAuth {
 			file = System.getProperty("user.home", ".") + "/.dsopz/auth.json";
 		}
 		return new File(file);
+	}
+
+	@Override
+	public void logout() {
+		deleteConfigFile();
 	}
 
 }

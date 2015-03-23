@@ -6,7 +6,7 @@ public abstract class OAuth {
 
 	private static OAuth me = null;
 
-	private static OAuth create() {
+	public static OAuth create() {
 		if (me == null) {
 			synchronized (MUTEX) {
 				if (me == null) {
@@ -17,14 +17,26 @@ public abstract class OAuth {
 		return me;
 	}
 
+	private boolean autoLogin = false;
+
 	public abstract String getToken();
 
 	protected abstract void login();
 
+	private void setAutoLogin(boolean autoLogin) {
+		this.autoLogin = autoLogin;
+	}
+
+	public boolean isAutoLogin() {
+		return autoLogin;
+	}
+
 	public static void main(String[] args) {
 		OAuth oauth = OAuth.create();
-		oauth.login();
+		oauth.setAutoLogin(false);
 		System.out.println(oauth.getToken());
 	}
+
+	public abstract void logout();
 
 }
