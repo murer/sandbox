@@ -3,8 +3,6 @@ package com.murerz.dsopz.ds.query;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import com.murerz.dsopz.util.FlexJson;
-
 public class FullQuery {
 
 	private PageQuery query;
@@ -63,7 +61,7 @@ public class FullQuery {
 		Iterator<Entity> entities = query.query();
 		int i = 0;
 		while (entities.hasNext()) {
-			System.out.println(FlexJson.toJSON(entities.next()));
+			System.out.println(entities.next());
 			if (i++ > 30) {
 				break;
 			}
