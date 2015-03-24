@@ -25,4 +25,9 @@ public class Entity {
 		this.properties = properties;
 	}
 
+	@Override
+	public String toString() {
+		return "[Entity " + id + " " + properties + "]";
+	}
+
 }
