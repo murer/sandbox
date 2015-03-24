@@ -1,12 +1,14 @@
 package com.murerz.dsopz.oauth;
 
+import org.apache.http.client.fluent.Request;
+
 public abstract class OAuth {
 
 	private static Object MUTEX = new Object();
 
 	private static OAuth me = null;
 
-	public static OAuth create() {
+	public static OAuth me() {
 		if (me == null) {
 			synchronized (MUTEX) {
 				if (me == null) {
@@ -23,8 +25,9 @@ public abstract class OAuth {
 
 	protected abstract void login();
 
-	private void setAutoLogin(boolean autoLogin) {
+	public OAuth setAutoLogin(boolean autoLogin) {
 		this.autoLogin = autoLogin;
+		return this;
 	}
 
 	public boolean isAutoLogin() {
@@ -32,11 +35,19 @@ public abstract class OAuth {
 	}
 
 	public static void main(String[] args) {
-		OAuth oauth = OAuth.create();
+		OAuth oauth = OAuth.me();
 		oauth.setAutoLogin(false);
 		System.out.println(oauth.getToken());
 	}
 
 	public abstract void logout();
+
+	public void config(Request req) {
+		String token = getToken();
+		if (token == null) {
+			throw new RuntimeException("wrong");
+		}
+		req.setHeader("Authorization", "Bearer " + token);
+	}
 
 }

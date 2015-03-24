@@ -60,7 +60,7 @@ public class OAuthData {
 	}
 
 	public boolean expired() {
-		return System.currentTimeMillis() > expiresAt + 60000;
+		return System.currentTimeMillis() > expiresAt + 10000;
 	}
 
 }

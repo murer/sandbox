@@ -987,4 +987,16 @@ public class Util {
 		return formatDate("HH:mm:ss.S", date);
 	}
 
+	public static void copyAll(InputStream in, File file) {
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(file);
+			copyAll(in, out);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} finally {
+			close(out);
+		}
+	}
+
 }

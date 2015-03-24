@@ -20,10 +20,20 @@ import com.murerz.dsopz.util.Util;
 public class LinkOAuth extends OAuth {
 
 	private OAuthData data;
+	private String clientId;
+	private String clientSecret;
+
+	public LinkOAuth() {
+		clientId = "765762103246-g936peorj64mgveoqhai6ohv4t5qc5qb.apps.googleusercontent.com";
+		clientSecret = "ayQpUnTqvIxgV1XY9e-ItyC8";
+	}
 
 	@Override
 	public String getToken() {
 		readConfigFile();
+		if (data != null && expired()) {
+			refresh();
+		}
 		if (expired() && isAutoLogin()) {
 			makeLogin();
 		}
@@ -33,9 +43,33 @@ public class LinkOAuth extends OAuth {
 		return data.getAuthToken();
 	}
 
+	private void refresh() {
+		try {
+			Request req = Request.Post("https://www.googleapis.com/oauth2/v3/token");
+			// Request req =
+			// Request.Post("http://localhost:5000/oauth2/v3/token");
+			Form form = Form.form();
+			form.add("client_id", clientId);
+			form.add("client_secret", clientSecret);
+			form.add("refresh_token", this.data.getRefreshToken());
+			form.add("grant_type", "refresh_token");
+			req.bodyForm(form.build());
+			HttpResponse resp = req.execute().returnResponse();
+			HttpUtil.checkError(resp);
+			OAuthData data = HttpUtil.jsonFlex(resp, OAuthData.class);
+			data.setRefreshToken(this.data.getRefreshToken());
+			File file = getFile();
+			FlexJson.writeFile(file, data);
+			this.data = data;
+		} catch (ClientProtocolException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private void makeLogin() {
 		try {
-			String clientId = "765762103246-g936peorj64mgveoqhai6ohv4t5qc5qb.apps.googleusercontent.com";
 			List<String> scopes = new ArrayList<String>();
 			scopes.add("https://www.googleapis.com/auth/cloud-platform");
 			scopes.add("https://www.googleapis.com/auth/datastore");
@@ -57,7 +91,7 @@ public class LinkOAuth extends OAuth {
 			Request req = Request.Post("https://www.googleapis.com:443/oauth2/v3/token");
 			Form form = Form.form();
 			form.add("code", code).add("client_id", clientId);
-			form.add("client_secret", "ayQpUnTqvIxgV1XY9e-ItyC8");
+			form.add("client_secret", this.clientSecret);
 			form.add("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
 			form.add("grant_type", "authorization_code");
 			req.bodyForm(form.build());
