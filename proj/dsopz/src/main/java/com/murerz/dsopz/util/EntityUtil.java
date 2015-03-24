@@ -56,7 +56,13 @@ public class EntityUtil {
 		}
 		if (value.has("stringValue")) {
 			property.setType("string");
-			property.setValue(FlexJson.toJSON(value.get("stringValue").getAsString()));
+			property.setValue(value.get("stringValue").toString());
+		} else if (value.has("integerValue")) {
+			property.setType("integer");
+			property.setValue(value.get("integerValue").toString());
+		} else if (value.has("listValue")) {
+			property.setType("list");
+			property.setValue(value.get("listValue").toString());
 		} else if (!value.entrySet().isEmpty()) {
 			throw new RuntimeException("wrong: " + value);
 		}

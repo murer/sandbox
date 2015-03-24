@@ -46,6 +46,10 @@ public class PageQuery {
 		this.namespace = namespace;
 	}
 
+	public void setLimit(Long limit) {
+		this.limit = limit;
+	}
+
 	public PageQuery query() {
 		InputStream in = null;
 		try {
@@ -87,7 +91,7 @@ public class PageQuery {
 		return ret;
 	}
 
-	private List<Entity> getEntities() {
+	public List<Entity> getEntities() {
 		return entities;
 	}
 
@@ -99,7 +103,7 @@ public class PageQuery {
 		return moreResults;
 	}
 
-	private boolean hasMoreElements() {
+	public boolean hasMoreElements() {
 		return ("MORE_RESULTS_AFTER_LIMIT".equals(moreResults));
 	}
 
@@ -119,10 +123,12 @@ public class PageQuery {
 		}
 	}
 
-	private boolean nextPage() {
+	public boolean nextPage() {
 		if (!hasMoreElements()) {
+			System.out.println("xxxx");
 			return false;
 		}
+		System.out.println("yyy");
 		startCursor = endCursor;
 		endCursor = null;
 		moreResults = null;

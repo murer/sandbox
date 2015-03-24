@@ -3,6 +3,8 @@ package com.murerz.dsopz.ds.query;
 import java.util.HashMap;
 import java.util.Map;
 
+import flexjson.JSON;
+
 public class Entity {
 
 	private String id;
@@ -17,6 +19,7 @@ public class Entity {
 		this.id = id;
 	}
 
+	@JSON(include = true)
 	public Map<String, Property> getProperties() {
 		return properties;
 	}
