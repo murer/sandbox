@@ -18,7 +18,7 @@ import com.murerz.dsopz.util.GsonUtil;
 import com.murerz.dsopz.util.HttpUtil;
 import com.murerz.dsopz.util.Util;
 
-public class KindQuery {
+public class PageQuery {
 
 	private String dataset;
 
@@ -46,7 +46,7 @@ public class KindQuery {
 		this.namespace = namespace;
 	}
 
-	public KindQuery query() {
+	public PageQuery query() {
 		InputStream in = null;
 		try {
 			Request req = Request.Post("https://www.googleapis.com/datastore/v1beta2/datasets/" + dataset + "/runQuery");
@@ -104,7 +104,7 @@ public class KindQuery {
 	}
 
 	public static void main(String[] args) {
-		KindQuery query = new KindQuery();
+		PageQuery query = new PageQuery();
 		query.setDataset("quero-natura");
 		query.setNamespace("staging");
 		query.query();
