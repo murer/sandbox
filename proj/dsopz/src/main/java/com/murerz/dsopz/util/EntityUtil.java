@@ -1,6 +1,7 @@
 package com.murerz.dsopz.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,14 +35,31 @@ public class EntityUtil {
 	}
 
 	private static Map<String, Property> parseEntityProperties(JsonObject obj) {
+		Map<String, Property> ret = new HashMap<String, Property>();
 		Set<Entry<String, JsonElement>> set = obj.entrySet();
 		for (Entry<String, JsonElement> entry : set) {
 			String name = entry.getKey();
 			JsonObject value = entry.getValue().getAsJsonObject();
 			Property property = new Property();
-			// property.setValue(parseValue(value));
+			parseValue(value, property);
+			if (property.getValue() != null) {
+				ret.put(name, property);
+			}
 		}
-		return null;
+		return ret;
+	}
+
+	private static void parseValue(JsonObject value, Property property) {
+		property.setIndexed(false);
+		if (value.has("indexed")) {
+			property.setIndexed(value.remove("indexed").getAsBoolean());
+		}
+		if (value.has("stringValue")) {
+			property.setType("string");
+			property.setValue(FlexJson.toJSON(value.get("stringValue").getAsString()));
+		} else if (!value.entrySet().isEmpty()) {
+			throw new RuntimeException("wrong: " + value);
+		}
 	}
 
 	public static String parseId(JsonArray array) {

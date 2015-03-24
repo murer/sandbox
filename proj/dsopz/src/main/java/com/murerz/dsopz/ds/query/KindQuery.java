@@ -22,32 +22,45 @@ public class KindQuery {
 
 	private String dataset;
 
-	private Long limit = 1000l;
+	private String namespace;
+
+	private Long limit = 10l;
 
 	private String endCursor;
+
+	private String startCursor;
 
 	private String moreResults;
 
 	private List<Entity> entities;
 
+	public void setStartCursor(String startCursor) {
+		this.startCursor = startCursor;
+	}
+
+	public void setDataset(String dataset) {
+		this.dataset = dataset;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+
 	public KindQuery query() {
 		InputStream in = null;
 		try {
-			Request req = Request.Post("https://www.googleapis.com/datastore/v1beta2/datasets/quero-natura/runQuery");
+			Request req = Request.Post("https://www.googleapis.com/datastore/v1beta2/datasets/" + dataset + "/runQuery");
 			OAuth.me().config(req);
-			JsonObject obj = new JsonObject();
-			obj.add("partitionId", new JsonObject());
-			req.bodyString("{\"partitionId\":{\"namespace\":\"staging\"},\"query\":{\"limit\":3}}", ContentType.APPLICATION_JSON);
+			JsonObject params = createParams();
+			req.bodyString(params.toString(), ContentType.APPLICATION_JSON);
 			HttpResponse resp = req.execute().returnResponse();
 			HttpUtil.checkError(resp);
 			in = new BufferedInputStream(resp.getEntity().getContent());
 			JsonObject json = GsonUtil.parse(in, "UTF-8").getAsJsonObject();
-			System.out.println(GsonUtil.pretty(json));
 			moreResults = json.get("batch").getAsJsonObject().get("moreResults").getAsString();
 			endCursor = json.get("batch").getAsJsonObject().get("endCursor").getAsString();
 			JsonArray entities = json.get("batch").getAsJsonObject().get("entityResults").getAsJsonArray();
 			this.entities = EntityUtil.parseEntities(entities);
-			System.out.println(this.entities);
 			return this;
 		} catch (ClientProtocolException e) {
 			throw new RuntimeException(e);
@@ -60,9 +73,61 @@ public class KindQuery {
 		}
 	}
 
+	private JsonObject createParams() {
+		JsonObject ret = new JsonObject();
+		JsonObject partitionId = new JsonObject();
+		JsonObject query = new JsonObject();
+		ret.add("partitionId", partitionId);
+		ret.add("query", query);
+		partitionId.addProperty("namespace", namespace);
+		query.addProperty("limit", limit);
+		if (startCursor != null) {
+			query.addProperty("startCursor", startCursor);
+		}
+		return ret;
+	}
+
+	private List<Entity> getEntities() {
+		return entities;
+	}
+
+	public String getEndCursor() {
+		return endCursor;
+	}
+
+	public String getMoreResults() {
+		return moreResults;
+	}
+
+	private boolean hasMoreElements() {
+		return ("MORE_RESULTS_AFTER_LIMIT".equals(moreResults));
+	}
+
 	public static void main(String[] args) {
 		KindQuery query = new KindQuery();
+		query.setDataset("quero-natura");
+		query.setNamespace("staging");
 		query.query();
+		System.out.println(query.getEntities());
+		System.out.println(query.getEndCursor());
+		System.out.println(query.getMoreResults());
+		if (query.nextPage()) {
+			query.query();
+			System.out.println(query.getEntities());
+			System.out.println(query.getEndCursor());
+			System.out.println(query.getMoreResults());
+		}
+	}
+
+	private boolean nextPage() {
+		if (!hasMoreElements()) {
+			return false;
+		}
+		startCursor = endCursor;
+		endCursor = null;
+		moreResults = null;
+		return true;
+
 	}
 
 }

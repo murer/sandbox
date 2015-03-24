@@ -32,4 +32,9 @@ public class Property {
 		this.indexed = indexed;
 	}
 
+	@Override
+	public String toString() {
+		return "[" + type + "/" + indexed + "/" + value + "]";
+	}
+
 }
