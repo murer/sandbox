@@ -12,4 +12,5 @@ public class IdGen {
 	public static String gen(Class<?> clazz) {
 		return gen(clazz.getSimpleName().toLowerCase());
 	}
+
 }
