@@ -6,6 +6,30 @@ public class Property {
 
 	private String value;
 
-	private Long indexed;
+	private Boolean indexed;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Boolean getIndexed() {
+		return indexed;
+	}
+
+	public void setIndexed(Boolean indexed) {
+		this.indexed = indexed;
+	}
 
 }
