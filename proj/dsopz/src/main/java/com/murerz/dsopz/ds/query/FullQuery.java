@@ -13,22 +13,22 @@ public class FullQuery {
 		this.query = new PageQuery();
 	}
 
-	private FullQuery setPageSize(Long pageSize) {
+	public FullQuery setPageSize(Long pageSize) {
 		this.query.setLimit(pageSize);
 		return this;
 	}
 
-	private FullQuery setNamespace(String namespace) {
+	public FullQuery setNamespace(String namespace) {
 		this.query.setNamespace(namespace);
 		return this;
 	}
 
-	private FullQuery setDataset(String dataset) {
+	public FullQuery setDataset(String dataset) {
 		this.query.setDataset(dataset);
 		return this;
 	}
 
-	private Iterator<Entity> query() {
+	public Iterator<Entity> query() {
 		query.query();
 		return new Iterator<Entity>() {
 
