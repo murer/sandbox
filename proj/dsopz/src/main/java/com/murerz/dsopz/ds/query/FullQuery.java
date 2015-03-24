@@ -3,6 +3,8 @@ package com.murerz.dsopz.ds.query;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.google.gson.JsonObject;
+
 public class FullQuery {
 
 	private PageQuery query;
@@ -28,9 +30,9 @@ public class FullQuery {
 		return this;
 	}
 
-	public Iterator<Entity> query() {
+	public Iterator<JsonObject> query() {
 		query.query();
-		return new Iterator<Entity>() {
+		return new Iterator<JsonObject>() {
 
 			@Override
 			public boolean hasNext() {
@@ -38,11 +40,11 @@ public class FullQuery {
 			}
 
 			@Override
-			public Entity next() {
+			public JsonObject next() {
 				if (!hasNext()) {
 					throw new NoSuchElementException();
 				}
-				Entity ret = query.getEntities().get(index++);
+				JsonObject ret = query.getEntities().get(index++).getAsJsonObject();
 				if (!hasNext() && query.hasMoreElements()) {
 					index = 0;
 					query.nextPage();
@@ -58,7 +60,7 @@ public class FullQuery {
 		FullQuery query = new FullQuery();
 		query.setDataset("quero-natura").setNamespace("staging");
 		query.setPageSize(10l);
-		Iterator<Entity> entities = query.query();
+		Iterator<JsonObject> entities = query.query();
 		int i = 0;
 		while (entities.hasNext()) {
 			System.out.println(entities.next());

@@ -3,7 +3,7 @@ package com.murerz.dsopz.ds.query;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -11,9 +11,9 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.murerz.dsopz.oauth.OAuth;
-import com.murerz.dsopz.util.EntityUtil;
 import com.murerz.dsopz.util.GsonUtil;
 import com.murerz.dsopz.util.HttpUtil;
 import com.murerz.dsopz.util.Util;
@@ -32,7 +32,7 @@ public class PageQuery {
 
 	private String moreResults;
 
-	private List<Entity> entities;
+	private JsonArray entities;
 
 	public void setStartCursor(String startCursor) {
 		this.startCursor = startCursor;
@@ -64,7 +64,7 @@ public class PageQuery {
 			moreResults = json.get("batch").getAsJsonObject().get("moreResults").getAsString();
 			endCursor = json.get("batch").getAsJsonObject().get("endCursor").getAsString();
 			JsonArray entities = json.get("batch").getAsJsonObject().get("entityResults").getAsJsonArray();
-			this.entities = EntityUtil.parseEntities(entities);
+			this.entities = parseEntities(entities);
 			return this;
 		} catch (ClientProtocolException e) {
 			throw new RuntimeException(e);
@@ -75,6 +75,36 @@ public class PageQuery {
 		} finally {
 			Util.close(in);
 		}
+	}
+
+	private JsonArray parseEntities(JsonArray entities) {
+		JsonArray ret = new JsonArray();
+		for (JsonElement element : entities) {
+			JsonObject obj = element.getAsJsonObject().get("entity").getAsJsonObject();
+			JsonObject entity = new JsonObject();
+			JsonObject key = new JsonObject();
+			JsonArray path = obj.get("key").getAsJsonObject().get("path").getAsJsonArray();
+			entity.add("key", key);
+			key.add("path", path);
+			JsonObject props = obj.get("properties").getAsJsonObject();
+			entity.add("properties", parseProps(props));
+			ret.add(entity);
+		}
+		return ret;
+	}
+
+	private JsonObject parseProps(JsonObject props) {
+		JsonObject ret = new JsonObject();
+		for (Entry<String, JsonElement> entry : props.entrySet()) {
+			JsonObject value = entry.getValue().getAsJsonObject();
+			if (!value.has("indexed")) {
+				value.addProperty("indexed", false);
+			}
+			if (value.entrySet().size() > 1) {
+				ret.add(entry.getKey(), value);
+			}
+		}
+		return ret;
 	}
 
 	private JsonObject createParams() {
@@ -91,7 +121,7 @@ public class PageQuery {
 		return ret;
 	}
 
-	public List<Entity> getEntities() {
+	public JsonArray getEntities() {
 		return entities;
 	}
 
@@ -128,7 +158,6 @@ public class PageQuery {
 			System.out.println("xxxx");
 			return false;
 		}
-		System.out.println("yyy");
 		startCursor = endCursor;
 		endCursor = null;
 		moreResults = null;
