@@ -15,7 +15,7 @@ def upload(dataset, block, namespace=None):
 			'upsert': block
 		}
 	}
-	resp = oauth.oauth_req_json('POST', 
+	return oauth.oauth_async_req_json('POST', 
 		'https://www.googleapis.com/datastore/v1beta2/datasets/%s/commit' % (dataset), 
 		params)
 
@@ -25,10 +25,11 @@ def get_kind(obj):
 	last = path[i - 1]
 	return last['kind']
 
-def import_data(dataset, kinds=[], namespace=None, chunkSize=500):
+def import_data(dataset, kinds=[], namespace=None, chunkSize=500, parallel=10):
 	kinds = kinds or []
 	kinds = [k.lower() for k in kinds]
 	block = []
+	ups = []
 	count = 0
 	while True:
 		line = sys.stdin.readline()
@@ -43,22 +44,27 @@ def import_data(dataset, kinds=[], namespace=None, chunkSize=500):
 			continue
 		block.append(obj)
 		if len(block) >= chunkSize:
-			upload(dataset, block, namespace)
 			count += len(block)
-			print >> sys.stderr, 'Uploaded', count
+			print >> sys.stderr, 'Uploading', count
+			ups.append(upload(dataset, block, namespace))
 			block = []
+			while len(ups) >= parallel:
+				ups.pop(0).resp()
 	if block:
-		upload(dataset, block, namespace)
 		count += len(block)
-	print >> sys.stderr, 'Done', count
+		print >> sys.stderr, 'Uploading', count
+		ups.append(upload(dataset, block, namespace))
+	while len(ups):
+		ups.pop(0).resp()
 
 def __main():
-	parser = argparse.ArgumentParser(description='Exporter')
+	parser = argparse.ArgumentParser(description='Importer')
 	parser.add_argument('-d', '--dataset', required=True, help='dataset')
 	parser.add_argument('-n', '--namespace', required=True, help='namespace')
 	parser.add_argument('-k', '--kinds', nargs='+', help='kinds')
+	parser.add_argument('-p', '--parallel', type=int, help='parallel')
 	args = parser.parse_args()
-	import_data(args.dataset, args.kinds, args.namespace)
+	import_data(args.dataset, args.kinds, args.namespace, parallel = args.parallel or 10)
 
 if __name__ == '__main__':
 	__main()

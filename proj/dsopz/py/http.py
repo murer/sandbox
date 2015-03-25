@@ -1,5 +1,6 @@
 import httplib
 import json
+import util
 from urlparse import urlparse
 
 class Error(Exception):
@@ -8,7 +9,25 @@ class Error(Exception):
 class HttpError(Error):
 	"""Exception"""
 
-def req_json(method, url, params = '', headers = {}, expects = [200]):
+class FutureResponse():
+	def __init__(self, conn, expects):
+		self.conn = conn
+		self.expects = expects
+
+	def resp(self):
+		try:
+			response = self.conn.getresponse()
+			if response.status not in self.expects:
+				raise Error('Status: %d %s %sri' % (response.status, response.reason, response.read()))
+			string = response.read()
+			if not string:
+				return None
+			ret = json.loads(string)
+			return ret
+		finally:
+			util.close(self.conn)
+
+def async_req_json(method, url, params = '', headers = {}, expects = [200]):
 	parsed = urlparse(url)
 	host = parsed.netloc
 	uri = parsed.path
@@ -23,23 +42,21 @@ def req_json(method, url, params = '', headers = {}, expects = [200]):
 		token = parsed.username + ':' + (parsed.password or '')
 		token = 'Basic ' + base64.b64encode(token)
 		headers['Authorization'] = token
+	success = False
 	try:
 		conn.request(method, uri, params, headers)
-		response = conn.getresponse()
-		if response.status not in expects:
-			raise Error('Status: %d %s %sri' % (response.status, response.reason, response.read()))
-		string = response.read()
-		if not string:
-			return None
-		ret = json.loads(string)
+		success = True
+		return FutureResponse(conn, expects)
 	finally:
-		conn.close()
-	return ret
+		if not success:
+			util.close(conn)
 
+def req_json(method, url, params = '', headers = {}, expects = [200]):
+	return async_req_json(method, url, params, headers, expects).resp()
 
 def __main():
 	obj = req_json('GET', 'http://graph.facebook.com/phmurer')
-	print json.dumps(obj)
+	print obj
 
 if __name__ == '__main__':
 	__main()
