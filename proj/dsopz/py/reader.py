@@ -44,39 +44,37 @@ def query(dataset, gql, namespace=None, limit=1000, startCursor=None):
 	ret['endCursor'] = resp['batch'].get('endCursor')
 	return ret
 
-def iterate(dataset, gql, namespace=None, bulkSize=10):
+def iterate(dataset, gql, namespace=None, bulkSize=1000):
 	startCursor = None
-	loaded = 0
 	while True:
 		page = query(dataset, gql, namespace, bulkSize, startCursor)
 		if not page['entities']:
 			return
-		loaded += len(page['entities'])
-		print >> sys.stderr, 'Loaded', loaded  
 		startCursor = page.get('endCursor')
 		for ent in page['entities']:
 			yield ent
 
 
-def printIterate(dataset, gql, namespace=None):
+def print_iterate(dataset, gql, namespace=None, msg=''):
 	it = iterate(dataset, gql, namespace)
 	loaded = 0
 	try:
 		while True:
 			loaded += 1
 			if loaded % 1000 == 0:
-				print >> sys.stderr, 'loaded', loaded
+				print >> sys.stderr, 'loaded', msg, loaded
 			print it.next()
 	except StopIteration:
 		pass
+	print >> sys.stderr, 'Done', msg, loaded
 
 def __main():
-	parser = argparse.ArgumentParser(description='Produce task')
+	parser = argparse.ArgumentParser(description='Reader')
 	parser.add_argument('-d', '--dataset', required=True, help='dataset')
 	parser.add_argument('-n', '--namespace', required=True, help='namespace')
 	parser.add_argument('-q', '--gql', required=True, help='gql')
 	args = parser.parse_args()
-	printIterate(args.dataset, args.gql, args.namespace)
+	print_iterate(args.dataset, args.gql, args.namespace)
 
 if __name__ == '__main__':
 	__main()
