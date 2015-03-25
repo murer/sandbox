@@ -14,6 +14,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.murerz.dsopz.oauth.OAuth;
+import com.murerz.dsopz.util.FlexJson;
 import com.murerz.dsopz.util.GsonUtil;
 import com.murerz.dsopz.util.HttpUtil;
 import com.murerz.dsopz.util.Util;
@@ -22,32 +23,32 @@ public class PageQuery {
 
 	private String dataset;
 
-	private String namespace;
-
-	private Long limit = 10l;
+	private QueryParam params = new QueryParam();
 
 	private String endCursor;
-
-	private String startCursor;
 
 	private String moreResults;
 
 	private JsonArray entities;
 
-	public void setStartCursor(String startCursor) {
-		this.startCursor = startCursor;
+	public PageQuery setStartCursor(String startCursor) {
+		this.params.setStartCursor(startCursor);
+		return this;
 	}
 
-	public void setDataset(String dataset) {
+	public PageQuery setDataset(String dataset) {
 		this.dataset = dataset;
+		return this;
 	}
 
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
+	public PageQuery setNamespace(String namespace) {
+		this.params.namespace(namespace);
+		return this;
 	}
 
-	public void setLimit(Long limit) {
-		this.limit = limit;
+	public PageQuery setLimit(Long limit) {
+		this.params.limit(limit);
+		return this;
 	}
 
 	public PageQuery query() {
@@ -55,7 +56,7 @@ public class PageQuery {
 		try {
 			Request req = Request.Post("https://www.googleapis.com/datastore/v1beta2/datasets/" + dataset + "/runQuery");
 			OAuth.me().config(req);
-			JsonObject params = createParams();
+			String params = FlexJson.toJSON(this.params);
 			req.bodyString(params.toString(), ContentType.APPLICATION_JSON);
 			HttpResponse resp = req.execute().returnResponse();
 			HttpUtil.checkError(resp);
@@ -86,8 +87,10 @@ public class PageQuery {
 			JsonArray path = obj.get("key").getAsJsonObject().get("path").getAsJsonArray();
 			entity.add("key", key);
 			key.add("path", path);
-			JsonObject props = obj.get("properties").getAsJsonObject();
-			entity.add("properties", parseProps(props));
+			if (obj.has("properties")) {
+				JsonObject props = obj.get("properties").getAsJsonObject();
+				entity.add("properties", parseProps(props));
+			}
 			ret.add(entity);
 		}
 		return ret;
@@ -107,29 +110,6 @@ public class PageQuery {
 		return ret;
 	}
 
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
-	private JsonObject createParams() {
-		JsonObject ret = new JsonObject();
-		JsonObject partitionId = new JsonObject();
-		JsonObject query = new JsonObject();
-		ret.add("partitionId", partitionId);
-		ret.add("query", query);
-		ret.add("filter",
-				GsonUtil.parse("{\"propertyFilter\":{\"operator\":\"LESS_THAN\"},\"property\":{\"name\":\"__key__\"},\"value\":{\"keyValue\":{\"path\":[{\"kind\":\"__\",\"id\":\"0\"}]}}}"));
-		partitionId.addProperty("namespace", namespace);
-		query.addProperty("limit", limit);
-		if (startCursor != null) {
-			query.addProperty("startCursor", startCursor);
-		}
-		System.out.println(ret);
-		return ret;
-	}
-
 	public JsonArray getEntities() {
 		return entities;
 	}
@@ -143,7 +123,12 @@ public class PageQuery {
 	}
 
 	public boolean hasMoreElements() {
-		return ("MORE_RESULTS_AFTER_LIMIT".equals(moreResults));
+		return entities.size() < params.getQuery().getLimit();
+	}
+
+	public PageQuery setKind(String kind) {
+		this.params.kind(kind);
+		return this;
 	}
 
 	public static void main(String[] args) {
@@ -164,14 +149,17 @@ public class PageQuery {
 
 	public boolean nextPage() {
 		if (!hasMoreElements()) {
-			System.out.println("xxxx");
 			return false;
 		}
-		startCursor = endCursor;
+		setStartCursor(endCursor);
 		endCursor = null;
 		moreResults = null;
 		return true;
 
+	}
+
+	public QueryParam getParams() {
+		return params;
 	}
 
 }
