@@ -25,7 +25,7 @@ def get_kind(obj):
 	last = path[i - 1]
 	return last['kind']
 
-def import_data(dataset, kinds=[], namespace=None, chunkSize=500, parallel=10):
+def process_data(dataset, op, kinds=[], namespace=None, chunkSize=500, parallel=10):
 	kinds = kinds or []
 	kinds = [k.lower() for k in kinds]
 	block = []
@@ -46,16 +46,19 @@ def import_data(dataset, kinds=[], namespace=None, chunkSize=500, parallel=10):
 		if len(block) >= chunkSize:
 			count += len(block)
 			print >> sys.stderr, 'Uploading', count
-			ups.append(upload(dataset, block, namespace))
+			ups.append(op(dataset, block, namespace))
 			block = []
 			while len(ups) >= parallel:
 				ups.pop(0).resp()
 	if block:
 		count += len(block)
 		print >> sys.stderr, 'Uploading', count
-		ups.append(upload(dataset, block, namespace))
+		ups.append(op(dataset, block, namespace))
 	while len(ups):
 		ups.pop(0).resp()
+
+def import_data(dataset, kinds=[], namespace=None, chunkSize=500, parallel=10):
+	process_data(dataset, upload, kinds, namespace, chunkSize, parallel)
 
 def __main():
 	parser = argparse.ArgumentParser(description='Importer')
