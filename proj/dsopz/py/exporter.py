@@ -7,7 +7,7 @@ class Error(Exception):
 
 def load_kinds(dataset, namespace=None):
 	max_kinds = 1000
-	results = reader.query(dataset, 'select __key__ from __kind__', namespace = namespace, limit = max_kinds)
+	results = reader.query(dataset, 'select __key__ from __kind__ order by __key__', namespace = namespace, limit = max_kinds)
 	l = len(results['entities'])
 	if l >= max_kinds:
 		raise Error('Too many kinds: %i' % (max_kinds))
@@ -23,7 +23,7 @@ def print_iterate(dataset, kinds=[], namespace=None):
 	if not kinds:
 		kinds = load_kinds(dataset, namespace)
 	for kind in kinds:
-		reader.print_iterate(dataset, 'select * from ' + kind, namespace=namespace, msg=kind)
+		reader.print_iterate(dataset, 'select * from ' + kind + ' order by __key__', namespace=namespace, msg=kind)
 
 def __main():
 	parser = argparse.ArgumentParser(description='Exporter')
