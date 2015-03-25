@@ -16,10 +16,10 @@ def upload(dataset, block, namespace=None):
 		}
 	}
 	print 'upload', json.dumps(params, indent=True)
-	#resp = oauth.oauth_req_json('POST', 
-	#	'https://www.googleapis.com/datastore/v1beta2/datasets/%s/commit' % (dataset), 
-	#	params)
-	#print resp
+	resp = oauth.oauth_req_json('POST', 
+		'https://www.googleapis.com/datastore/v1beta2/datasets/%s/commit' % (dataset), 
+		params)
+	print 'sssssssssssssss', resp
 
 def get_kind(obj):
 	path = obj['key']['path']
