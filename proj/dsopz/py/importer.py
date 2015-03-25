@@ -15,11 +15,9 @@ def upload(dataset, block, namespace=None):
 			'upsert': block
 		}
 	}
-	print 'upload', json.dumps(params, indent=True)
 	resp = oauth.oauth_req_json('POST', 
 		'https://www.googleapis.com/datastore/v1beta2/datasets/%s/commit' % (dataset), 
 		params)
-	print 'sssssssssssssss', resp
 
 def get_kind(obj):
 	path = obj['key']['path']
@@ -27,10 +25,11 @@ def get_kind(obj):
 	last = path[i - 1]
 	return last['kind']
 
-def import_data(dataset, kinds=[], namespace=None, chunkSize=2):
+def import_data(dataset, kinds=[], namespace=None, chunkSize=500):
 	kinds = kinds or []
 	kinds = [k.lower() for k in kinds]
 	block = []
+	count = 0
 	while True:
 		line = sys.stdin.readline()
 		if not line:
@@ -43,11 +42,15 @@ def import_data(dataset, kinds=[], namespace=None, chunkSize=2):
 		if kinds and kind.lower() not in kinds:
 			continue
 		block.append(obj)
-		if len(block) > chunkSize:
+		if len(block) >= chunkSize:
 			upload(dataset, block, namespace)
+			count += len(block)
+			print >> sys.stderr, 'Uploaded', count
 			block = []
 	if block:
 		upload(dataset, block, namespace)
+		count += len(block)
+	print >> sys.stderr, 'Done', count
 
 def __main():
 	parser = argparse.ArgumentParser(description='Exporter')
