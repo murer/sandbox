@@ -41,4 +41,12 @@ public class Console {
 		}
 	}
 
+	public void println(Object obj) {
+		System.out.println(obj);
+	}
+
+	public void errPrintln(Object obj) {
+		System.err.println(obj);
+	}
+
 }

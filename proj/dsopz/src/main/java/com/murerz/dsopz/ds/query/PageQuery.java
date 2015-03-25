@@ -107,17 +107,26 @@ public class PageQuery {
 		return ret;
 	}
 
+	/**
+	 * @return
+	 */
+	/**
+	 * @return
+	 */
 	private JsonObject createParams() {
 		JsonObject ret = new JsonObject();
 		JsonObject partitionId = new JsonObject();
 		JsonObject query = new JsonObject();
 		ret.add("partitionId", partitionId);
 		ret.add("query", query);
+		ret.add("filter",
+				GsonUtil.parse("{\"propertyFilter\":{\"operator\":\"LESS_THAN\"},\"property\":{\"name\":\"__key__\"},\"value\":{\"keyValue\":{\"path\":[{\"kind\":\"__\",\"id\":\"0\"}]}}}"));
 		partitionId.addProperty("namespace", namespace);
 		query.addProperty("limit", limit);
 		if (startCursor != null) {
 			query.addProperty("startCursor", startCursor);
 		}
+		System.out.println(ret);
 		return ret;
 	}
 
