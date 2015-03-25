@@ -63,7 +63,8 @@ def print_iterate(dataset, gql, namespace=None, msg=''):
 			loaded += 1
 			if loaded % 1000 == 0:
 				print >> sys.stderr, 'loaded', msg, loaded
-			print it.next()
+			string = json.dumps(it.next())
+			print string
 	except StopIteration:
 		pass
 	print >> sys.stderr, 'Done', msg, loaded

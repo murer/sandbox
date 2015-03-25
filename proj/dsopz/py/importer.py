@@ -1,0 +1,61 @@
+import oauth
+import json
+import sys
+import argparse
+
+def upload(dataset, block, namespace=None):
+	for ent in block:
+		ent['key']['partitionId'] = {
+			'dataset': dataset,
+			'namespace': namespace
+		}
+	params = { 
+		'mode': 'NON_TRANSACTIONAL', 
+		'mutation': { 
+			'upsert': block
+		}
+	}
+	print 'upload', json.dumps(params, indent=True)
+	#resp = oauth.oauth_req_json('POST', 
+	#	'https://www.googleapis.com/datastore/v1beta2/datasets/%s/commit' % (dataset), 
+	#	params)
+	#print resp
+
+def get_kind(obj):
+	path = obj['key']['path']
+	i = len(path)
+	last = path[i - 1]
+	return last['kind']
+
+def import_data(dataset, kinds=[], namespace=None, chunkSize=2):
+	kinds = kinds or []
+	kinds = [k.lower() for k in kinds]
+	block = []
+	while True:
+		line = sys.stdin.readline()
+		if not line:
+			break
+		line = line.strip()
+		if not line or line.startswith('#'):
+			continue
+		obj = json.loads(line)
+		kind = get_kind(obj)
+		if kinds and kind.lower() not in kinds:
+			continue
+		block.append(obj)
+		if len(block) > chunkSize:
+			upload(dataset, block, namespace)
+			block = []
+	if block:
+		upload(dataset, block, namespace)
+
+def __main():
+	parser = argparse.ArgumentParser(description='Exporter')
+	parser.add_argument('-d', '--dataset', required=True, help='dataset')
+	parser.add_argument('-n', '--namespace', required=True, help='namespace')
+	parser.add_argument('-k', '--kinds', nargs='+', help='kinds')
+	args = parser.parse_args()
+	import_data(args.dataset, args.kinds, args.namespace)
+
+if __name__ == '__main__':
+	__main()
