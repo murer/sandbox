@@ -5,6 +5,9 @@ import sys
 import datetime
 import json
 
+class Error(Exception):
+	"""Exceptions"""
+
 def __config():
 	return { 
 		'client_id': '765762103246-g936peorj64mgveoqhai6ohv4t5qc5qb.apps.googleusercontent.com',
@@ -33,8 +36,12 @@ def __write_file(content):
 	with open(__auth_file(), 'w') as f:
 		f.write(c + '\n')
 
-def get_token():
-	return None
+def __read_file():
+	if not os.path.isfile(__auth_file()):
+		return None 
+	with open(__auth_file(), 'r') as f:
+		c = f.read()
+	return json.loads(c)
 
 def login():
 	__delete_file()
@@ -64,6 +71,33 @@ def login():
 	content['expires'] = now + expires_in
 	__write_file(content)
 	print 'Done'
+
+def __refesh_token(auth):
+	config = __config()
+	content = http.req_json('POST', 'https://www.googleapis.com/oauth2/v3/token', urllib.urlencode({
+		'refresh_token': auth['refresh_token'],
+		'client_id': config['client_id'],
+		'client_secret': config['client_secret'],
+		'grant_type': 'refresh_token'
+	}), { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' })
+	now = int(datetime.datetime.now().strftime("%s"))
+	expires_in = content['expires_in']
+	content['created'] = now
+	content['expires'] = now + expires_in
+	content['refresh_token'] = auth['refresh_token']
+	__write_file(content)
+
+def get_token():
+	auth = __read_file()
+	if not auth:
+		raise Error('You need to login')
+	now = int(datetime.datetime.now().strftime("%s"))
+	if now > auth['expires'] - 60:
+		__refesh_token(auth)
+	auth = __read_file()
+	if not auth:
+		raise Error('You need to login')
+	return auth['access_token']
 
 def __main():
 	print login()
