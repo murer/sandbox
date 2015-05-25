@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class Console {
 
 	private static final Object MUTEX = new Object();
@@ -47,6 +49,18 @@ public class Console {
 
 	public void errPrintln(Object obj) {
 		System.err.println(obj);
+	}
+
+	private static void csv(String s) {
+		System.out.println("'" + s + "': ---" + StringEscapeUtils.escapeCsv(s) + "---");
+	}
+
+	public static void main(String[] args) {
+		csv("abc");
+		csv("abc\"de\"f");
+		csv("abc,def");
+		csv("abc,d\"e\"f");
+		csv("abc\"\"\"def");
 	}
 
 }
