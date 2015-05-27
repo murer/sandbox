@@ -37,8 +37,10 @@ class DHCPServer():
             self.serve()
 
     def parse_request(self, req):
-        print struct.unpack('!BBBB', req[0:4])
-
+        ret = {}
+        ret['op'], ret['htype'], ret['hlen'], ret['hops'] = struct.unpack('!BBBB', req[0:4])
+        print ret
+        
     def conn(self, client, req):
         parsed_req = self.parse_request(req)
         print parsed_req
