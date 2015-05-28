@@ -73,6 +73,7 @@ class DHCPRequest():
 
     def parse_response(self):
         data = self.response_data
+        print ' '.join([ '%02x' % ord(b) for b in self.response_data ])
         self.response = {
             'offer_ip': '.'.join([str(ord(char)) for char in data[16:20]]),
             'next_server_ip': '.'.join([str(ord(char)) for char in data[20:24]]),
