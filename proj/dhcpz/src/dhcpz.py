@@ -24,7 +24,7 @@ def ip2str(bin):
     return '.'.join([ str(ord(b)) for b in bin ])
 
 def ip2bin(data):
-    return [ struct.pack('!B', int(d)) for d in data.split('.') ]
+    return ''.join([ struct.pack('!B', int(d)) for d in data.split('.') ])
 
 class DHCPServer():
     
@@ -75,15 +75,44 @@ class DHCPServer():
             self.reply(client, preq)
 
     def reply(self, client, req):
-        print 'Replying', req['chaddr_str'], req['ciaddr_str']
+        print 'Parsing', req['chaddr_str'], req['ciaddr_str'], req
         resp = req.copy()
         resp['op'] = 0x02
+        resp['hops'] = 0x00
         resp['secs'] = 0x00
-        #resp['flags'] = 0x8000
-        resp['ciaddr_str'] = '172.16.120.202'
-        resp['ciaddr'] = ip2bin(resp['ciaddr_str'])
-        print resp
+        resp['ciaddr'] = '\x00\x00\x00\x00'
+        resp['yiaddr'] = ip2bin('172.16.129.202')
+        resp['yiaddr_str'] = ip2str(resp['yiaddr'])
+        resp['siaddr'] = '\x00\x00\x00\x00'
+        resp['sname'] = ''
+        resp['file'] = ''
+        resp['options'] = {
+            'gateway': ip2bin('172.16.120.1'),
+            'dns': [ ip2bin('172.16.120.1'), ip2bin('8.8.8.8') ],
+            'bcast': ip2bin('172.16.127.255'),
+            'mask': ip2bin('255.255.248.0')
+        }
+        self.send_resp(client, resp)
 
+    def send_resp(self, client, resp):
+        print 'Sending', client, resp['chaddr_str'], resp['yiaddr_str']
+        data = struct.pack('!BBBB', resp['op'], resp['htype'], resp['hlen'], resp['hops'])
+        data += struct.pack('!IHH', resp['xid'], resp['secs'], resp['flags'])
+        data += resp['ciaddr'] + resp['yiaddr'] + resp['siaddr'] + resp['giaddr']
+        data += resp['chaddr'] + ('\x00' * 10)
+        data += resp['sname'] + ('\x00' * (64-len(resp['sname'])))
+        data += resp['file'] + ('\x00' * (128-len(resp['file'])))
+        print ' '.join(['%02x' % ord(c) for c in data[:4]])
+        print ' '.join(['%02x' % ord(c) for c in data[4:8]])
+        print ' '.join(['%02x' % ord(c) for c in data[8:12]])
+        print ' '.join(['%02x' % ord(c) for c in data[12:16]])
+        print ' '.join(['%02x' % ord(c) for c in data[16:20]])
+        print ' '.join(['%02x' % ord(c) for c in data[20:24]])
+        print ' '.join(['%02x' % ord(c) for c in data[24:28]])
+        print ' '.join(['%02x' % ord(c) for c in data[28:44]])
+        print ' '.join(['%02x' % ord(c) for c in data[44:]])
+        print len(data)
+        #self.sck.sendto(data, ('<broadcast>', 68))
 
 
 def main():
