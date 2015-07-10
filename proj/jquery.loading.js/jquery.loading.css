@@ -1,0 +1,11 @@
+
+/*--
+.loading { cursor: wait; display: block; height: 100%; left: 0; position: absolute; top: 0; width: 100%; z-index: 999999; }
+--*/
+.loading { cursor: wait; display: block; height: 100%; left: 0; position: fixed; top: 0; width: 100%; z-index: 999999; }
+.loading .loading-overlay { background-color: #fff; height: 100%; left: 0; opacity: 0.7; position: absolute; top: 0; width: 100%; }
+.loading .loading-panel { border-bottom: 1px solid #000; border-top: 1px solid #000; margin: 80px auto 0; padding: 10px; position: relative; text-align: center; width: 80%; background-color: #fff }
+.loading .loading-panel ul { background: #ffffff url("../img/loading-black.gif") no-repeat scroll center top; padding-top: 20px }
+.loading li { margin-top: 5px; }
+.loading .loading-loaded { color: #aaa }
+
