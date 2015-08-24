@@ -10,6 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.9</slf4j.version>
 		<log4j.version>2.3</log4j.version>
+		<camel.version>2.15.3</camel.version>
 	</properties>
 
 	<dependencies>
@@ -24,19 +25,29 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>${log4j.version}</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-slf4j-impl</artifactId>
-		    <version>${log4j.version}</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.apache.camel</groupId>
-		  <artifactId>camel-core</artifactId>
-		  <version>2.15.3</version>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http4</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-gson</artifactId>
+			<version>2.10.0</version>
 		</dependency>
 	</dependencies>
 
