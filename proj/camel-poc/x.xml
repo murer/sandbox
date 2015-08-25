@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<request>
+	<def>
+		<from>123</from>
+		<textMessage>my default message</textMessage>
+	</def>
+	<messages>
+		<message>
+			<from>1111</from>
+			<destination>21343543654</destination>
+		</message>
+		<message>
+			<destination>21343543654</destination>
+		</message>
+		<message>
+			<destination>21343543654</destination>
+			<textMessage>other message</textMessage>
+		</message>
+	</messages>
+</request>
+	
