@@ -11,8 +11,9 @@ tar xzf teamspeak3-server_linux-amd64-3.0.11.2.tar.gz
 mkdir opt
 mv teamspeak3-server_linux-amd64 opt/teamspeak
 sudo ln -s /home/ts/opt/teamspeak/ts3server_startscript.sh /etc/init.d/teamspeak
+sudo chown -R ts:ts /home/ts
 sudo update-rc.d teamspeak defaults
 sudo service teamspeak start
 
 cd -
-sudo chown -R ts:ts /home/ts
+
