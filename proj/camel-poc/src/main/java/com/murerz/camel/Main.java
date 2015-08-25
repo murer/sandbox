@@ -10,6 +10,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http4.HttpComponent;
 import org.apache.camel.component.jetty8.JettyHttpComponent8;
+import org.apache.camel.component.websocket.WebsocketComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -33,6 +34,7 @@ public class Main {
 
 		ctx.addComponent("http4", new HttpComponent());
 		ctx.addComponent("jetty", new JettyHttpComponent8());
+		ctx.addComponent("websocket", new WebsocketComponent());
 
 		String current = new File(".").getAbsolutePath();
 		final String from = "file://" + current + "/target/poc";
@@ -63,9 +65,43 @@ public class Main {
 		// }
 		// });
 
+		// ctx.addRoutes(new RouteBuilder() {
+		// public void configure() {
+		// RouteDefinition route =
+		// from("jetty:http://localhost:5005/app?matchOnUriPrefix=true");
+		// route.to("log:input?showAll=true");
+		// route.unmarshal().json(JsonLibrary.Gson);
+		// route.to("log:parsed?showAll=true");
+		// route.process(new Processor() {
+		//
+		// public void process(Exchange exchange) throws Exception {
+		// Map body = exchange.getIn().getBody(Map.class);
+		// System.out.println("XXX: " + body);
+		// HttpServletResponse resp =
+		// exchange.getIn().getBody(HttpServletResponse.class);
+		// resp.addHeader("X-TestHeader", "test value");
+		// exchange.getOut().setBody(body);
+		// }
+		// });
+		// route.to("log:result?showAll=true");
+		// route.process(new Processor() {
+		//
+		// public void process(Exchange exchange) throws Exception {
+		// exchange.getOut().setBody("fake!!!");
+		// }
+		// });
+		// route.to("log:fake?showAll=true");
+		// route.routingSlip().method(new Poc() {
+		// public String poc() {
+		// return "log:final?showAll=true";
+		// }
+		// }, "poc");
+		// }
+		// });
+
 		ctx.addRoutes(new RouteBuilder() {
 			public void configure() {
-				RouteDefinition route = from("jetty:http://localhost:5005/app?matchOnUriPrefix=true");
+				RouteDefinition route = from("websocket://localhost:5006/");
 				route.to("log:input?showAll=true");
 				route.unmarshal().json(JsonLibrary.Gson);
 				route.to("log:parsed?showAll=true");
