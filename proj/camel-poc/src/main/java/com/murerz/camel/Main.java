@@ -103,6 +103,7 @@ public class Main {
 			public void configure() {
 				RouteDefinition route = from("websocket://localhost:5006/");
 				route.to("log:input?showAll=true");
+				route.to("websocket://localhost:5006/");
 				route.unmarshal().json(JsonLibrary.Gson);
 				route.to("log:parsed?showAll=true");
 				route.process(new Processor() {
@@ -111,7 +112,7 @@ public class Main {
 						Map body = exchange.getIn().getBody(Map.class);
 						System.out.println("XXX: " + body);
 						HttpServletResponse resp = exchange.getIn().getBody(HttpServletResponse.class);
-						resp.addHeader("X-TestHeader", "test value");
+						//resp.addHeader("X-TestHeader", "test value");
 						exchange.getOut().setBody(body);
 					}
 				});
