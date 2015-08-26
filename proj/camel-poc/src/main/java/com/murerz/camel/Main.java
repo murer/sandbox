@@ -112,7 +112,7 @@ public class Main {
 						Map body = exchange.getIn().getBody(Map.class);
 						System.out.println("XXX: " + body);
 						HttpServletResponse resp = exchange.getIn().getBody(HttpServletResponse.class);
-						//resp.addHeader("X-TestHeader", "test value");
+						// resp.addHeader("X-TestHeader", "test value");
 						exchange.getOut().setBody(body);
 					}
 				});
