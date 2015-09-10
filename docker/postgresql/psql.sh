@@ -1,4 +1,5 @@
 #!/bin/bash -xe
 
-docker run --rm --link postgresql:postgresql -t --name postgresql-client postgresql /opt/config/psql.sh
+docker rm -f postgresql-client || true
+docker run --rm --link postgresql:postgresql -it --name postgresql-client postgresql /opt/config/psql.sh
 
