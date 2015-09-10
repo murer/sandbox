@@ -16,12 +16,12 @@ public class XMPPPoc {
 
 	public static void main(String[] args) throws SmackException, IOException, XMPPException {
 		// connect to gtalk server
-		ConnectionConfiguration connConfig = new ConnectionConfiguration("talk.google.com", 5222, "fuweweu.com");
+		ConnectionConfiguration connConfig = new ConnectionConfiguration("talk.google.com", 5222, "gmail.com");
 		XMPPConnection connection = new XMPPTCPConnection(connConfig);
 		connection.connect();
 
 		// login with username and password
-		connection.login("pyrata", "5t6y7u8i");
+		connection.login("pyrata@fuweweu.com", "5t6y7u8i");
 
 		// set presence status info
 		Presence presence = new Presence(Presence.Type.available);
@@ -46,6 +46,11 @@ public class XMPPPoc {
 
 		// wait for user to end program
 		System.in.read();
+		
+	      // send a message to somebody
+        msg = new Message("fuweweu@gmail.com", Message.Type.chat);
+        msg.setBody("hello");
+        connection.sendPacket(msg);
 
 		// set presence status to unavailable
 		presence = new Presence(Presence.Type.unavailable);
