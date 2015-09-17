@@ -14,4 +14,4 @@ PG_DATABASE=$5
 shift 5
 
 export PGPASSWORD="$PG_PASSWORD"
-pg_dump -v -O -h $PG_HOST -p $PG_PORT -U $PG_USER $* $PG_DATABASE
+pg_dump -v -O -x -h $PG_HOST -p $PG_PORT -U $PG_USER $* $PG_DATABASE
