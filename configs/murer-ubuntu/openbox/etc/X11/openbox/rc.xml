@@ -273,6 +273,12 @@
       </action>
     </keybind>
     <!-- Take a screenshot of the current window with gnome-screenshot when Alt+Print are pressed -->
+    <keybind key="S-Print">
+      <action name="Execute">
+        <command>gnome-screenshot -a</command>
+      </action>
+    </keybind>
+    <!-- Take a screenshot of the current window with gnome-screenshot when Alt+Print are pressed -->
     <keybind key="A-Print">
       <action name="Execute">
         <command>gnome-screenshot -w</command>
