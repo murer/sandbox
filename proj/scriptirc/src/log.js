@@ -9,7 +9,7 @@ function stack() {
     Error.captureStackTrace(err, arguments.callee);
     var stack = err.stack;
     Error.prepareStackTrace = orig;
-    return stack[1];
+    return stack[3];
 }
 
 function line() {
@@ -45,6 +45,7 @@ log.raw = raw;
 log.func = func;
 log.line = line;
 log.path = path;
+log.file = file;
 
 function createLevel(id, name) {
     log[name] = function() {
