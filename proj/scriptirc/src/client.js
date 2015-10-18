@@ -10,7 +10,10 @@ function on(evt, func) {
 }
 
 function fire(evt, args) {
-    log.trace('firing', evt, args)
+    if(evt != 'protocol_data' && evt != 'protocol_message' && evt != 'conns_data' 
+        && evt != 'conns_send') {
+        log.trace('firing', evt, args);
+    }
     var addons = this.addons[evt] || [];
     for (var i = 0; i < addons.length; i++) {
         var result = addons[i](evt, args);

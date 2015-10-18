@@ -29,7 +29,7 @@ function main() {
 
 	client.on('nick_identified', function() {
 		client.changeNick('pyrata');
-		//client.join('#mycontainer');
+		client.join('#mycontainer');
 	});
 	//log.info('Server', server)
 }
