@@ -1,32 +1,30 @@
+net = require('net')
 log = require('./log')
 
-function register(addon) {
-	log.debug('registering addon', addon);
-	this.addons.push(addon);
-	addon.init(this);
+function on(evt, func) {
+    log.debug('on', evt, func);
+    var addons = this.addons[evt] || [];
+    addons.push(func);
+    this.addons[evt] = addons;
 }
 
-function fire(evt, args){
-	log.debug('firing', evt, args)
-	var addons = this.addons[evt] || [];
-	for (var i = 0; i < addons.length; i++) {
-		var result = addons[i](evt, args);
-		if(result === false) {
-			break;
-		}
-	}
-}
-
-function command(name, cmd) {
-	log.debug('Registering command', name, cmd)
-	this[name] = cmd;
+function fire(evt, args) {
+    log.trace('firing', evt, args)
+    var addons = this.addons[evt] || [];
+    for (var i = 0; i < addons.length; i++) {
+        var result = addons[i](evt, args);
+        if(result === false) {
+            log.debug('fire halted', evt, addons[i]);
+            break;
+        }
+    }
 }
 
 function Client() {
-	this.addons = [];
+    this.addons = {};
 }
-Client.prototype.fire = fire;
-Client.prototype.register = register;
-Client.prototype.command = command;
+Client.fn = Client.prototype;
+Client.fn.fire = fire;
+Client.fn.on = on;
 
 module.exports = Client;

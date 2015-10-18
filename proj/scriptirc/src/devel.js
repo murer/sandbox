@@ -1,16 +1,17 @@
 
 log = require('./log')
 Client = require('./client');
-ConnectionAddon = require('./connection');
-
-log.info('Starting')
+connsMod = require('./conns');
+protocol = require('./protocol');
 
 function main() {
-	var client = new Client();
-	client.register(new ConnectionAddon());
-	client.fire('client_start');
+	log.info('Starting');
 
-	client.connect('irc.freenode.net', 6667)
+	var client = new Client();
+	conns = connsMod(client);
+	protocol(client);
+	conns.connect('irc.freenode.net', 6667);
+	//log.info('Server', server)
 }
 
 main();

@@ -30,12 +30,11 @@ function file() {
 }
 
 function raw(id, name, msgs) {
-    var str = util.format('%s [%s] %s:%s:%s %j', 
+    var str = util.format('%s [%s] %s:%s %j', 
         new Date().toISOString(),
         name.toUpperCase(),
-        file(),
-        line(),
         func(), 
+        line(),
         msgs);
     console.log(str);
 }
