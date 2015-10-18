@@ -22,7 +22,7 @@ function init(client) {
     }
 
     client.on('conns_send', onSend);
-    client.on('connection_connect', onConnect);
+    client.on('user_connect', onConnect);
 
 }
 

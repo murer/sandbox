@@ -15,7 +15,7 @@ function main() {
 		nick: 'pyrata',
 		user: '1 1 1 1'
 	});
-	client.fire('connection_connect', { 
+	client.fire('user_connect', { 
 		host: 'localhost', 
 		port: 6667
 	});
