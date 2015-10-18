@@ -1,12 +1,18 @@
 log = require('./log')
+util = require('./util')
 
 function init(client) {
 
     function setNick(nick) {
-        client.nick = nick;
+        client.nickVisual = nick;
+        client.nick = util.low(nick);
     }
 
     function onNickChanged(evt, data) {
+        var user = util.parseUser(data.prefix);
+        if(user.nick != client.nick) {
+            return;
+        }
         setNick(data.params[0]);
         log.info('nick changed to ' + client.nick);
     }

@@ -3,12 +3,17 @@ util = require('./util');
 
 function init(client) {
 
-    function onUserJoin(evt, channel) {
-        client.fire('protocol_send', 'JOIN ' + channel);
+    function handleLeave(channelName, nick) {
+        if(nick == client.nick) {
+            delete(client.channels[channelName]);
+            return;
+        }
+        var channel = client.channels[channelName];
+        delete(channel.nicks[nick]);
     }
 
-    function destroyChannel(name) {
-        delete(client.channels[name]);
+    function onUserJoin(evt, channel) {
+        client.fire('protocol_send', 'JOIN ' + channel);
     }
 
     function createChannel(data) {
@@ -45,13 +50,38 @@ function init(client) {
     function onPart(evt, data) {
         var user = util.parseUser(data.prefix);
         var channelName = data.params[0];
-        if(user.nick == client.nick) {
-            destroyChannel(channelName);
-            return;
-        }
-        var channel = client.channels[channelName];
-        delete(channel.nicks[user.nick]);
+        handleLeave(channelName, user.nick);
     }
+
+    function onKick(evt, data) {
+        handleLeave(data.params[0], util.low(data.params[1]));
+    }
+
+    function onQuit(evt, data) {
+        var user = util.parseUser(data.prefix);
+        for(var channelName in client.channels) {
+            console.log('handle quit', user.nick, channelName);
+            handleLeave(channelName, user.nick);
+        }
+    }
+
+    function onNick(evt, data) {
+        var fromUser = util.parseUser(data.prefix);
+        var from = fromUser.nick;
+        var toVisual = data.params[0];
+        var to = util.low(toVisual);
+        for(var channelName in client.channels) {
+            var channel = client.channels[channelName];
+            if(channel.nicks[from]) {
+                channel.nicks[to] = channel.nicks[from];
+                delete(channel.nicks[from]);
+                channel.nicks[to].full = toVisual;
+                channel.nicks[to].visual = toVisual;
+                channel.nicks[to].nick = to;                
+            }
+        }
+        console.log('AAA', client);
+    }    
 
     client.join = function() {
         for(var i = 0; i < arguments.length; i++) {
@@ -65,6 +95,9 @@ function init(client) {
     client.on('protocol_command_JOIN', onJoin);
     client.on('protocol_command_PART', onPart);
     client.on('protocol_command_353', onNickList);
+    client.on('protocol_command_KICK', onKick);
+    client.on('protocol_command_QUIT', onQuit);
+    client.on('protocol_command_NICK', onNick);
 }
 
 module.exports = init
