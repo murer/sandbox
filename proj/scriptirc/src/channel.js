@@ -80,7 +80,6 @@ function init(client) {
                 channel.nicks[to].nick = to;                
             }
         }
-        console.log('AAA', client);
     }    
 
     client.join = function() {
