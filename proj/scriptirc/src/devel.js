@@ -20,18 +20,20 @@ function main() {
 	channel(client);
 
 	client.setIdent('1 1 1 1');
-	client.changeNick('elemister');
+	client.changeNick('Elemister');
 	client.setNickservIdentify('1q2w3e4r');
 	client.connect({
 		host: 'localhost',
 		port: 6667
 	});
 
-	client.on('nick_identified', function() {
+	client.on('protocol_command_004', function() {
 		client.changeNick('pyrata');
 		client.join('#mycontainer');
 	});
 	//log.info('Server', server)
+
+	module.exports = client;
 }
 
 main();
