@@ -1,5 +1,6 @@
 net = require('net')
 log = require('./log')
+basics = require('./basics')
 
 function on(evt, func) {
     log.debug('on', evt, func);
@@ -26,5 +27,7 @@ function Client() {
 Client.fn = Client.prototype;
 Client.fn.fire = fire;
 Client.fn.on = on;
+
+basics(Client);
 
 module.exports = Client;
