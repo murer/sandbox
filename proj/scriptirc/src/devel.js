@@ -5,6 +5,7 @@ connsMod = require('./conns');
 protocol = require('./protocol');
 nickservIdentify = require('./nickservIdentify');
 nick = require('./nick');
+ident = require('./ident');
 
 function main() {
 	log.info('Starting');
@@ -14,13 +15,13 @@ function main() {
 	nickservIdentify(client);
 	nick(client);
 	connsMod(client);
+	ident(client);
 
-	client.nick = 'pyrata';
-	client.user = '1 1 1 1';
-	client.nickservPassword = '1q2w3e4r';
-
-	client.fire('user_connect', { 
-		host: 'localhost', 
+	client.setIdent('1 1 1 1');
+	client.changeNick('pyrata');
+	client.setNickservIdentify('1q2w3e4r');
+	client.connect({
+		host: 'localhost',
 		port: 6667
 	});
 	//log.info('Server', server)

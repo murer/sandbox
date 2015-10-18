@@ -2,23 +2,30 @@ log = require('./log')
 
 function init(client) {
 
-	var sck = null;
-
     function onConnect(evt, opts) {
-        sck = net.connect({ host: opts.host, port: opts.port }, function() {
+        client.sck = net.connect({ host: opts.host, port: opts.port }, function() {
         	client.fire('conns_connected');
         });
-        sck.setEncoding('UTF-8');
-        sck.on('data', function(data) {
+        client.sck.setEncoding('UTF-8');
+        client.sck.on('data', function(data) {
         	client.fire('conns_data', data);
         })
-        sck.on('close', function() {
-        	client.fire('conns_closed');	
+        client.sck.on('close', function() {
+            client.sck = null;
+        	client.fire('conns_closed');
         });
     }
 
     function onSend(evt, data) {
-    	sck.write(data);
+    	client.sck.write(data);
+    }
+
+    client.isConnected = function() {
+        return !!(client.sck);
+    }
+
+    client.connect = function(opts) {
+        client.fire('user_connect', opts);
     }
 
     client.on('conns_send', onSend);
