@@ -36,7 +36,6 @@ function init(client) {
     }
 
     function onProtocolData(evt, data) {
-
         var array = data.match(/^:\s*([^\s]+)\s+([^\s]+)\s(.*)$/);
         var msg = null;
         if(array) {
@@ -45,10 +44,13 @@ function init(client) {
             array = data.match(/\s*([^\s]+)\s+([^\s]+)\s(.*)$/);
             msg = { command: array[2], params: array[3] };
         }
-
         msg.params = parseLine(msg.params);
-
+        msg.command = msg.command.toUpperCase();
         client.fire('protocol_message', msg);
+    }
+
+    function onProtocolMessage(evt, data) {
+        client.fire('protocol_command_' + data.command, data);
     }
 
     function onSend(evt, data) {
@@ -58,6 +60,7 @@ function init(client) {
     client.on('conns_data', onConnsData);
     client.on('protocol_data', onProtocolData);
     client.on('protocol_send', onSend);
+    client.on('protocol_message', onProtocolMessage);
 }
 
 module.exports = init

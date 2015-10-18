@@ -4,7 +4,7 @@ function init(client) {
 
 	var sck = null;
 
-    function connect(opts) {
+    function onConnect(evt, opts) {
         sck = net.connect({ host: opts.host, port: opts.port }, function() {
         	client.fire('conns_connected');
         });
@@ -22,10 +22,7 @@ function init(client) {
     }
 
     client.on('conns_send', onSend);
-
-    return {
-        connect: connect
-    }
+    client.on('connection_connect', onConnect);
 
 }
 

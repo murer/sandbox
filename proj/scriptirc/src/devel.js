@@ -9,13 +9,13 @@ function main() {
 	log.info('Starting');
 
 	var client = new Client();
-	conns = connsMod(client);
+	connsMod(client);
 	protocol(client);
 	nick(client, {
 		nick: 'pyrata',
 		user: '1 1 1 1'
 	});
-	conns.connect({ 
+	client.fire('connection_connect', { 
 		host: 'localhost', 
 		port: 6667
 	});
