@@ -7,6 +7,18 @@ function parseLine(line) {
     var ret = [];
     var pos = 0;
     var end = 0;
+    while(end >= 0) {
+        if (line[pos] == ':') {
+            ret.push(line.substring(pos + 1));
+            return ret;
+        }
+        end = line.indexOf(' ', pos);
+        if(end >= 0) {
+            ret.push(line.substring(pos, end));
+        }
+        pos = end + 1;
+    }
+    /** wrong
     while((end = line.indexOf(' ', pos)) >= 0) {
         ret.push(line.substring(pos, end));
         pos = end + 1;
@@ -15,6 +27,7 @@ function parseLine(line) {
             return ret;
         }
     }
+    */
     ret.push(line.substring(pos));
     return ret;
 } 

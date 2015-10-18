@@ -2,6 +2,11 @@ log = require('./log')
 
 function init(client) {
 
+    function onNickChanged(evt, data) {
+        client.nick = data.params[0];
+        log.info('nick changed to ' + client.nick);
+    }
+
     function onChangeNick(evt, data) {
         if(client.isConnected()) {
             client.fire('protocol_send', 'NICK ' + data);
@@ -19,6 +24,7 @@ function init(client) {
     }
 
     client.on('conns_connected', onConnected);
+    client.on('protocol_command_NICK', onNickChanged);
     client.on('user_nick', onChangeNick);
 
 }
