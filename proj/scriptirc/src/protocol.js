@@ -54,7 +54,7 @@ function init(client) {
         if(array) {
             msg = { prefix: array[1], command: array[2], params: array[3] };
         } else {
-            array = data.match(/\s*([^\s]+)\s+([^\s]+)\s(.*)$/);
+            array = data.match(/\s*([^\s]+)\s+([^\s]+)\s*(.*)$/);
             msg = { command: array[2], params: array[3] };
         }
         msg.params = parseLine(msg.params);
