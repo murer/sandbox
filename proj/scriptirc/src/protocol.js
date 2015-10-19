@@ -70,10 +70,15 @@ function init(client) {
         client.fire('conns_send', data += '\r\n');
     }
 
+    function onConnect(evt, data) {
+        client.serverIdent = data.prefix;
+    }
+
     client.on('conns_data', onConnsData);
     client.on('protocol_data', onProtocolData);
     client.on('protocol_send', onSend);
     client.on('protocol_message', onProtocolMessage);
+    client.on('protocol_command_001', onConnect);
 }
 
 module.exports = init
