@@ -7,12 +7,14 @@ nickservIdentify = require('./nickservIdentify');
 nick = require('./nick');
 ident = require('./ident');
 channel = require('./channel');
+ping = require('./ping');
 
 function main() {
 	log.info('Starting');
 
 	var client = new Client();
 	protocol(client);
+	ping(client);
 	nickservIdentify(client);
 	nick(client);
 	connsMod(client);

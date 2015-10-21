@@ -54,8 +54,8 @@ function init(client) {
         if(array) {
             msg = { prefix: array[1], command: array[2], params: array[3] };
         } else {
-            array = data.match(/\s*([^\s]+)\s+([^\s]+)\s*(.*)$/);
-            msg = { command: array[2], params: array[3] };
+            array = data.match(/\s*([^\s]+)\s*(.*)$/);
+            msg = { command: array[1], params: array[2] };
         }
         msg.params = parseLine(msg.params);
         msg.command = msg.command.toUpperCase();
