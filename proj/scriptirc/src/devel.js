@@ -8,6 +8,7 @@ nick = require('./nick');
 ident = require('./ident');
 channel = require('./channel');
 ping = require('./ping');
+history = require('./history');
 
 function main() {
 	log.info('Starting');
@@ -20,6 +21,7 @@ function main() {
 	connsMod(client);
 	ident(client);
 	channel(client);
+	history(client);
 
 	client.setIdent('1 1 1 1');
 	client.changeNick('Elemister');
