@@ -25,7 +25,6 @@ function main() {
 
 	client.setIdent('1 1 1 1');
 	client.changeNick('Elemister');
-	client.setNickservIdentify('1q2w3e4r');
 	client.connect({
 		host: 'localhost',
 		port: 6667
