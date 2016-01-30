@@ -1,13 +1,15 @@
 #!/bin/bash -xe 
 
+VERSION=1.9.6
+
 cd /opt
-if [ ! -f apache-ant-1.9.5-bin.zip ]; then
-	sudo wget http://ftp.unicamp.br/pub/apache//ant/binaries/apache-ant-1.9.5-bin.zip
+if [ ! -f apache-ant-$VERSION-bin.zip ]; then
+	sudo wget http://ftp.unicamp.br/pub/apache//ant/binaries/apache-ant-$VERSION-bin.zip
 fi
-sudo rm -rf apache-ant-1.9.5 | cat
-sudo unzip apache-ant-1.9.5-bin.zip
+sudo rm -rf apache-ant-$VERSION | cat
+sudo unzip apache-ant-$VERSION-bin.zip
 if [ ! -L ant ]; then
-	sudo ln -s apache-ant-1.9.5 ant;
+	sudo ln -s apache-ant-$VERSION ant;
 else
 	echo 'ant link already exists. Maybe you want to change it';
 fi;
