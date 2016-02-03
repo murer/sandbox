@@ -5,6 +5,8 @@ function TestRunner() {
 
 function processNext(runner) {
   if(!runner.jobs.length) {
+    runner.finishedAt = new Date().getTime();
+    runner.time = runner.finishedAt - runner.startedAt;
     runner.onFinished();
     return;
   }
@@ -13,6 +15,7 @@ function processNext(runner) {
   runner.onTestStarted(function() {
     runner.current.func(function() {
       runner.current.finishedAt = new Date().getTime();
+      runner.current.time = runner.current.finishedAt - runner.current.startedAt;
       runner.onTestFinished(function() {
         processNext(runner);
       });
@@ -56,6 +59,7 @@ TestRunner.prototype.simple = function(name, func) {
 }
 
 TestRunner.prototype.execute = function execute() {
+  this.startedAt = new Date().getTime();
   this.jobs = [].concat(this.tests);
   processNext(this);
 }
@@ -66,22 +70,21 @@ TestRunner.prototype.onTestStarted = function(end) {
 }
 
 TestRunner.prototype.onTestFinished = function(end) {
-  var diff = this.current.finishedAt - this.current.startedAt;
-  console.log('Test Finished: ' + this.current.name + ' ' + diff + ' millis');
+  console.log('Test Finished: ' + this.current.name + ' ' + this.current.time + ' millis');
   end();
 }
 
 TestRunner.prototype.onFinished = function() {
-  console.log('TEST DONE');
+  console.log('TEST DONE, time: ' + this.time + ' millis');
   var fail = false;
   for(var i = 0; i < this.tests.length; i++) {
     var entry = this.tests[i];
     var msg = 'TEST SUMMARY ' + entry.name + ': ';
     if(entry.errors.length) {
       fail = true;
-      console.log(msg + 'FAIL (' + entry.errors.length + ')')
+      console.log(msg + 'FAIL, errors: ' + entry.errors.length + ', time: ' + entry.time + ' millis')
     } else {
-      console.log(msg + 'SUCCESS')
+      console.log(msg + 'SUCCESS, time: ' + entry.time + ' millis')
     }
   }
   console.log('TEST ' + (fail?'FAIL':'SUCCESS'));

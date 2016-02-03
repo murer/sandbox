@@ -11,7 +11,7 @@ testrunner.test('test1', function(end) {
 
 testrunner.test('test timeout', function(end) {
   setTimeout(function() {
-    testrunner.equal(4, 4);
+    testrunner.equal(4, 1);
     end();
   }, 1);
 });
