@@ -16,10 +16,6 @@ testrunner.test('test timeout', function(end) {
   }, 1);
 });
 
-function equal(a, b){
-  testrunner.error = true;
-}
-
 testrunner.simple('test2', function() {
   testrunner.ok(1);
 });
