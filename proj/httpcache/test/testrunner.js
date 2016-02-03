@@ -3,20 +3,20 @@ function TestRunner() {
   this.tests = [];
 }
 
-function process(entry, end) {
-  entry.func(function() {
-    end();
-  });
-}
-
 function processNext(runner) {
   if(!runner.jobs.length) {
     runner.onFinished();
     return;
   }
   runner.current = runner.jobs.shift();
-  process(runner.current, function() {
-    processNext(runner);
+  runner.current.startedAt = new Date().getTime();
+  runner.onTestStarted(function() {
+    runner.current.func(function() {
+      runner.current.finishedAt = new Date().getTime();
+      runner.onTestFinished(function() {
+        processNext(runner);
+      });
+    });
   });
 }
 
@@ -58,6 +58,17 @@ TestRunner.prototype.simple = function(name, func) {
 TestRunner.prototype.execute = function execute() {
   this.jobs = [].concat(this.tests);
   processNext(this);
+}
+
+TestRunner.prototype.onTestStarted = function(end) {
+  console.log('Test Started: ' + this.current.name);
+  end();
+}
+
+TestRunner.prototype.onTestFinished = function(end) {
+  var diff = this.current.finishedAt - this.current.startedAt;
+  console.log('Test Finished: ' + this.current.name + ' ' + diff + ' millis');
+  end();
 }
 
 TestRunner.prototype.onFinished = function() {
