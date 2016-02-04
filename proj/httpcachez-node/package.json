@@ -1,28 +1,31 @@
 {
     "name": "httpcachez",
     "version": "1.0.0",
-    "description": "",
-    "main": "src/qunit-page.js",
+    "description": "httpcachez",
+    "main": "src/httpcachez.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/murer/qunit-page.git"
+        "url": "url"
     },
     "files": [
-        "src/qunit-page.js",
-        "phantomjs-test/run-qunit.js"
+        "src/httpcachez.js",
+        "test/test.js"
     ],
     "keywords": [
-        "qunit",
-        "pages",
-        "test"
+        "http",
+        "mirror",
+        "cache"
     ],
+    "dependencies": {
+        "mkdirp": "^0.5.0"
+    },
     "author": "murer",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/murer/qunit-page/issues"
+        "url": "url"
     },
-    "homepage": "https://github.com/murer/qunit-page#readme"
+    "homepage": "url"
 }
