@@ -1,4 +1,6 @@
 
+var TIMEOUT=5000
+
 function TestRunner() {
   this.tests = [];
 }
@@ -15,7 +17,7 @@ function processNext(runner) {
 
   runner.timeout = setTimeout(function() {
     runner.fail('Timeout')
-  }, 1000);
+  }, TIMEOUT);
 
   runner.onTestStarted(function() {
     runner.current.func(function() {
@@ -34,7 +36,7 @@ TestRunner.prototype.group = function(name) {
   this.module = name;
 }
 
-TestRunner.prototype.test = function addTest(name, func) {
+TestRunner.prototype.test = function(name, func) {
   this.tests.push({
     module: this.module,
     name: name,
