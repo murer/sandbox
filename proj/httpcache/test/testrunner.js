@@ -23,26 +23,6 @@ function processNext(runner) {
   });
 }
 
-function concat(target) {
-  var ret = [];
-  for(var i = 0; i < arguments.length; i++) {
-    var array =  arguments[i];
-    for(var j = 0; j < array.length; j++) {
-      console.log('x', i, j, array.length)
-      ret.push(array[j])
-    }
-  }
-  return ret;
-}
-
-function toArray(array) {
-  var ret = [];
-  for(var i = 0; i < array.length; i++) {
-    ret.push(array[i]);
-  }
-  return ret;
-}
-
 TestRunner.prototype.test = function addTest(name, func) {
   this.tests.push({
     name: name,
