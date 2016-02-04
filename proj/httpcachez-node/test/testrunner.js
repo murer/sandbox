@@ -76,6 +76,9 @@ TestRunner.prototype.onFinished = function() {
     }
   }
   console.log('TEST ' + (fail?'FAIL':'SUCCESS'));
+  if(fail) {
+    throw 'FAILED'
+  }
 }
 
 TestRunner.prototype.onError = function(error) {
