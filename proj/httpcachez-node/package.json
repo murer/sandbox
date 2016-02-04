@@ -20,7 +20,7 @@
         "cache"
     ],
     "dependencies": {
-        "mkdirp": "^0.5.0"
+        "mkdirpd": "^0.1.8"
     },
     "author": "murer",
     "license": "MIT",
