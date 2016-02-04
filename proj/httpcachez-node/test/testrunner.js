@@ -23,11 +23,19 @@ function processNext(runner) {
   });
 }
 
+TestRunner.prototype.group = function(name) {
+  this.module = name;
+}
+
 TestRunner.prototype.test = function addTest(name, func) {
   this.tests.push({
+    module: this.module,
     name: name,
     func: func,
-    errors: []
+    errors: [],
+    ident: function() {
+      return '' + this.module + '.' + this.name;
+    }
   });
 }
 
@@ -45,12 +53,12 @@ TestRunner.prototype.execute = function execute() {
 }
 
 TestRunner.prototype.onTestStarted = function(end) {
-  console.log('Test Started: ' + this.current.name);
+  console.log('Test Started: ' + this.current.ident());
   end();
 }
 
 TestRunner.prototype.onTestFinished = function(end) {
-  console.log('Test Finished: ' + this.current.name + ' ' + this.current.time + ' millis');
+  console.log('Test Finished: ' + this.current.ident() + ' ' + this.current.time + ' millis');
   end();
 }
 
@@ -59,7 +67,7 @@ TestRunner.prototype.onFinished = function() {
   var fail = false;
   for(var i = 0; i < this.tests.length; i++) {
     var entry = this.tests[i];
-    var msg = 'TEST SUMMARY ' + entry.name + ': ';
+    var msg = 'TEST SUMMARY ' + entry.ident() + ': ';
     if(entry.errors.length) {
       fail = true;
       console.log(msg + 'FAIL, errors: ' + entry.errors.length + ', time: ' + entry.time + ' millis')
@@ -71,7 +79,7 @@ TestRunner.prototype.onFinished = function() {
 }
 
 TestRunner.prototype.onError = function(error) {
-  console.error.apply(this, ['ERROR', '[' + this.current.name  + ']'].concat(error));
+  console.error.apply(this, ['ERROR', '[' + this.current.ident()  + ']'].concat(error));
 }
 
 TestRunner.prototype.error = function(msg) {

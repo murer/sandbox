@@ -1,5 +1,7 @@
 var testrunner = require('./testrunner');
 
+testrunner.group('simpleTest')
+
 testrunner.test('test1', function(end) {
   testrunner.ok(1);
   end();
