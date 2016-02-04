@@ -3,11 +3,10 @@ var urlparser = require('url')
 var mkdirp = require('mkdirp')
 
 function executeDownload(download) {
-  var parsed = urlparser.parse(download.url);
   var req = http.request({
-    host: parsed.host,
-    path: parsed.path,
-    port: parsed.port,
+    host: download.parsed.host,
+    path: download.parsed.path,
+    port: download.parsed.port,
     method: 'GET'
   });
   req.on('response', function(resp) {
@@ -27,7 +26,10 @@ function executeDownload(download) {
 function Download(url) {
   (function(download) {
     download.url = url;
-    mkdirp('./data', function (err) {
+    download.parsed = urlparser.parse(url);
+    download.path = './data/' + download.parsed.host;
+    console.log('creating', download.path)
+    mkdirp(download.path, function (err) {
         if (err) {
           throw err;
         }
