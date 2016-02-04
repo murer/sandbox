@@ -1,19 +1,8 @@
 var testrunner = require('./testrunner');
+var downloader = require('../src/downloader');
 
 testrunner.group('downloaderTest')
 
-testrunner.test('test1', function(end) {
-  testrunner.ok(1);
+testrunner.test('download', function(end) {
   end();
-});
-
-testrunner.test('test timeout', function(end) {
-  setTimeout(function() {
-    testrunner.equal(1, 1);
-    end();
-  }, 1);
-});
-
-testrunner.simple('test2', function() {
-  testrunner.ok(1);
 });

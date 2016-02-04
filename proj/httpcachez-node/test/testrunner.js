@@ -12,9 +12,16 @@ function processNext(runner) {
   }
   runner.current = runner.jobs.shift();
   runner.current.startedAt = new Date().getTime();
+
+  runner.timeout = setTimeout(function() {
+    runner.fail('Timeout')
+  }, 1000);
+
   runner.onTestStarted(function() {
     runner.current.func(function() {
       runner.current.finishedAt = new Date().getTime();
+      clearTimeout(runner.timeout);
+      runner.timeout = null;
       runner.current.time = runner.current.finishedAt - runner.current.startedAt;
       runner.onTestFinished(function() {
         processNext(runner);
@@ -92,6 +99,10 @@ TestRunner.prototype.error = function(msg) {
 
 TestRunner.prototype.ok = function(a, msg) {
   a || this.error(msg);
+}
+
+TestRunner.prototype.fail = function(msg) {
+  this.error(msg);
 }
 
 TestRunner.prototype.equal = function(a, b, msg) {
