@@ -1,35 +1,9 @@
 net = require('net');
 
-function Server(port) {
-    var clients = {};
-    var server = net.createServer(function(socket) {
-      var name = socket.remoteAddress + ":" + socket.remotePort
-      clients[name] = socket;
-      socket.write('Connected\n');
-
-      socket.on('data', function(data) {
-        var msg = data.toString('utf-8');
-        var reply = 'Reply: ' + data;
-        socket.write(reply);
-        if(msg.match(/^exit/)) {
-          socket.end();
-        }
-      });
-      socket.on('end', function() {
-        console.log('Client Disconnected: ' + name);
-        delete(clients[name])
-      });
-    });
-    server.listen(port, function() {
-      var address = server.address();
-      console.log('Reply server started on %j', address, arguments);
-    });
-
-    this.clients = clients;
-    this.server = server;
+function Server() {
 }
 
-Server.prototype.shutdown = function() {
+Server.prototype.shutdown = function(onFinished) {
   console.log('Shutting down')
   this.server.close(function() {
     console.log('Server shutdown')
@@ -38,8 +12,35 @@ Server.prototype.shutdown = function() {
     this.clients[name].end('Shutting down\n');
     delete(this.clients[name]);
   };
+  onFinished(this);
 }
 
-exports.server = function(port) {
+exports.listen = function(port, onStarted) {
+
+  var server = new Server(port);
+
+  server.clients = {};
+  server.server = net.createServer(function(socket) {
+    var name = socket.remoteAddress + ":" + socket.remotePort
+    server.clients[name] = socket;
+    socket.write('Connected\n');
+
+    socket.on('data', function(data) {
+      var msg = data.toString('utf-8');
+      var reply = 'Reply: ' + data;
+      socket.write(reply);
+      if(msg.match(/^exit/)) {
+        socket.end();
+      }
+    });
+    socket.on('end', function() {
+      console.log('Client Disconnected: ' + name);
+      delete(server.clients[name])
+    });
+  }).listen(port, function() {
+    onStarted(server);
+  });
+
+
   return new Server(port);
 }
