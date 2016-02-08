@@ -21,7 +21,7 @@ function Server(port) {
       });
     });
     server.listen(port, function() {
-      address = server.address();
+      var address = server.address();
       console.log('Reply server started on %j', address, arguments);
     });
 
