@@ -7,11 +7,11 @@ exports.server = function(port) {
 
     socket.on('data', function(data) {
       var msg = data.toString('utf-8');
+      var reply = 'Reply: ' + data;
+      socket.write(reply);
       if(msg.match(/^exit/)) {
-        socket.end('Done\n')
-        return;
+        socket.end();
       }
-      socket.write(msg);
     });
     socket.on('end', function() {
       console.log('Client Disconnected: ' + name);
