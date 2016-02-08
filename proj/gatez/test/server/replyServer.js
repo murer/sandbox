@@ -21,7 +21,6 @@ exports.server = function(port) {
     address = server.address();
     console.log('Reply server started on %j', address, arguments);
   });
-
 }
 
 exports.server(5000);
