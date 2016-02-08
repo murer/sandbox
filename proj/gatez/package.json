@@ -1,0 +1,31 @@
+{
+    "name": "httpcachez",
+    "version": "1.0.0",
+    "description": "httpcachez",
+    "main": "src/httpcachez.js",
+    "scripts": {
+        "test": "node test/test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "url"
+    },
+    "files": [
+        "src/httpcachez.js",
+        "test/test.js"
+    ],
+    "keywords": [
+        "http",
+        "mirror",
+        "cache"
+    ],
+    "dependencies": {
+        
+    },
+    "author": "murer",
+    "license": "MIT",
+    "bugs": {
+        "url": "url"
+    },
+    "homepage": "url"
+}
