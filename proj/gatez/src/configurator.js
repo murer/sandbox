@@ -13,7 +13,7 @@ exports.all = function(callback) {
       ret[name] = null;
       fs.readFile(base + '/' + file, 'utf-8', function(err, content) {
         if(err) throw err;
-        ret[name] = {name:name};
+        ret[name] = JSON.parse(content);
         total--;
         if(total == 0) {
           callback(ret);
