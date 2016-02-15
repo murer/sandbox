@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.ExceptionLogger;
 import org.apache.http.HttpException;
@@ -25,15 +24,6 @@ public class SimpleHttpServer implements Closeable {
 	private static final Logger LOG = LoggerFactory.getLogger(SimpleHttpServer.class);
 
 	private static final SimpleHttpServer ME = new SimpleHttpServer();
-
-	public class LoggerExceptionLogger implements ExceptionLogger {
-
-		@Override
-		public void log(Exception e) {
-			LOG.error("error", e);
-		}
-
-	}
 
 	public static class Resource {
 
@@ -82,7 +72,11 @@ public class SimpleHttpServer implements Closeable {
 			bootstrap.setListenerPort(port);
 			bootstrap.setServerInfo("Test/1.1");
 			bootstrap.setSocketConfig(socketConfig);
-			bootstrap.setExceptionLogger(new LoggerExceptionLogger());
+			bootstrap.setExceptionLogger(new ExceptionLogger() {
+				public void log(Exception e) {
+					LOG.error("error", e);
+				}
+			});
 			bootstrap.registerHandler("*", new HttpRequestHandler() {
 				public void handle(HttpRequest req, HttpResponse resp, HttpContext ctx)
 						throws HttpException, IOException {
