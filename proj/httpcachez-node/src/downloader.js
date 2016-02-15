@@ -27,7 +27,8 @@ function Download(url) {
   (function(download) {
     download.url = url;
     download.parsed = urlparser.parse(url);
-    download.path = './data/' + download.parsed.host;
+    var port = download.parsed.port || 80;
+    download.path = './data/' + download.parsed.host + '/' + port;
     console.log('creating', download.path)
     mkdirp(download.path, function (err) {
         if (err) {

@@ -4,7 +4,7 @@ var downloader = require('../src/downloader');
 testrunner.group('downloaderTest')
 
 testrunner.test('download', function(end) {
-  var download = downloader.download('http://repo1.maven.org/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/mycontainer-annotations-1.6.2.pom.md5')
+  var download = downloader.download('http://repo1.maven.org:80/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/mycontainer-annotations-1.6.2.pom.md5')
   download.on('headers', function(resp) {
     testrunner.equal(200, resp.code);
     testrunner.equal('OK', resp.status);
