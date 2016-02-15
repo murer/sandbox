@@ -41,3 +41,20 @@ testrunner.test('downloadHttpNotFound', 2, function(end) {
   });
   download.start();
 });
+
+testrunner.test('downloadHttpError', 1, function(end) {
+  var download = downloader.download('http://repo1.maven.org-error/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/not-found.txt')
+  var buffer = new Buffer(0);
+  download.on('response', function(resp) {
+    testrunner.fail('it should fail');
+  });
+  download.on('end', function() {
+    testrunner.fail('it should fail');
+    end();
+  });
+  download.on('error', function(error) {
+    testrunner.ok('ENOTFOUND', error.code);
+    end();
+  });
+  download.start();
+});
