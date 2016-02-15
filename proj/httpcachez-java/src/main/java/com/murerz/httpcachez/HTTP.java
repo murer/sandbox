@@ -85,4 +85,20 @@ public class HTTP {
 		return header.getValue();
 	}
 
+	public void proxy(String url, HttpResponse response) {
+		CloseableHttpClient client = HttpClients.createDefault();
+		CloseableHttpResponse resp = null;
+		try {
+			HttpGet req = new HttpGet(url);
+			resp = client.execute(req);
+			response.setHeader(resp.getFirstHeader("Content-Type"));
+			response.setEntity(resp.getEntity());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			Util.close(resp);
+			Util.close(client);
+		}
+	}
+
 }

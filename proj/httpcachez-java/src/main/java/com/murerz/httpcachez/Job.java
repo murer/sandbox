@@ -31,10 +31,7 @@ public class Job {
 
 	private void proxy(HttpRequest req, HttpResponse resp) {
 		String url = key.toURL();
-		HttpResponse response = HTTP.me().get(url);
-		resp.setStatusLine(response.getStatusLine());
-		resp.setHeader(response.getFirstHeader("Content-Type"));
-		resp.setEntity(response.getEntity());
+		HTTP.me().proxy(url, resp);
 	}
 
 	private synchronized boolean cache(HttpRequest req, HttpResponse resp) {
