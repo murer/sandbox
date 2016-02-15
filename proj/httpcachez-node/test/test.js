@@ -5,6 +5,7 @@ require('./simpleTest');
 require('./downloaderTest');
 
 require('./downloaderIT');
+require('./cacherIT')
 
 //t.onError = function(error) {
 //  throw 'ERROR: ' + this.current.name + ' ' + error.join('');
