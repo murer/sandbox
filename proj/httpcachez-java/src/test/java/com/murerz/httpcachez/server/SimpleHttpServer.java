@@ -127,7 +127,7 @@ public class SimpleHttpServer implements Closeable {
 
 	@Override
 	public void close() {
-		server.shutdown(100l, TimeUnit.MILLISECONDS);
+		server.stop();
 		server = null;
 		resources = null;
 		port = 0;
