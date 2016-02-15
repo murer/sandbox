@@ -2,7 +2,6 @@ var testrunner = require('./testrunner');
 
 require('./simpleTest')
 require('./server/replyServerTest')
-require('./configuratorTest')
 
 //testrunner.onError = function(error) {
 //  throw 'ERROR: ' + this.current.name + ' ' + error.join('');
