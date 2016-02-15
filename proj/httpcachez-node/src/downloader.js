@@ -6,7 +6,7 @@ var mkdirp = require('mkdirpd')
 
 function executeDownload(download) {
   var req = http.request({
-    host: download.parsed.host,
+    host: download.parsed.hostname,
     path: download.parsed.path,
     port: download.parsed.port,
     method: 'GET'
@@ -38,7 +38,7 @@ function Download(url) {
   this.url = url;
   this.parsed = urlparser.parse(url);
   var port = this.parsed.port || 80;
-  this.path = './data/' + this.parsed.host + '/' + port;
+  this.path = './data/' + this.parsed.hostname + '/' + port;
 }
 util.inherits(Download, Emitter);
 
