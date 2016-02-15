@@ -7,9 +7,10 @@ testrunner.test('test1', function(end) {
   end();
 });
 
-testrunner.test('test timeout', function(end) {
+testrunner.test('test timeout', 2, function(end) {
   setTimeout(function() {
     testrunner.equal(1, 1);
+    testrunner.equal(2, 2);
     end();
   }, 1);
 });

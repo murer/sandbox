@@ -24,6 +24,9 @@ function processNext(runner) {
       runner.current.finishedAt = new Date().getTime();
       clearTimeout(runner.timeout);
       runner.timeout = null;
+      if(runner.current.expectAsserts && runner.current.expectAsserts != runner.current.asserts) {
+        runner.error('Asserts expected: ' + runner.current.expectAsserts + ', but was: ' + runner.current.asserts);
+      }
       runner.current.time = runner.current.finishedAt - runner.current.startedAt;
       runner.onTestFinished(function() {
         processNext(runner);
@@ -36,10 +39,16 @@ TestRunner.prototype.group = function(name) {
   this.module = name;
 }
 
-TestRunner.prototype.test = function(name, func) {
+TestRunner.prototype.test = function(name, expectAsserts, func) {
+  if(!func) {
+    func = expectAsserts;
+    expectAsserts = null;
+  }
   this.tests.push({
     module: this.module,
     name: name,
+    expectAsserts: expectAsserts,
+    asserts: 0,
     func: func,
     errors: [],
     ident: function() {
@@ -100,11 +109,12 @@ TestRunner.prototype.error = function(msg) {
 }
 
 TestRunner.prototype.ok = function(a, msg) {
+  this.current.asserts++;
   a || this.error(msg);
 }
 
 TestRunner.prototype.fail = function(msg) {
-  this.error(msg);
+  this.ok(false, msg);
 }
 
 TestRunner.prototype.equal = function(a, b, msg) {

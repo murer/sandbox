@@ -16,7 +16,7 @@ testrunner.test('download', function(end) {
   });
   download.on('end', function() {
     testrunner.equal('35021fb13df866d2df394f5d7b169abe', buffer.toString('utf-8'));
-    end();
+    end(50);
   });
   download.on('error', function(error) {
     testrunner.fail(error)
