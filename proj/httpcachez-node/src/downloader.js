@@ -15,7 +15,8 @@ function executeDownload(download) {
       code: resp.statusCode,
       message: resp.statusMessage,
       headers: {
-        'Content-Length': resp.headers['content-length']
+        'Content-Length': resp.headers['content-length'],
+        'ETag': resp.headers['etag']
       }
     });
 
@@ -36,8 +37,6 @@ function Download(url) {
   Emitter.call(this);
   this.url = url;
   this.parsed = urlparser.parse(url);
-  var port = this.parsed.port || 80;
-  this.path = './data/' + this.parsed.hostname + '/' + port;
 }
 util.inherits(Download, Emitter);
 

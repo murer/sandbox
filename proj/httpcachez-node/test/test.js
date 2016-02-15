@@ -1,15 +1,15 @@
 var http = require('./server/httpServer');
 var t = require('./testrunner');
 
-require('./simpleTest');
-require('./downloaderTest');
+//require('./simpleTest');
+//require('./downloaderTest');
 
-require('./downloaderIT');
+//require('./downloaderIT');
 require('./cacherIT')
 
-//t.onError = function(error) {
-//  throw 'ERROR: ' + this.current.name + ' ' + error.join('');
-//};
+t.onError = function(error) {
+  throw 'ERROR: ' + this.current.name + ' ' + error;
+};
 
 t.onTestStarted = function(end) {
   console.log('Test Started: ' + this.current.ident());

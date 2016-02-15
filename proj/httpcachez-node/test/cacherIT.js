@@ -1,5 +1,5 @@
 var t = require('./testrunner');
-var downloader = require('../src/downloader');
+var downloader = require('../src/cacher');
 
 t.group('cacherIT')
 
