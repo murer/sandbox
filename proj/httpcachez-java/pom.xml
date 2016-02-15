@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>br.com.dextra.httpcachez</groupId>
+	<groupId>com.murerz.httpcachez</groupId>
 	<artifactId>httpcachez</artifactId>
 	<name>httpcachez</name>
 	<version>0.0.1-SNAPSHOT</version>
@@ -45,16 +45,6 @@
 				<version>4.0</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.2.1</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
-			</dependency>
-			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>1.7.1</version>
@@ -67,12 +57,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
-				<version>4.1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.easymock</groupId>
-				<artifactId>easymock</artifactId>
-				<version>2.2</version>
+				<version>4.5.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -91,227 +76,8 @@
 			</dependency>
 
 			<dependency>
-				<groupId>javax.el</groupId>
-				<artifactId>el-api</artifactId>
-				<version>${javax.el.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.web</groupId>
-				<artifactId>el-impl</artifactId>
-				<version>${javax.el.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-jsp</artifactId>
-				<version>${jetty.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.eclipse.jetty.orbit</groupId>
-						<artifactId>javax.el</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.eclipse.jetty.orbit</groupId>
-						<artifactId>com.sun.el</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-webapp</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.beanshell</groupId>
-				<artifactId>bsh</artifactId>
-				<version>2.0b4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-ejb_3.0_spec</artifactId>
-				<version>1.0.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>javax.persistence</groupId>
-				<artifactId>persistence-api</artifactId>
-				<version>1.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager</artifactId>
-				<version>4.3.7.Final</version>
-			</dependency>
-			<!-- this dependecy is temporary. Depends jpa-2.0 release -->
-			<dependency>
-				<groupId>org.hibernate.javax.persistence</groupId>
-				<artifactId>hibernate-jpa-2.1-api</artifactId>
-				<version>1.0.0.Final</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hsqldb</groupId>
-				<artifactId>hsqldb</artifactId>
-				<version>${hsqldb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.5</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.xml</groupId>
-				<artifactId>jaxrpc-api</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.faces</groupId>
-				<artifactId>jsf-api</artifactId>
-				<version>${jsf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.faces</groupId>
-				<artifactId>jsf-impl</artifactId>
-				<version>${jsf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.4</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.transaction</groupId>
-				<artifactId>jta</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jms_1.1_spec</artifactId>
-				<version>1.1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-api-labs</artifactId>
-				<version>${appengine.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-testing</artifactId>
-				<version>${appengine.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-api-1.0-sdk</artifactId>
-				<version>${appengine.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-api-stubs</artifactId>
-				<version>${appengine.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-kernel</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-gae-web</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-util</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-jta</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-ejb</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-jpa</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.googlecode.mycontainer</groupId>
 				<artifactId>mycontainer-commons</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-servlet-commons</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-servlet</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-jms</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-datasource</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-web</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-js-java</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-starter</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-mail</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-annotations</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-jsfprovider</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-junit-js</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-web-client</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-test-ejb</artifactId>
-				<type>ejb</type>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.mycontainer</groupId>
-				<artifactId>mycontainer-test-web</artifactId>
-				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
