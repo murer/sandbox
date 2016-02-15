@@ -1,16 +1,26 @@
-var testrunner = require('./testrunner');
+var http = require('./server/httpServer');
+var t = require('./testrunner');
 
 require('./simpleTest');
 require('./server/replyServerTest');
 require('./downloaderTest');
 
-//testrunner.onError = function(error) {
+//t.onError = function(error) {
 //  throw 'ERROR: ' + this.current.name + ' ' + error.join('');
 //};
 
-//testrunner.onTestStarted = function(end) {
-//  console.log('Test Started: ' + this.current.ident());
-//}
+t.onTestStarted = function(end) {
+  console.log('Test Started: ' + this.current.ident());
+  http.initSingle(0).on('start', function() {
+    end();
+  }).start();
+}
+
+t.onTestFinished = function(end) {
+  http.single().on('stop', function() {
+    end();
+  }).stop();
+}
 
 
-testrunner.execute();
+t.execute();

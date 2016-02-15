@@ -2,6 +2,8 @@ var Emitter = require('events');
 var http = require('http');
 var util = require('util');
 
+var single = null;
+
 function send(resp, opts) {
   var content = new Buffer(opts.content.toString('UTF-8'));
   opts.headers['Content-Length'] = content.length
@@ -62,6 +64,16 @@ Server.prototype.put = function(url, opts) {
 exports.server = function(port) {
   return new Server(port);
 }
+
+exports.initSingle = function(port) {
+  single = new Server(port);
+  return single;
+}
+
+exports.single = function(port) {
+  return single;
+}
+
 /**
 var s = exports.server(0);
 s.on('start', function() {
