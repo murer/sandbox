@@ -27,7 +27,7 @@ t.test('downloadHttpOk', 4, function(end) {
 });
 
 t.test('downloadHttpNotFound', 2, function(end) {
-  var download = downloader.download('http://repo1.maven.org/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/not-found.txt')
+  var download = downloader.download('http://localhost:' + server.single().port + '/not-found.txt')
   var buffer = new Buffer(0);
   download.on('response', function(resp) {
     t.equal(404, resp.code);
@@ -44,7 +44,7 @@ t.test('downloadHttpNotFound', 2, function(end) {
 });
 
 t.test('downloadHttpError', 1, function(end) {
-  var download = downloader.download('http://repo1.maven.org-error/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/not-found.txt')
+  var download = downloader.download('http://localhost-not-found:' + server.single().port + '/ping.txt')
   var buffer = new Buffer(0);
   download.on('response', function(resp) {
     t.fail('it should fail');
