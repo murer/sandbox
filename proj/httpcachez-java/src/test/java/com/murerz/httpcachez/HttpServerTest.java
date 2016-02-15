@@ -10,7 +10,8 @@ public class HttpServerTest {
 	public void testHttpServer() {
 		HttpServer server = HttpServer.me();
 		try {
-			int port = server.start(0).getPort();
+			server.start(0);
+			int port = server.getPort();
 			assertTrue(port > 0);
 		} finally {
 			Util.close(server);
