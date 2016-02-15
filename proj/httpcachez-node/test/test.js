@@ -2,7 +2,6 @@ var http = require('./server/httpServer');
 var t = require('./testrunner');
 
 require('./simpleTest');
-require('./server/replyServerTest');
 require('./downloaderTest');
 
 require('./downloaderIT');
