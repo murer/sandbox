@@ -2,7 +2,6 @@ var Emitter = require('events');
 var util = require('util');
 var http = require('http')
 var urlparser = require('url')
-var mkdirp = require('mkdirpd')
 
 function executeDownload(download) {
   var req = http.request({
