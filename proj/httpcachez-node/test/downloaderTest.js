@@ -3,7 +3,7 @@ var downloader = require('../src/downloader');
 
 testrunner.group('downloaderTest')
 
-testrunner.test('download', 1, function(end) {
+testrunner.test('download', 4, function(end) {
   var download = downloader.download('http://repo1.maven.org/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/mycontainer-annotations-1.6.2.pom.md5')
   var buffer = new Buffer(0);
   download.on('response', function(resp) {
