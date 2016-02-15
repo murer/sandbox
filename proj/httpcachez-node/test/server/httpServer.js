@@ -51,10 +51,12 @@ function stop(server) {
 
 Server.prototype.start = function() {
   start(this);
+  return this;
 }
 
 Server.prototype.stop = function() {
   stop(this);
+  return this;
 }
 
 Server.prototype.put = function(url, opts) {
