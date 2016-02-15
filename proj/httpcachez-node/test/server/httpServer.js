@@ -40,8 +40,18 @@ function start(server) {
   });
 }
 
+function stop(server) {
+  server.server.close(function() {
+    server.emit('stop');
+  });
+}
+
 Server.prototype.start = function() {
   start(this);
+}
+
+Server.prototype.stop = function() {
+  stop(this);
 }
 
 Server.prototype.put = function(url, opts) {
@@ -54,7 +64,10 @@ exports.server = function(port) {
 
 var s = exports.server(5000);
 s.on('start', function() {
-  console.log('started');
+  console.log('start');
+});
+s.on('stop', function() {
+  console.log('stop');
 });
 s.start();
 s.put('/ping.txt', {
@@ -67,3 +80,6 @@ s.put('/ping.txt', {
   },
   content: 'PONG'
 });
+setTimeout(function() {
+  s.stop();
+}, 5000)
