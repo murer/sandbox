@@ -1,5 +1,5 @@
 package com.murerz.httpcachez;
 
-public class AbsractTestCase {
+public class AbstractTestCase {
 
 }
