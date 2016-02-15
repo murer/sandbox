@@ -15,9 +15,12 @@ testrunner.test('download', function(end) {
   });
   download.on('end', function() {
     console.log('End');
+    end();
   });
   download.on('error', function(error) {
     console.log('Error', error);
+    testrunner.fail(error)
+    end();
   });
   download.start();
 });

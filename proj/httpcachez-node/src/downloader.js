@@ -1,3 +1,5 @@
+var Emitter = require('events');
+var util = require('util');
 var http = require('http')
 var urlparser = require('url')
 var mkdirp = require('mkdirpd')
@@ -24,23 +26,16 @@ function executeDownload(download) {
 }
 
 function Download(url) {
-  (function(download) {
-    download.url = url;
-    download.parsed = urlparser.parse(url);
-    var port = download.parsed.port || 80;
-    download.path = './data/' + download.parsed.host + '/' + port;
-    console.log('creating', download.path)
-    mkdirp(download.path, function (err) {
-        if (err) {
-          throw err;
-        }
-        executeDownload(download);
-    });
-  })(this);
+  Emitter.call(this);
+  this.url = url;
+  this.parsed = urlparser.parse(url);
+  var port = this.parsed.port || 80;
+  this.path = './data/' + this.parsed.host + '/' + port;
 }
+util.inherits(Download, Emitter);
 
-Download.prototype.done = function(done) {
-  this.onDone = done;
+Download.prototype.start = function() {
+
 }
 
 exports.download = function(url) {
