@@ -1,4 +1,4 @@
-package com.murerz.httpcachez;
+package com.murerz.httpcachez.server;
 
 import java.io.Closeable;
 import java.io.IOException;

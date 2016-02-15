@@ -1,4 +1,4 @@
-package com.murerz.httpcachez;
+package com.murerz.httpcachez.server;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,6 +7,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
+
+import com.murerz.httpcachez.Util;
 
 public class HttpServerTest {
 
