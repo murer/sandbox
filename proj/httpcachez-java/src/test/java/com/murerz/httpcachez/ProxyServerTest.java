@@ -9,7 +9,7 @@ public class ProxyServerTest extends AbstractTestCase {
 
 	@Test
 	public void testProxy() throws Exception {
-		HttpResponse resp = HTTP.getWithHost("http://localhost:" + port + "/ping.txt", "localhost:" + serverPort);
+		HttpResponse resp = HTTP.me().getWithHost("http://localhost:" + port + "/ping.txt", "localhost:" + serverPort);
 		assertEquals(200, resp.getStatusLine().getStatusCode());
 		assertEquals("OK", resp.getStatusLine().getReasonPhrase());
 		assertEquals("PONG", HTTP.toString(resp.getEntity()));

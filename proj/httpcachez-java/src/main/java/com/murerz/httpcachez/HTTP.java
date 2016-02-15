@@ -6,21 +6,67 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 public class HTTP {
 
-	public static HttpResponse get(String url) {
+	private static final Object MUTEX = new Object();
+	private static HTTP me;
+
+	public static HTTP me() {
+		if (me == null) {
+			synchronized (MUTEX) {
+				if (me == null) {
+					HTTP ret = new HTTP();
+					ret.init();
+					me = ret;
+				}
+			}
+		}
+		return me;
+	}
+
+	private void init() {
+	}
+
+	public HttpResponse get(String url) {
+		CloseableHttpClient client = HttpClients.createDefault();
+		CloseableHttpResponse resp = null;
 		try {
-			return create(url).execute().returnResponse();
+			HttpGet req = new HttpGet(url);
+			resp = client.execute(req);
+			String str = EntityUtils.toString(resp.getEntity());
+			EntityUtils.updateEntity(resp, new StringEntity(str));
+			return resp;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} finally {
+			Util.close(resp);
+			Util.close(client);
 		}
 	}
 
-	private static Request create(String url) {
-		return Request.Get(url).connectTimeout(100000).socketTimeout(100000);
+	public HttpResponse getWithHost(String url, String host) {
+		CloseableHttpClient client = HttpClients.createDefault();
+		CloseableHttpResponse resp = null;
+		try {
+			HttpGet req = new HttpGet(url);
+			req.setHeader("Host", host);
+			resp = client.execute(req);
+			String str = EntityUtils.toString(resp.getEntity());
+			EntityUtils.updateEntity(resp, new StringEntity(str));
+			return resp;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			Util.close(resp);
+			Util.close(client);
+		}
 	}
 
 	public static String toString(HttpEntity entity) {
@@ -37,15 +83,6 @@ public class HTTP {
 			return null;
 		}
 		return header.getValue();
-	}
-
-	public static HttpResponse getWithHost(String url, String host) {
-		try {
-			return create(url).setHeader("Host", host).execute()
-					.returnResponse();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

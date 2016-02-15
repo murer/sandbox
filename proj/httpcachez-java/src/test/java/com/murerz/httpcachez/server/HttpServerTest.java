@@ -22,7 +22,7 @@ public class HttpServerTest {
 			port = server.getPort();
 			assertTrue(port > 0);
 
-			HttpResponse resp = HTTP.get("http://localhost:" + port + "/ping.txt");
+			HttpResponse resp = HTTP.me().get("http://localhost:" + port + "/ping.txt");
 
 			assertEquals(404, resp.getStatusLine().getStatusCode());
 			assertEquals("Not Found", resp.getStatusLine().getReasonPhrase());
@@ -30,7 +30,7 @@ public class HttpServerTest {
 
 			server.put("/ping.txt").code(200, "OK").header("Content-Type", "text/plain").content("PONG");
 
-			resp = HTTP.get("http://localhost:" + port + "/ping.txt");
+			resp = HTTP.me().get("http://localhost:" + port + "/ping.txt");
 			assertEquals(200, resp.getStatusLine().getStatusCode());
 			assertEquals("OK", resp.getStatusLine().getReasonPhrase());
 			assertEquals("PONG", EntityUtils.toString(resp.getEntity()));
