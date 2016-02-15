@@ -20,7 +20,6 @@ testrunner.test('server', function(end) {
       received += data.toString('utf-8');
     });
     client.on('end', function() {
-      console.log('aaa', received)
       testrunner.equal(received, 'Connected\nReply: Test\n');
 
       server.shutdown(function() {
