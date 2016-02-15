@@ -3,7 +3,7 @@ var downloader = require('../src/downloader');
 
 testrunner.group('downloaderTest')
 
-testrunner.test('download http ok', 4, function(end) {
+testrunner.test('downloadHttpOk', 4, function(end) {
   var download = downloader.download('http://repo1.maven.org/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/mycontainer-annotations-1.6.2.pom.md5')
   var buffer = new Buffer(0);
   download.on('response', function(resp) {
@@ -25,7 +25,7 @@ testrunner.test('download http ok', 4, function(end) {
   download.start();
 });
 
-testrunner.test('download http not found', 2, function(end) {
+testrunner.test('downloadHttpNotFound', 2, function(end) {
   var download = downloader.download('http://repo1.maven.org/maven2/com/googlecode/mycontainer/mycontainer-annotations/1.6.2/not-found.txt')
   var buffer = new Buffer(0);
   download.on('response', function(resp) {
