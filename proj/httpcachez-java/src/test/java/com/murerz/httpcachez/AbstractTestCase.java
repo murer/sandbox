@@ -7,11 +7,11 @@ import com.murerz.httpcachez.server.SimpleHttpServer;
 
 public class AbstractTestCase {
 
-	protected Integer port = null;
+	protected Integer serverPort = null;
 
 	@Before
 	public void setUp() {
-		port = SimpleHttpServer.me().start(0).getPort();
+		serverPort = SimpleHttpServer.me().start(0).getPort();
 		SimpleHttpServer.me().put("/ping.txt").code(200, "OK").header("Content-Type", "text/plain").content("PONG");
 	}
 
