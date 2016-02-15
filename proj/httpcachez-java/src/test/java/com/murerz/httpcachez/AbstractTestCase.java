@@ -13,6 +13,8 @@ public class AbstractTestCase {
 	public void setUp() {
 		serverPort = SimpleHttpServer.me().start(0).getPort();
 		SimpleHttpServer.me().put("/ping.txt").code(200, "OK").header("Content-Type", "text/plain").content("PONG");
+	
+	
 	}
 
 	@After

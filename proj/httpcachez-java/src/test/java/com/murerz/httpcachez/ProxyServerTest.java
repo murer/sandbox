@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.apache.http.HttpResponse;
 import org.junit.Test;
 
-public class ProxyTest extends AbstractTestCase {
+public class ProxyServerTest extends AbstractTestCase {
 
 	@Test
 	public void testProxy() throws Exception {
