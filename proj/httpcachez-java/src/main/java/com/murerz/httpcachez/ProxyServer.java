@@ -64,6 +64,9 @@ public class ProxyServer implements Closeable {
 		if (host == null) {
 			host = req.getFirstHeader("Host").getValue();
 		}
+		if (host == null) {
+			throw new RuntimeException("Host header is required");
+		}
 		if (host.indexOf(":") < 0) {
 			host += ":80";
 		}
