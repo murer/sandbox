@@ -64,7 +64,7 @@ public class SimpleHttpServer implements Closeable {
 		return ME;
 	}
 
-	private Map<String, Resource> resources = new HashMap<String, Resource>();
+	private Map<String, Resource> resources;
 
 	private HttpServer server;
 
@@ -74,6 +74,7 @@ public class SimpleHttpServer implements Closeable {
 		if (server != null) {
 			throw new RuntimeException("server already started");
 		}
+		resources = new HashMap<String, Resource>();
 		try {
 			SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(15000).setTcpNoDelay(true).build();
 
@@ -126,8 +127,10 @@ public class SimpleHttpServer implements Closeable {
 
 	@Override
 	public void close() {
-		server.shutdown(1l, TimeUnit.SECONDS);
+		server.shutdown(100l, TimeUnit.MILLISECONDS);
 		server = null;
+		resources = null;
+		port = 0;
 	}
 
 	public Resource put(String name) {
