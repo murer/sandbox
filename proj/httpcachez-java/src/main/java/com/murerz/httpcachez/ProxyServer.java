@@ -60,9 +60,9 @@ public class ProxyServer implements Closeable {
 	}
 
 	private Key key(HttpRequest req) {
-		String host = req.getFirstHeader("TargetHost").getValue();
+		String host = HTTP.header(req, "TargetHost");
 		if (host == null) {
-			host = req.getFirstHeader("Host").getValue();
+			host = HTTP.header(req, "Host");
 		}
 		if (host == null) {
 			throw new RuntimeException("Host header is required");
