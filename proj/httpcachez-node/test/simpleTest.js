@@ -1,20 +1,20 @@
-var testrunner = require('./testrunner');
+var t = require('./testrunner');
 
-testrunner.group('simpleTest')
+t.group('simpleTest')
 
-testrunner.test('test1', function(end) {
-  testrunner.ok(1);
+t.test('test1', function(end) {
+  t.ok(1);
   end();
 });
 
-testrunner.test('test timeout', 2, function(end) {
+t.test('test timeout', 2, function(end) {
   setTimeout(function() {
-    testrunner.equal(1, 1);
-    testrunner.equal(2, 2);
+    t.equal(1, 1);
+    t.equal(2, 2);
     end();
   }, 1);
 });
 
-testrunner.simple('test2', function() {
-  testrunner.ok(1);
+t.simple('test2', function() {
+  t.ok(1);
 });

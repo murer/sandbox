@@ -1,10 +1,10 @@
 var net = require('net');
-var testrunner = require('../testrunner');
+var t = require('../testrunner');
 var replyServer = require('./replyServer');
 
-testrunner.group('replyServerTest')
+t.group('replyServerTest')
 
-testrunner.test('server', function(end) {
+t.test('server', function(end) {
   replyServer.listen(5000, function(server) {
     console.log('Reply server started on %j', server.server.address());
 
@@ -20,7 +20,7 @@ testrunner.test('server', function(end) {
       received += data.toString('utf-8');
     });
     client.on('end', function() {
-      testrunner.equal(received, 'Connected\nReply: Test\n');
+      t.equal(received, 'Connected\nReply: Test\n');
 
       server.shutdown(function() {
         end();
