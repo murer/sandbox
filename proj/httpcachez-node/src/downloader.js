@@ -12,15 +12,23 @@ function executeDownload(download) {
     method: 'GET'
   });
   req.on('response', function(resp) {
+    download.emit('response', {
+      code: resp.statusCode,
+      message: resp.statusMessage,
+      headers: {
+        'Content-Length': resp.headers['content-length']
+      }
+    });
+
     resp.on('data', function(chunk) {
-      console.log('chunk', chunk);
+      download.emit('data', chunk);
     });
     resp.on('end', function() {
-      console.log('end');
+      download.emit('end');
     });
   });
-  req.on('error', function(e) {
-    console.log('http error', e);
+  req.on('error', function(error) {
+    download.emit('error', error);
   });
   req.end();
 }
@@ -35,7 +43,7 @@ function Download(url) {
 util.inherits(Download, Emitter);
 
 Download.prototype.start = function() {
-
+  executeDownload(this);
 }
 
 exports.download = function(url) {
