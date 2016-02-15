@@ -13,10 +13,14 @@ public class HTTP {
 
 	public static HttpResponse get(String url) {
 		try {
-			return Request.Get(url).connectTimeout(100000).socketTimeout(100000).execute().returnResponse();
+			return create(url).execute().returnResponse();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Request create(String url) {
+		return Request.Get(url).connectTimeout(100000).socketTimeout(100000);
 	}
 
 	public static String toString(HttpEntity entity) {
@@ -33,6 +37,15 @@ public class HTTP {
 			return null;
 		}
 		return header.getValue();
+	}
+
+	public static HttpResponse getWithHost(String url, String host) {
+		try {
+			return create(url).setHeader("Host", host).execute()
+					.returnResponse();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

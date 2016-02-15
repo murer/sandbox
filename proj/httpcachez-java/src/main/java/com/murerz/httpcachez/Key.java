@@ -46,4 +46,13 @@ public class Key {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return toURL();
+	}
+
+	public String toURL() {
+		return "http://" + host + ":" + port + path;
+	}
+
 }
