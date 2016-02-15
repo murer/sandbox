@@ -36,7 +36,7 @@ util.inherits(Server, Emitter);
 
 function start(server) {
   server.server.listen(server.port, function() {
-    console.log('x', server.server.address().port)
+    server.port = server.server.address().port;
     server.emit('start');
   });
 }
@@ -62,10 +62,10 @@ Server.prototype.put = function(url, opts) {
 exports.server = function(port) {
   return new Server(port);
 }
-
+/**
 var s = exports.server(0);
 s.on('start', function() {
-  console.log('start');
+  console.log('start', s.port);
 });
 s.on('stop', function() {
   console.log('stop');
@@ -84,3 +84,4 @@ s.put('/ping.txt', {
 setTimeout(function() {
   s.stop();
 }, 5000)
+*/
