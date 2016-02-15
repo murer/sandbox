@@ -36,6 +36,7 @@ util.inherits(Server, Emitter);
 
 function start(server) {
   server.server.listen(server.port, function() {
+    console.log('x', server.server.address().port)
     server.emit('start');
   });
 }
@@ -62,7 +63,7 @@ exports.server = function(port) {
   return new Server(port);
 }
 
-var s = exports.server(5000);
+var s = exports.server(0);
 s.on('start', function() {
   console.log('start');
 });
