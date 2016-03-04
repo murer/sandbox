@@ -96,8 +96,8 @@ public class HTTP {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			Util.close(resp);
-			Util.close(client);
+			//Util.close(resp);
+			//Util.close(client);
 		}
 	}
 
