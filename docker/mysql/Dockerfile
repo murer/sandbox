@@ -24,4 +24,4 @@ RUN service mysql start && \
 
 EXPOSE 3309
 
-CMD [" /usr/sbin/mysqld" ]
+CMD [ "/usr/sbin/mysqld" ]
