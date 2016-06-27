@@ -7,6 +7,8 @@ RUN apt-get install -y wget curl
 
 RUN apt-get install -y mysql-client mysql-server && service mysql stop && sleep 3
 
+RUN sed -i.original 's/^bind-address.*/bind-address=0.0.0.0/g' /etc/mysql/my.cnf
+
 RUN service mysql start && \
     mysqladmin -u root password root && sleep 3 && \
     mysql -u root -proot --execute "SET GLOBAL log_bin_trust_function_creators=true;" && \
@@ -22,6 +24,8 @@ RUN service mysql start && \
     mysql -u root -proot --execute "FLUSH PRIVILEGES;" && \
     service mysql stop && sleep 3
 
-EXPOSE 3309
+ADD config /opt/config
+
+EXPOSE 3306
 
 CMD [ "/usr/sbin/mysqld" ]
