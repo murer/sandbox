@@ -14,10 +14,10 @@ RUN service mysql start && \
     mysql -u root -proot --execute "DELETE FROM mysql.user WHERE User='';" && \
     mysql -u root -proot --execute "DROP DATABASE IF EXISTS test;" && \
     mysql -u root -proot --execute "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" && \
-    #mysql -u root -proot --execute "CREATE DATABASE mydb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" && \
-    #mysql -u root -proot --execute "GRANT ALL ON mydb.* TO 'mydb'@'%' IDENTIFIED BY 'mydb';" && \
-    #mysql -u root -proot --execute "GRANT ALL ON innodb.* TO 'mydb'@'%';" && \
-    #mysql -u root -proot --execute "GRANT ALL ON mysql.* TO 'mydb'@'%';" && \
+    mysql -u root -proot --execute "CREATE DATABASE it DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" && \
+    mysql -u root -proot --execute "GRANT ALL ON it.* TO 'it'@'%' IDENTIFIED BY 'it';" && \
+    mysql -u root -proot --execute "GRANT ALL ON innodb.* TO 'mydb'@'%';" && \
+    mysql -u root -proot --execute "GRANT ALL ON mysql.* TO 'mydb'@'%';" && \
     mysql -u root -proot --execute "FLUSH PRIVILEGES;" && \
     service mysql stop && sleep 3
 
