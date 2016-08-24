@@ -1,4 +1,4 @@
-#!/bin/bash -e 
+#!/bin/bash -e
 
 install() {
 	filename=$1
@@ -14,6 +14,7 @@ cd /opt
 
 install jdk-8u20-linux-x64.tar.gz jdk1.8.0_20
 install jdk-7u67-linux-x64.tar.gz jdk1.7.0_67
+install jdk1.6.0_45.tar.gz jdk1.6.0_45
 
 if [ ! -L jdk ]; then
 	sudo ln -s jdk1.7.0_67 jdk;
@@ -33,4 +34,3 @@ fi
 source /etc/bash.bashrc.jdk
 
 cd -
-
