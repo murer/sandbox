@@ -86,13 +86,6 @@ public class Base64Encoder {
 		return new String(ret);
 	}
 
-	public static void main(String[] args) {
-		int a = Integer.parseInt("11111111111111111111111111000000", 2);
-		System.out.println(a);
-		System.out.println(Integer.toBinaryString(a));
-		System.out.println(Integer.toHexString(a));
-	}
-
 	public String done(byte[] data) {
 		StringBuilder ret = new StringBuilder();
 		ret.append(encode(data));
