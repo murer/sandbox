@@ -247,4 +247,5 @@ public class Base64 {
 	public Decoder decoder() {
 		return new Decoder();
 	}
+
 }
