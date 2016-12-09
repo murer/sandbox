@@ -19,6 +19,7 @@ public class Base64EncoderTest {
 
 		assertEquals("bXVyZXIg", base.encode("murer ".getBytes()));
 		assertEquals("dGVzdCBh", base.encode("test ab".getBytes()));
+		assertEquals("", base.encode("".getBytes()));
 		assertEquals("", base.encode("c".getBytes()));
 		assertEquals("YmNmaW5hbGx5", base.done("finally".getBytes()));
 	}
