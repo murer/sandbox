@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class Base64Test {
+import com.murerz.base64.Base64.Encoder;
+
+public class Base64EncoderTest {
 
 	@Test
 	public void testBase64Encode() {
-		Base64Encoder base = new Base64Encoder();
+		Encoder base = new Base64().encoder();
 		assertEquals("dGVz", base.encode("test".getBytes()));
 		assertEquals("dA==", base.done());
 
@@ -23,8 +25,8 @@ public class Base64Test {
 
 	@Test
 	public void testBase64Done() {
-		assertEquals("dGVzdA==", new Base64Encoder().done("test".getBytes()));
-		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", new Base64Encoder().done("murer test abcfinally".getBytes()));
+		assertEquals("dGVzdA==", new Base64().encoder().done("test".getBytes()));
+		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", new Base64().encoder().done("murer test abcfinally".getBytes()));
 	}
 
 }
