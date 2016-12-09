@@ -79,7 +79,7 @@ public class Base64 {
 				ret = word(buffer[0], 0, 0);
 				ret[2] = '=';
 				ret[3] = '=';
-			} else if (buffer.length == 1) {
+			} else if (buffer.length == 2) {
 				ret = word(buffer[0], buffer[1], 0);
 				ret[3] = '=';
 			} else if (buffer.length != 0) {
@@ -109,7 +109,7 @@ public class Base64 {
 			if (buffer.length == 1) {
 				ret = word(buffer[0], 0, 0);
 				ret = new char[] { ret[0], ret[1] };
-			} else if (buffer.length == 1) {
+			} else if (buffer.length == 2) {
 				ret = word(buffer[0], buffer[1], 0);
 				ret = new char[] { ret[0], ret[1], ret[2] };
 			} else if (buffer.length != 0) {

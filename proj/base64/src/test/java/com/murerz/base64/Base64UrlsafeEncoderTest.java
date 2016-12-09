@@ -26,8 +26,11 @@ public class Base64UrlsafeEncoderTest {
 	@Test
 	public void testBase64Done() {
 		assertEquals("dGVzdA", new Base64().urlsafeEncoder().done("test".getBytes()));
-		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", new Base64().urlsafeEncoder().done("murer test abcfinally".getBytes()));
+		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5",
+				new Base64().urlsafeEncoder().done("murer test abcfinally".getBytes()));
 		assertEquals("", new Base64().urlsafeEncoder().done("".getBytes()));
+
+		assertEquals("-_s", new Base64().urlsafeEncoder().done(new byte[] { -5, -5 }));
 	}
 
 }

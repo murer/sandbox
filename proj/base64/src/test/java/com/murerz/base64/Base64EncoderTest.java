@@ -28,6 +28,9 @@ public class Base64EncoderTest {
 	public void testBase64Done() {
 		assertEquals("dGVzdA==", new Base64().encoder().done("test".getBytes()));
 		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", new Base64().encoder().done("murer test abcfinally".getBytes()));
+		assertEquals("", new Base64().encoder().done("".getBytes()));
+
+		assertEquals("+/s=", new Base64().encoder().done(new byte[] { -5, -5 }));
 	}
 
 }

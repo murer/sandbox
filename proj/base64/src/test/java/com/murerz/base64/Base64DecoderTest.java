@@ -30,6 +30,9 @@ public class Base64DecoderTest {
 		assertEquals("murer test abcfinally",
 				new String(new Base64().decoder().decode("bXVyZXIgdGVzdCBhYmNmaW5hbGx5")));
 		assertEquals("", new String(new Base64().decoder().done("")));
+		
+		assertEquals("test", new String(new Base64().decoder().done("-_s")));
+		assertEquals("test", new String(new Base64().decoder().done("-_s=")));
 	}
 
 }
