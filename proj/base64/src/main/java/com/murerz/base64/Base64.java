@@ -57,9 +57,6 @@ public class Base64 {
 			b1 = 0x000000FF & b1;
 			b2 = 0x000000FF & b2;
 			b3 = 0x000000FF & b3;
-			System.out.println(String.format("word = [ %s, %s, %s ]", b1, b2, b3));
-			System.out.println(String.format("bin = [ %s, %s, %s ]", Integer.toBinaryString(b1),
-					Integer.toBinaryString(b2), Integer.toBinaryString(b3)));
 			int r1 = b1 >> 2;
 			int r2 = (b1 << 4) | (b2 >> 4);
 			int r3 = (b2 << 2) | (b3 >> 6);
@@ -67,14 +64,10 @@ public class Base64 {
 			r1 = 0x0000003F & r1;
 			r2 = 0x0000003F & r2;
 			r3 = 0x0000003F & r3;
-			System.out.println(String.format("rs = [ %s, %s, %s, %s ]", r1, r2, r3, r4));
-			System.out.println(String.format("rbin = [ %s, %s, %s, %s ]", Integer.toBinaryString(r1),
-					Integer.toBinaryString(r2), Integer.toBinaryString(r3), Integer.toBinaryString(r4)));
 			char c1 = alphabet[r1];
 			char c2 = alphabet[r2];
 			char c3 = alphabet[r3];
 			char c4 = alphabet[r4];
-			System.out.println(String.format("chars = [ %s, %s, %s, %s ]", c1, c2, c3, c4));
 			return new char[] { c1, c2, c3, c4 };
 		}
 
@@ -181,23 +174,16 @@ public class Base64 {
 		}
 
 		protected byte[] word(char c1, char c2, char c3, char c4) {
-			System.out.println(String.format("word = [ %s, %s, %s, %s ]", c1, c2, c3, c4));
 			int i1 = c1 == '=' ? 0 : reverse(c1);
 			int i2 = c2 == '=' ? 0 : reverse(c2);
 			int i3 = c3 == '=' ? 0 : reverse(c3);
 			int i4 = c4 == '=' ? 0 : reverse(c4);
-			System.out.println(String.format("dec = [ %s, %s, %s, %s ]", i1, i2, i3, i4));
-			System.out.println(String.format("bin = [ %s, %s, %s, %s ]", Integer.toBinaryString(i1),
-					Integer.toBinaryString(i2), Integer.toBinaryString(i3), Integer.toBinaryString(i4)));
 			int r1 = (i1 << 2) | (i2 >> 4);
 			int r2 = (i2 << 4) | (i3 >> 2);
 			int r3 = (i3 << 6) | i4;
 			r1 = 0x000000FF & r1;
 			r2 = 0x000000FF & r2;
 			r3 = 0x000000FF & r3;
-			System.out.println(String.format("rdec = [ %s, %s, %s ]", r1, r2, r3));
-			System.out.println(String.format("rbin = [ %s, %s, %s ]", Integer.toBinaryString(r1),
-					Integer.toBinaryString(r2), Integer.toBinaryString(r3)));
 			if (c2 == '=') {
 				throw new RuntimeException("wrong");
 			} else if (c3 == '=') {
@@ -249,7 +235,7 @@ public class Base64 {
 		}
 
 	}
-	
+
 	protected static byte[] concat(byte[] a1, byte[] a2) {
 		byte[] ret = new byte[a1.length + a2.length];
 		System.arraycopy(a1, 0, ret, 0, a1.length);
@@ -261,14 +247,14 @@ public class Base64 {
 		return new Encoder();
 	}
 
-	public static  Encoder encoderUrlsafe() {
+	public static Encoder encoderUrlsafe() {
 		return new UrlsafeEncoder();
 	}
 
 	public static Decoder decoder() {
 		return new Decoder();
 	}
-	
+
 	public static String encode(byte[] data) {
 		return encoder().done(data);
 	}
@@ -276,11 +262,11 @@ public class Base64 {
 	public static String encodeUrlsafe(byte[] data) {
 		return encoderUrlsafe().done(data);
 	}
-	
+
 	public static byte[] decode(String data) {
 		return decoder().done(data);
 	}
-	
+
 	public static void main(String[] args) {
 		byte[] ret = new byte[123];
 		Arrays.fill(ret, (byte) -1);
