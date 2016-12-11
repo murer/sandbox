@@ -7,8 +7,6 @@ public class Base64 {
 
 	private final static char[] ALPHABET_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			.toCharArray();
-	private final static char[] ALPHABET_URLSAFE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
-			.toCharArray();
 
 	public static class Encoder {
 
@@ -99,8 +97,19 @@ public class Base64 {
 	}
 
 	public static class UrlsafeEncoder extends Encoder {
-		public UrlsafeEncoder() {
-			alphabet = ALPHABET_URLSAFE;
+
+		@Override
+		protected char[] word(int b1, int b2, int b3) {
+			char[] ret = super.word(b1, b2, b3);
+			for (int i = 0; i < ret.length; i++) {
+				char c = ret[i];
+				if (c == '+') {
+					ret[i] = '-';
+				} else if (c == '/') {
+					ret[i] = '_';
+				}
+			}
+			return ret;
 		}
 
 		@Override
@@ -193,6 +202,11 @@ public class Base64 {
 		}
 
 		private int indexOf(char ch) {
+			if (ch == '-') {
+				ch = '+';
+			} else if (ch == '_') {
+				ch = '/';
+			}
 			for (int i = 0; i < ALPHABET_ORIGINAL.length; i++) {
 				char c = ALPHABET_ORIGINAL[i];
 				if (c == ch) {
@@ -219,12 +233,14 @@ public class Base64 {
 			this.buffer = new StringBuilder();
 			if (sb.length() == 0) {
 				return new byte[0];
+			} else if (sb.length() == 1) {
+				return word(sb.charAt(0), '=', '=', '=');
+			} else if (sb.length() == 2) {
+				return word(sb.charAt(0), sb.charAt(1), '=', '=');
+			} else if (sb.length() == 3) {
+				return word(sb.charAt(0), sb.charAt(1), sb.charAt(2), '=');
 			}
-			while (sb.length() < 4) {
-				sb.append('=');
-			}
-			return word(sb.charAt(0), sb.charAt(1), sb.charAt(2), sb.charAt(3));
-
+			throw new RuntimeException("wrong: " + sb.length());
 		}
 
 	}

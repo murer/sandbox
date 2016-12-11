@@ -2,6 +2,8 @@ package com.murerz.base64;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import com.murerz.base64.Base64.Decoder;
@@ -9,7 +11,7 @@ import com.murerz.base64.Base64.Decoder;
 public class Base64DecoderTest {
 
 	@Test
-	public void testBase64Encode() {
+	public void testBase64Decode() {
 		Decoder base = new Base64().decoder();
 		assertEquals("tes", new String(base.decode("dGVz")));
 		assertEquals("t", new String(base.done("dA==")));
@@ -31,8 +33,8 @@ public class Base64DecoderTest {
 				new String(new Base64().decoder().decode("bXVyZXIgdGVzdCBhYmNmaW5hbGx5")));
 		assertEquals("", new String(new Base64().decoder().done("")));
 		
-		assertEquals("test", new String(new Base64().decoder().done("-_s")));
-		assertEquals("test", new String(new Base64().decoder().done("-_s=")));
+		assertEquals("[-5, -5]", Arrays.toString(new Base64().decoder().done("-_s")));
+		assertEquals("[-5, -5]", Arrays.toString(new Base64().decoder().done("-_s=")));
 	}
 
 }
