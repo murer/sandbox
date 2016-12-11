@@ -12,7 +12,7 @@ public class Base64DecoderTest {
 
 	@Test
 	public void testBase64Decode() {
-		Decoder base = new Base64().decoder();
+		Decoder base = Base64.decoder();
 		assertEquals("tes", new String(base.decode("dGVz")));
 		assertEquals("t", new String(base.done("dA==")));
 
@@ -27,14 +27,13 @@ public class Base64DecoderTest {
 
 	@Test
 	public void testBase64Done() {
-		assertEquals("test", new String(new Base64().decoder().done("dGVzdA")));
-		assertEquals("test", new String(new Base64().decoder().done("dGVzdA==")));
-		assertEquals("murer test abcfinally",
-				new String(new Base64().decoder().decode("bXVyZXIgdGVzdCBhYmNmaW5hbGx5")));
-		assertEquals("", new String(new Base64().decoder().done("")));
-		
-		assertEquals("[-5, -5]", Arrays.toString(new Base64().decoder().done("-_s")));
-		assertEquals("[-5, -5]", Arrays.toString(new Base64().decoder().done("-_s=")));
+		assertEquals("test", new String(Base64.decode("dGVzdA")));
+		assertEquals("test", new String(Base64.decode("dGVzdA==")));
+		assertEquals("murer test abcfinally", new String(Base64.decode("bXVyZXIgdGVzdCBhYmNmaW5hbGx5")));
+		assertEquals("", new String(Base64.decode("")));
+
+		assertEquals("[-5, -5]", Arrays.toString(Base64.decode("-_s")));
+		assertEquals("[-5, -5]", Arrays.toString(Base64.decode("-_s=")));
 	}
 
 }

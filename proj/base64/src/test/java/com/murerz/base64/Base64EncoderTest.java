@@ -10,7 +10,7 @@ public class Base64EncoderTest {
 
 	@Test
 	public void testBase64Encode() {
-		Encoder base = new Base64().encoder();
+		Encoder base = Base64.encoder();
 		assertEquals("dGVz", base.encode("test".getBytes()));
 		assertEquals("dA==", base.done());
 
@@ -26,11 +26,11 @@ public class Base64EncoderTest {
 
 	@Test
 	public void testBase64Done() {
-		assertEquals("dGVzdA==", new Base64().encoder().done("test".getBytes()));
-		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", new Base64().encoder().done("murer test abcfinally".getBytes()));
-		assertEquals("", new Base64().encoder().done("".getBytes()));
+		assertEquals("dGVzdA==", Base64.encode("test".getBytes()));
+		assertEquals("bXVyZXIgdGVzdCBhYmNmaW5hbGx5", Base64.encode("murer test abcfinally".getBytes()));
+		assertEquals("", Base64.encode("".getBytes()));
 
-		assertEquals("+/s=", new Base64().encoder().done(new byte[] { -5, -5 }));
+		assertEquals("+/s=", Base64.encode(new byte[] { -5, -5 }));
 	}
 
 }

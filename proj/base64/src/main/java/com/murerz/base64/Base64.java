@@ -257,18 +257,30 @@ public class Base64 {
 		return ret;
 	}
 
-	public Encoder encoder() {
+	public static Encoder encoder() {
 		return new Encoder();
 	}
 
-	public Encoder urlsafeEncoder() {
+	public static  Encoder encoderUrlsafe() {
 		return new UrlsafeEncoder();
 	}
 
-	public Decoder decoder() {
+	public static Decoder decoder() {
 		return new Decoder();
 	}
+	
+	public static String encode(byte[] data) {
+		return encoder().done(data);
+	}
 
+	public static String encodeUrlsafe(byte[] data) {
+		return encoderUrlsafe().done(data);
+	}
+	
+	public static byte[] decode(String data) {
+		return decoder().done(data);
+	}
+	
 	public static void main(String[] args) {
 		byte[] ret = new byte[123];
 		Arrays.fill(ret, (byte) -1);
