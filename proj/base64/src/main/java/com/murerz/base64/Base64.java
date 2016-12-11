@@ -2,15 +2,22 @@ package com.murerz.base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Base64 {
 
-	private final static char[] ALPHABET_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 			.toCharArray();
+
+	private final static byte[] REVERSED = new byte[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6,
+			7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
+			29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 };
 
 	public static class Encoder {
 
-		protected char[] alphabet = ALPHABET_ORIGINAL;
+		protected char[] alphabet = ALPHABET;
 
 		protected byte[] buffer = new byte[0];
 
@@ -131,7 +138,7 @@ public class Base64 {
 
 	public static class Decoder {
 
-		protected char[] alphabet = ALPHABET_ORIGINAL;
+		protected char[] alphabet = ALPHABET;
 
 		private StringBuilder buffer = new StringBuilder();
 
@@ -175,10 +182,10 @@ public class Base64 {
 
 		protected byte[] word(char c1, char c2, char c3, char c4) {
 			System.out.println(String.format("word = [ %s, %s, %s, %s ]", c1, c2, c3, c4));
-			int i1 = c1 == '=' ? 0 : indexOf(c1);
-			int i2 = c2 == '=' ? 0 : indexOf(c2);
-			int i3 = c3 == '=' ? 0 : indexOf(c3);
-			int i4 = c4 == '=' ? 0 : indexOf(c4);
+			int i1 = c1 == '=' ? 0 : reverse(c1);
+			int i2 = c2 == '=' ? 0 : reverse(c2);
+			int i3 = c3 == '=' ? 0 : reverse(c3);
+			int i4 = c4 == '=' ? 0 : reverse(c4);
 			System.out.println(String.format("dec = [ %s, %s, %s, %s ]", i1, i2, i3, i4));
 			System.out.println(String.format("bin = [ %s, %s, %s, %s ]", Integer.toBinaryString(i1),
 					Integer.toBinaryString(i2), Integer.toBinaryString(i3), Integer.toBinaryString(i4)));
@@ -201,19 +208,17 @@ public class Base64 {
 			return new byte[] { (byte) r1, (byte) r2, (byte) r3 };
 		}
 
-		private int indexOf(char ch) {
+		private int reverse(char ch) {
 			if (ch == '-') {
 				ch = '+';
 			} else if (ch == '_') {
 				ch = '/';
 			}
-			for (int i = 0; i < ALPHABET_ORIGINAL.length; i++) {
-				char c = ALPHABET_ORIGINAL[i];
-				if (c == ch) {
-					return i;
-				}
+			int ret = REVERSED[ch];
+			if (ret < 0) {
+				throw new RuntimeException("not found: " + ch);
 			}
-			throw new RuntimeException("not found: " + ch);
+			return ret;
 		}
 
 		public byte[] done(String encoded) {
@@ -244,7 +249,7 @@ public class Base64 {
 		}
 
 	}
-
+	
 	protected static byte[] concat(byte[] a1, byte[] a2) {
 		byte[] ret = new byte[a1.length + a2.length];
 		System.arraycopy(a1, 0, ret, 0, a1.length);
@@ -262,6 +267,17 @@ public class Base64 {
 
 	public Decoder decoder() {
 		return new Decoder();
+	}
+
+	public static void main(String[] args) {
+		byte[] ret = new byte[123];
+		Arrays.fill(ret, (byte) -1);
+		for (byte i = 0; i < ALPHABET.length; i++) {
+			char ch = ALPHABET[i];
+			int ich = ch;
+			ret[ich] = i;
+		}
+		System.out.println(Arrays.toString(ret).replaceAll("\\[", "{").replaceAll("\\]", "}"));
 	}
 
 }
