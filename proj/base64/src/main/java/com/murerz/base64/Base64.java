@@ -136,36 +136,25 @@ public class Base64 {
 		private StringBuilder buffer = new StringBuilder();
 
 		public byte[] decode(String encoded) {
+			return decode(encoded.toCharArray());
+
+		}
+
+		public byte[] decode(char[] chars) {
 			try {
-				char[] chars = encoded.toCharArray();
-
-				int i = 0;
-				ByteArrayOutputStream ret = new ByteArrayOutputStream();
-
-				if (buffer.length() + chars.length < 4) {
-					buffer = buffer.append(chars);
-					ret.close();
-					return ret.toByteArray();
+				int init = ((chars.length * 3) / 4);
+				ByteArrayOutputStream ret = new ByteArrayOutputStream(init);
+				StringBuilder sb = new StringBuilder(4);
+				sb.append(buffer);
+				for (int i = 0; i < chars.length; i++) {
+					char ch = chars[i];
+					sb.append(ch);
+					if (sb.length() == 4) {
+						ret.write(word(sb.charAt(0), sb.charAt(1), sb.charAt(2), sb.charAt(3)));
+						sb.setLength(0);
+					}
 				}
-
-				if (buffer.length() == 1) {
-					ret.write(word(buffer.charAt(0), chars[i++], chars[i++], chars[i++]));
-				} else if (buffer.length() == 2) {
-					ret.write(word(buffer.charAt(0), buffer.charAt(1), chars[i++], chars[i++]));
-				} else if (buffer.length() == 3) {
-					ret.write(word(buffer.charAt(0), buffer.charAt(1), buffer.charAt(2), chars[i++]));
-				} else if (buffer.length() != 0) {
-					throw new RuntimeException("wrong: " + buffer);
-				}
-				buffer = new StringBuilder();
-
-				while (i <= chars.length - 4) {
-					ret.write(word(chars[i++], chars[i++], chars[i++], chars[i++]));
-				}
-				this.buffer = new StringBuilder().append(chars, i, chars.length - i);
-				if (buffer.length() >= 4) {
-					throw new RuntimeException("wrong: " + buffer);
-				}
+				buffer = sb;
 				ret.close();
 				return ret.toByteArray();
 			} catch (IOException e) {
