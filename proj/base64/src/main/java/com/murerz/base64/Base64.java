@@ -17,8 +17,6 @@ public class Base64 {
 
 	public static class Encoder {
 
-		protected char[] alphabet = ALPHABET;
-
 		protected byte[] buffer = new byte[0];
 
 		public String encode(byte[] data) {
@@ -64,10 +62,10 @@ public class Base64 {
 			r1 = 0x0000003F & r1;
 			r2 = 0x0000003F & r2;
 			r3 = 0x0000003F & r3;
-			char c1 = alphabet[r1];
-			char c2 = alphabet[r2];
-			char c3 = alphabet[r3];
-			char c4 = alphabet[r4];
+			char c1 = ALPHABET[r1];
+			char c2 = ALPHABET[r2];
+			char c3 = ALPHABET[r3];
+			char c4 = ALPHABET[r4];
 			return new char[] { c1, c2, c3, c4 };
 		}
 
@@ -130,8 +128,6 @@ public class Base64 {
 	}
 
 	public static class Decoder {
-
-		protected char[] alphabet = ALPHABET;
 
 		private StringBuilder buffer = new StringBuilder();
 
