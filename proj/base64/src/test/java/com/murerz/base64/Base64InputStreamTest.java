@@ -2,6 +2,7 @@ package com.murerz.base64;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.CharArrayReader;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -24,7 +25,12 @@ public class Base64InputStreamTest {
 	}
 
 	private byte[] decode(String encoded) {
-		return Base64.decode(encoded);
+		Base64InputStream in = new Base64InputStream(Base64.decoder(), new CharArrayReader(encoded.toCharArray()));
+		try {
+			return IOUtil.readAll(in);
+		} finally {
+			IOUtil.close(in);
+		}
 	}
 
 	@Test
