@@ -36,4 +36,20 @@ public class Base64DecoderTest {
 		assertEquals("[-5, -5]", Arrays.toString(Base64.decode("-_s=")));
 	}
 
+	@Test
+	public void testBase64LargeDecoder() {
+		StringBuilder enc = new StringBuilder();
+		enc.append("MQoyCjMKNAo1CjYKNwo4CjkKMTAKMTEKMTIKMTMKMTQKMTUKMTYKMTcKMTgKMTkKMjAKMjEKMjIK\r\n");
+		enc.append("MjMKMjQKMjUKMjYKMjcKMjgKMjkKMzAKMzEKMzIKMzMKMzQKMzUKMzYKMzcKMzgKMzkKNDAKNDEK\r\n");
+		enc.append("NDIKNDMKNDQKNDUKNDYKNDcKNDgKNDkKNTAKNTEKNTIKNTMKNTQKNTUKNTYKNTcKNTgKNTkKNjAK\r\n  ");
+		enc.append("NjEKNjIKNjMKNjQKNjUKNjYKNjcKNjgKNjkKNzAKNzEKNzIKNzMKNzQKNzUKNzYKNzcKNzgKNzkK\r\n");
+		enc.append("   ODA  KODE  KODIKODMKODQKODUKODYKODcKODgKODkKOTAKOTEKOTIKOTMKOTQKOTUKOTYKOTcKOTgK\n");
+		enc.append("OTkKMTAwCg==\n\n\n");
+		System.out.println(enc.toString());
+		
+		byte[] data = Base64.decode(enc.toString());
+		String test = new String(data);
+		System.out.println(test);
+	}
+
 }
