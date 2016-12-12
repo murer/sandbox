@@ -148,6 +148,9 @@ public class Base64 {
 				sb.append(buffer);
 				for (int i = 0; i < chars.length; i++) {
 					char ch = chars[i];
+					if (ignore(ch)) {
+						continue;
+					}
 					sb.append(ch);
 					if (sb.length() == 4) {
 						ret.write(word(sb.charAt(0), sb.charAt(1), sb.charAt(2), sb.charAt(3)));
@@ -159,6 +162,18 @@ public class Base64 {
 				return ret.toByteArray();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
+			}
+		}
+
+		private boolean ignore(char ch) {
+			switch (ch) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				return true;
+			default:
+				return false;
 			}
 		}
 

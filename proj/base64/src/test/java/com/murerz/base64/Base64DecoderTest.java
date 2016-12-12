@@ -45,11 +45,14 @@ public class Base64DecoderTest {
 		enc.append("NjEKNjIKNjMKNjQKNjUKNjYKNjcKNjgKNjkKNzAKNzEKNzIKNzMKNzQKNzUKNzYKNzcKNzgKNzkK\r\n");
 		enc.append("   ODA  KODE  KODIKODMKODQKODUKODYKODcKODgKODkKOTAKOTEKOTIKOTMKOTQKOTUKOTYKOTcKOTgK\n");
 		enc.append("OTkKMTAwCg==\n\n\n");
-		System.out.println(enc.toString());
-		
-		byte[] data = Base64.decode(enc.toString());
-		String test = new String(data);
-		System.out.println(test);
+		String nums = new String(Base64.decode(enc.toString()));
+		String[] array = nums.split("\\s+");
+		for (int i = 0; i < array.length; i++) {
+			String num = array[i];
+			assertEquals(Integer.toString(i + 1), num);
+		}
+		assertEquals(100, array.length);
+
 	}
 
 }
