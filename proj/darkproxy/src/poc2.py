@@ -9,17 +9,6 @@ class ThreadingSimpleServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServ
 
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
-    """
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-
-    def req(self, method):
-        self._set_headers()
-        self.wfile.write("<html><body><h1>hi!</h1></body></html>")
-    """
-
     def req(self, method):
         self.server.req(self)
 
