@@ -10,7 +10,7 @@ function _error(resp, err) {
     resp.end('' + err);
 }
 
-function _writeRequestMeta(msg) {
+function _writeRequestMeta(msg, success) {
     var meta = {
         method: msg.req.method,
         uri: msg.req.url,
@@ -26,10 +26,22 @@ function _writeRequestMeta(msg) {
         headers: msg.req.headers
     }
     fs.writeFile(msg.server.dest + '/noop.json', JSON.stringify(meta), (err) => {
-        if(err) {
-            _error(msg.resp, err)
-            return;
-        }
+        if(err) _error(msg.resp, err)
+        else success()
+    })
+}
+
+function _loadRequest(msg, success) {
+    var body = '';
+    msg.req.on('aborted', (err) => {
+        _error(msg.resp, 'client left')
+    })
+    msg.req.on('data', (data) => {
+        body += data;
+    })
+    msg.req.on('end', () => {
+        msg.req.body = body;
+        success()
     })
 }
 
@@ -43,9 +55,9 @@ function serve(self, port) {
 
 function onRequest(self, req, resp) {
     var message = { server: self, req: req, resp: resp }
-    _writeRequestMeta(message, () => {
-        console.log('file writed');
-    });
+    _loadRequest(message, () => {
+        console.log('request loaded', req.body.length);
+    })
 }
 
 function Server() {
