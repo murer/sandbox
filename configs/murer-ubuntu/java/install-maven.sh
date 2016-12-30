@@ -1,13 +1,13 @@
 #!/bin/bash -xe 
 
 cd /opt
-if [ ! -f apache-maven-3.3.3-bin.zip ]; then
-	sudo wget http://ftp.unicamp.br/pub/apache/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.zip
+if [ ! -f apache-maven-3.3.9-bin.tar.gz ]; then
+	sudo wget 'https://repoz.dextra.com.br/repoz/r/pub/maven/apache-maven-3.3.9-bin.tar.gz'
 fi
-sudo rm -rf apache-maven-3.3.3 | cat
-sudo unzip apache-maven-3.3.3-bin.zip
+sudo rm -rf apache-maven-3.3.9 | cat
+sudo tar xzf apache-maven-3.3.9-bin.tar.gz
 if [ ! -L maven ]; then
-	sudo ln -s apache-maven-3.3.3 maven;
+	sudo ln -s apache-maven-3.3.9 maven;
 else
 	echo 'maven link already exists. Maybe you want to change it';
 fi;
