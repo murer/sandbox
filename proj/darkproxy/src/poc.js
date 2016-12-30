@@ -1,4 +1,14 @@
 const http = require('http');
+const fs = require('fs');
+
+function _error(resp, err) {
+    console.log('error on request', err);
+    resp.statusCode = 500;
+    resp.statusMessage = 'Internal Error';
+    resp.removeHeader('Content-Length')
+    resp.setHeader('Content-Type', 'text/plain; charset=UTF-8');
+    resp.end('' + err);
+}
 
 function _writeRequestMeta(msg) {
     var meta = {
@@ -15,7 +25,12 @@ function _writeRequestMeta(msg) {
         },
         headers: msg.req.headers
     }
-    console.log('x', meta)
+    fs.writeFile(msg.server.dest + '/noop.json', JSON.stringify(meta), (err) => {
+        if(err) {
+            _error(msg.resp, err)
+            return;
+        }
+    })
 }
 
 function serve(self, port) {
@@ -33,7 +48,9 @@ function onRequest(self, req, resp) {
     });
 }
 
-function Server() {}
+function Server() {
+    this.dest = 'target/requests'
+}
 Server.prototype.serve = function(port) { serve(this, port) }
 Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) }
 
