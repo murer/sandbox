@@ -21,5 +21,5 @@ if ! grep "bash.bashrc.gradle" /etc/bash.bashrc; then
 	echo "source /etc/bash.bashrc.gradle" | sudo tee -a /etc/bash.bashrc
 fi
 
-source /etc/bash.bashrc.maven
+source /etc/bash.bashrc.gradle
 cd -

@@ -16,6 +16,6 @@ cd chrome
 ./install-chrome.sh
 cd -
 cd slim
-./install-slim.sh
+#./install-slim.sh
 cd -
 
