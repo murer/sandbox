@@ -10,28 +10,27 @@ function _error(resp, err) {
     resp.end('' + err);
 }
 
-function _writeRequestMeta(msg, success) {
-    var meta = {
+function _loadTarget(msg) {
+    msg.req.target =  {
         method: msg.req.method,
         uri: msg.req.url,
-        local: {
-            address: msg.req.socket.localAddress,
-            port: msg.req.socket.localPort
-        },
         remote: {
-            family: msg.req.socket.remoteFamily,
-            address: msg.req.socket.remoteAddress,
-            port: msg.req.socket.remotePort
+            host: null,
+            port: 80
         },
         headers: msg.req.headers
     }
-    fs.writeFile(msg.server.dest + '/noop.json', JSON.stringify(meta), (err) => {
-        if(err) _error(msg.resp, err)
-        else success()
-    })
+    if(msg.req.headers.host) {
+        var array = msg.req.headers.host.split(':')
+        msg.req.target.remote.host = array[0]
+        if(array.length > 1) {
+            msg.req.target.remote.port = parseInt(array[1])
+        }
+    }
 }
 
 function _loadRequest(msg, success) {
+    _loadTarget(msg);
     var body = '';
     msg.req.on('aborted', (err) => {
         _error(msg.resp, 'client left')
@@ -40,7 +39,7 @@ function _loadRequest(msg, success) {
         body += data;
     })
     msg.req.on('end', () => {
-        msg.req.body = body;
+        msg.req.target.body = body;
         success()
     })
 }
@@ -56,7 +55,7 @@ function serve(self, port) {
 function onRequest(self, req, resp) {
     var message = { server: self, req: req, resp: resp }
     _loadRequest(message, () => {
-        console.log('request loaded', req.body.length);
+        console.log('request loaded', req.target);
     })
 }
 
