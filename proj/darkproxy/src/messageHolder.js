@@ -18,6 +18,10 @@ MessageHolder.prototype.add = function(msg) {
     this._map[msg.data.id] = msg;
 }
 
+MessageHolder.prototype.get = function(id) {
+    return this._map[id] || null;
+}
+
 MessageHolder.prototype.toList = function() {
     var ret = [];
     for(var key in this._map) {
