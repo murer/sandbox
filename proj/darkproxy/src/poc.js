@@ -58,6 +58,9 @@ function serve(self, port) {
 }
 
 function onRequest(self, req, resp) {
+    if(req.url.startsWith('/_darkproxy/') || req.url == '/_darkproxy') {
+        self.darkproxy(req, resp);
+    }
     var msg = { server: self, req: req, resp: resp }
     _loadRequest(msg, () => {
         self.msgs.add(msg);
@@ -65,12 +68,17 @@ function onRequest(self, req, resp) {
     })
 }
 
+function darkproxy(self, req, resp) {
+    console.log('darkproxy')
+}
+
 function Server() {
     this.dest = 'target/requests';
     this.msgs = new MessageHolder();
 }
-Server.prototype.serve = function(port) { serve(this, port) }
-Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) }
+Server.prototype.serve = function(port) { serve(this, port) };
+Server.prototype.darkproxy = function(req, resp) { darkproxy(this, req, resp) };
+Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) };
 
 function main() {
     var server = new Server()
