@@ -9,9 +9,30 @@ function sendData(self, req, resp) {
     darkutil.sendJson(resp, ret);
 }
 
+function proxy(self, msg) {
+    
+}
+
+function handle(self, msg) {
+    if(msg.data.resp) {
+      sendResp(self, msg);
+      return;
+    }
+    proxy(self, msg);
+}
+
 function receiveDate(self, req, resp) {
     darkutil.requestLoad(req, resp, (body) => {
-        console.log('darkproxy load', body);
+        body = JSON.parse(body);
+        var saved = self.msgs.get(body.id);
+        if(!saved) {
+            darkutil.sendNotFound(resp);
+            return;
+        }
+        console.log('request changed', body.id);
+        saved.data = body;
+        darkutil.sendJson(resp, 'OK');
+        handle(self, saved);
     })
 }
 
@@ -20,7 +41,7 @@ function darkproxy(self, req, resp) {
         darkutil.sendJson(resp, self.msgs.toList());
     } else if(req.method == 'GET' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
         sendData(self, req, resp);
-    } else if(req.method == 'POST' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
+    } else if(req.method == 'POST' && req.url == '/_darkproxy/request') {
         receiveDate(self, req, resp);
     } else {
         darkutil.sendNotFound(resp);
