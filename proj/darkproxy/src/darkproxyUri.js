@@ -1,17 +1,4 @@
-
-function sendJson(resp, obj) {
-    resp.statusCode = 200;
-    resp.statusMessage = 'OK';
-    resp.setHeader('Content-Type', 'application/json; charset=UTF-8');
-    resp.end(JSON.stringify(obj, null, 4));
-}
-
-function sendNotFound(resp) {
-    resp.statusCode = 404;
-    resp.statusMessage = 'Not Found';
-    resp.setHeader('Content-Type', 'text/plain; charset=UTF-8');
-    resp.end('Not Found');
-}
+const darkutil = require('./util');
 
 function sendData(self, req, resp) {
     var id = req.url.split('/')[3];
@@ -19,22 +6,24 @@ function sendData(self, req, resp) {
     if(ret) {
       ret = ret.data;
     }
-    sendJson(resp, ret);
+    darkutil.sendJson(resp, ret);
 }
 
 function receiveDate(self, req, resp) {
-
+    darkutil.requestLoad(req, resp, (body) => {
+        console.log('darkproxy load', body);
+    })
 }
 
 function darkproxy(self, req, resp) {
     if(req.method == 'GET' && req.url == '/_darkproxy/request') {
-        sendJson(resp, self.msgs.toList());
+        darkutil.sendJson(resp, self.msgs.toList());
     } else if(req.method == 'GET' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
         sendData(self, req, resp);
     } else if(req.method == 'POST' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
         receiveDate(self, req, resp);
     } else {
-        sendNotFound(resp);
+        darkutil.sendNotFound(resp);
     }
 }
 
