@@ -1,4 +1,5 @@
 const darkutil = require('./util');
+const proxy = require('./proxy');
 
 function sendData(self, req, resp) {
     var id = req.url.split('/')[3];
@@ -9,30 +10,21 @@ function sendData(self, req, resp) {
     darkutil.sendJson(resp, ret);
 }
 
-function proxy(self, msg) {
-    
-}
-
-function handle(self, msg) {
-    if(msg.data.resp) {
-      sendResp(self, msg);
-      return;
-    }
-    proxy(self, msg);
-}
-
-function receiveDate(self, req, resp) {
+function receiveData(self, req, resp) {
     darkutil.requestLoad(req, resp, (body) => {
         body = JSON.parse(body);
-        var saved = self.msgs.get(body.id);
-        if(!saved) {
+        var msg = self.msgs.get(body.id);
+        if(!msg) {
             darkutil.sendNotFound(resp);
             return;
         }
         console.log('request changed', body.id);
-        saved.data = body;
-        darkutil.sendJson(resp, 'OK');
-        handle(self, saved);
+        msg.data = body;
+        if(msg.data.resp) {
+          sendResp(self, msg);
+        } else {
+          proxy(self, msg, req, resp);
+        }
     })
 }
 
@@ -42,7 +34,7 @@ function darkproxy(self, req, resp) {
     } else if(req.method == 'GET' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
         sendData(self, req, resp);
     } else if(req.method == 'POST' && req.url == '/_darkproxy/request') {
-        receiveDate(self, req, resp);
+        receiveData(self, req, resp);
     } else {
         darkutil.sendNotFound(resp);
     }
