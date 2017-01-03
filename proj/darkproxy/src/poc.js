@@ -12,8 +12,7 @@ function _error(resp, err) {
 }
 
 function _loadTarget(msg) {
-    msg.req.target =  {
-        id: msg.id,
+    var req = {
         method: msg.req.method,
         uri: msg.req.url,
         remote: {
@@ -24,15 +23,16 @@ function _loadTarget(msg) {
     }
     if(msg.req.headers.host) {
         var array = msg.req.headers.host.split(':')
-        msg.req.target.remote.host = array[0]
+        req.remote.host = array[0]
         if(array.length > 1) {
-            msg.req.target.remote.port = parseInt(array[1])
+            req.remote.port = parseInt(array[1]);
         }
     }
+    msg.data.req = req;
 }
 
 function _loadRequest(msg, success) {
-    msg.id = new UUID().format();
+    msg.data = { id: new UUID().format() };
     _loadTarget(msg);
     var body = '';
     msg.req.on('aborted', (err) => {
@@ -42,7 +42,7 @@ function _loadRequest(msg, success) {
         body += data;
     })
     msg.req.on('end', () => {
-        msg.req.target.body = body;
+        msg.data.req.body = body;
         success()
     })
 }
@@ -56,9 +56,9 @@ function serve(self, port) {
 }
 
 function onRequest(self, req, resp) {
-    var message = { server: self, req: req, resp: resp }
-    _loadRequest(message, () => {
-        console.log('request loaded', req.target);
+    var msg = { server: self, req: req, resp: resp }
+    _loadRequest(msg, () => {
+        console.log('request loaded', msg.data);
     })
 }
 
