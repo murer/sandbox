@@ -1,7 +1,8 @@
 const http = require('http');
 const fs = require('fs');
 const UUID = require('./uuid');
-const MessageHolder = require('./messageHolder')
+const MessageHolder = require('./messageHolder');
+const darkproxyUri = require('./darkproxyUri');
 
 function _error(resp, err) {
     console.log('error on request', err);
@@ -59,7 +60,8 @@ function serve(self, port) {
 
 function onRequest(self, req, resp) {
     if(req.url.startsWith('/_darkproxy/') || req.url == '/_darkproxy') {
-        self.darkproxy(req, resp);
+        self.darkproxyUri(req, resp);
+        return;
     }
     var msg = { server: self, req: req, resp: resp }
     _loadRequest(msg, () => {
@@ -68,16 +70,12 @@ function onRequest(self, req, resp) {
     })
 }
 
-function darkproxy(self, req, resp) {
-    console.log('darkproxy')
-}
-
 function Server() {
     this.dest = 'target/requests';
     this.msgs = new MessageHolder();
 }
 Server.prototype.serve = function(port) { serve(this, port) };
-Server.prototype.darkproxy = function(req, resp) { darkproxy(this, req, resp) };
+Server.prototype.darkproxyUri = function(req, resp) { darkproxyUri(this, req, resp) };
 Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) };
 
 function main() {
