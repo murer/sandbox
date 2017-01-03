@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const UUID = require('./uuid');
 
 function _error(resp, err) {
     console.log('error on request', err);
@@ -12,6 +13,7 @@ function _error(resp, err) {
 
 function _loadTarget(msg) {
     msg.req.target =  {
+        id: msg.id,
         method: msg.req.method,
         uri: msg.req.url,
         remote: {
@@ -30,6 +32,7 @@ function _loadTarget(msg) {
 }
 
 function _loadRequest(msg, success) {
+    msg.id = new UUID().format();
     _loadTarget(msg);
     var body = '';
     msg.req.on('aborted', (err) => {
