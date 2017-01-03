@@ -35,12 +35,15 @@ function _loadRequest(msg, success) {
     });
 }
 
-function serve(self, port) {
+function serve(self, port, cb) {
     self.server = http.createServer();
     self.server.on('request', (req, resp) => {
         self.onRequest(req, resp)
     })
-    self.server.listen(8000);
+    self.server.listen(port, () => {
+        console.log('Server is running', port);
+        cb();
+    });
 }
 
 function onRequest(self, req, resp) {
@@ -63,14 +66,14 @@ function Server() {
     this.dest = 'target/requests';
     this.msgs = new MessageHolder();
 }
-Server.prototype.serve = function(port) { serve(this, port) };
+Server.prototype.serve = function(port, cb) { serve(this, port, cb) };
 Server.prototype.darkproxyUri = function(req, resp) { darkproxyUri(this, req, resp) };
 Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) };
 Server.prototype.stop = function(cb) { stop(this, cb); }
 
 function main() {
     var server = new Server()
-    server.serve()
+    server.serve(8000);
 }
 
 exports.Server = Server;

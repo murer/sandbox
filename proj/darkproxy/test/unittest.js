@@ -38,5 +38,23 @@ function execute() {
     executeNext(procs);
 }
 
+function testDarkproxy(name, fn) {
+    fns.push({
+        name: name,
+        fn: (end) => {
+            var darkproxy = require('../src/darkproxy');
+            var server = new darkproxy.Server();
+            server.serve(8000, () => {
+                fn(8000, (err) => {
+                    server.stop(() => {
+                        end(err);
+                    });
+                });
+            });
+        }
+    });
+}
+
 exports.test = test;
 exports.execute = execute;
+exports.darkproxy = testDarkproxy;
