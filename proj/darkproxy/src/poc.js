@@ -13,6 +13,7 @@ function _error(resp, err) {
 
 function _loadTarget(msg) {
     var req = {
+        created: new Date().getTime(),
         method: msg.req.method,
         uri: msg.req.url,
         remote: {
