@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const UUID = require('./uuid');
+const MessageHolder = require('./messageHolder')
 
 function _error(resp, err) {
     console.log('error on request', err);
@@ -59,12 +60,14 @@ function serve(self, port) {
 function onRequest(self, req, resp) {
     var msg = { server: self, req: req, resp: resp }
     _loadRequest(msg, () => {
-        console.log('request loaded', msg.data);
+        self.msgs.add(msg);
+        console.log('request loaded', self);
     })
 }
 
 function Server() {
-    this.dest = 'target/requests'
+    this.dest = 'target/requests';
+    this.msgs = new MessageHolder();
 }
 Server.prototype.serve = function(port) { serve(this, port) }
 Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) }
