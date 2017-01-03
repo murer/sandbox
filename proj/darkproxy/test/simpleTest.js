@@ -1,6 +1,10 @@
 const unit = require('./unittest');
 
-unit.test('simple', (end) => {
+unit.test('simple1', (end) => {
+    end();
+});
+
+unit.test('simple2', (end) => {
     end();
 });
 
