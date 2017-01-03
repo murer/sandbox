@@ -55,6 +55,10 @@ function onRequest(self, req, resp) {
     })
 }
 
+function stop(self, cb) {
+    self.server.close(cb)
+}
+
 function Server() {
     this.dest = 'target/requests';
     this.msgs = new MessageHolder();
@@ -62,11 +66,14 @@ function Server() {
 Server.prototype.serve = function(port) { serve(this, port) };
 Server.prototype.darkproxyUri = function(req, resp) { darkproxyUri(this, req, resp) };
 Server.prototype.onRequest = function(req, resp) { onRequest(this, req, resp) };
+Server.prototype.stop = function(cb) { stop(this, cb); }
 
 function main() {
     var server = new Server()
     server.serve()
 }
+
+exports.Server = Server;
 
 if (require.main === module) {
     main()
