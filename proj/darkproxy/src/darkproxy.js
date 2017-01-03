@@ -3,15 +3,7 @@ const fs = require('fs');
 const UUID = require('./uuid');
 const MessageHolder = require('./messageHolder');
 const darkproxyUri = require('./darkproxyUri');
-
-function _error(resp, err) {
-    console.log('error on request', err);
-    resp.statusCode = 500;
-    resp.statusMessage = 'Internal Error';
-    resp.removeHeader('Content-Length')
-    resp.setHeader('Content-Type', 'text/plain; charset=UTF-8');
-    resp.end('' + err);
-}
+const darkutil = require('./util');
 
 function _loadTarget(msg) {
     var req = {
@@ -37,17 +29,10 @@ function _loadTarget(msg) {
 function _loadRequest(msg, success) {
     msg.data = { id: new UUID().format() };
     _loadTarget(msg);
-    var body = '';
-    msg.req.on('aborted', (err) => {
-        _error(msg.resp, 'client left')
-    })
-    msg.req.on('data', (data) => {
-        body += data;
-    })
-    msg.req.on('end', () => {
+    darkutil.requestLoad(msg.req, msg.resp, (body) => {
         msg.data.req.body = body;
         success()
-    })
+    });
 }
 
 function serve(self, port) {
@@ -66,7 +51,7 @@ function onRequest(self, req, resp) {
     var msg = { server: self, req: req, resp: resp }
     _loadRequest(msg, () => {
         self.msgs.add(msg);
-        console.log('request loaded', self);
+        console.log('request loaded', msg.data.id, msg.req.method, msg.req.url);
     })
 }
 

@@ -22,11 +22,17 @@ function sendData(self, req, resp) {
     sendJson(resp, ret);
 }
 
+function receiveDate(self, req, resp) {
+
+}
+
 function darkproxy(self, req, resp) {
     if(req.method == 'GET' && req.url == '/_darkproxy/request') {
         sendJson(resp, self.msgs.toList());
     } else if(req.method == 'GET' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
         sendData(self, req, resp);
+    } else if(req.method == 'POST' && req.url.match(/^\/_darkproxy\/request\/[0-9a-fA-F\-]{36}$/)) {
+        receiveDate(self, req, resp);
     } else {
         sendNotFound(resp);
     }
