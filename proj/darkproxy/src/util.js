@@ -21,7 +21,7 @@ function sendError(resp, err) {
     resp.end('' + err);
 }
 
-function requestLoad(req, resp, success) {
+function loadBody(req, resp, success) {
   var body = '';
   req.on('aborted', (err) => {
       sendError(resp, 'client left')
@@ -34,7 +34,7 @@ function requestLoad(req, resp, success) {
   });
 }
 
-exports.requestLoad = requestLoad;
+exports.loadBody = loadBody;
 exports.sendError = sendError;
 exports.sendNotFound = sendNotFound;
 exports.sendJson = sendJson;

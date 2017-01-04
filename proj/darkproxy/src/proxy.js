@@ -12,7 +12,7 @@ function proxy(self, msg, commandReq, commandResp) {
     console.log('proxy', opts);
     var req = http.request(opts, (resp) => {
         console.log('reading response');
-        darkutil.requestLoad(resp, commandResp, (body) => {
+        darkutil.loadBody(resp, commandResp, (body) => {
             console.log('body loaded', body);
         });
     });

@@ -29,7 +29,7 @@ function _loadTarget(msg) {
 function _loadRequest(msg, success) {
     msg.data = { id: new UUID().format() };
     _loadTarget(msg);
-    darkutil.requestLoad(msg.req, msg.resp, (body) => {
+    darkutil.loadBody(msg.req, msg.resp, (body) => {
         msg.data.req.body = body;
         success()
     });
@@ -42,7 +42,7 @@ function serve(self, port, cb) {
     })
     self.server.listen(port, () => {
         console.log('Server is running', port);
-        cb();
+        if(cb) cb();
     });
 }
 
