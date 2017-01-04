@@ -11,7 +11,7 @@ function sendData(self, req, resp) {
 }
 
 function receiveData(self, req, resp) {
-    darkutil.requestLoad(req, resp, (body) => {
+    darkutil.loadBody(req, resp, (body) => {
         body = JSON.parse(body);
         var msg = self.msgs.get(body.id);
         if(!msg) {
