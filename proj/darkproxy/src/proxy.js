@@ -35,4 +35,4 @@ function proxy(self, msg, commandReq, commandResp) {
     req.end();
 }
 
-module.exports = proxy;
+exports.proxy = proxy;
