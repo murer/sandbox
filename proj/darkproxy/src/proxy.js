@@ -21,6 +21,7 @@ function proxy(self, msg, commandReq, commandResp) {
         darkutil.loadBody(resp, commandResp, (body) => {
             msg.data.resp.body = body;
             console.log('proxy resp', msg.data.resp);
+            darkutil.sendJson(commandResp, 'OK');
         });
     });
     req.on('error', (err) => {
