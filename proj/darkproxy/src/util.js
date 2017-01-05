@@ -27,6 +27,7 @@ function loadBody(req, resp, success) {
       sendError(resp, 'client left')
   });
   req.on('data', (data) => {
+      console.log('data', data);
       body += data;
   });
   req.on('end', () => {

@@ -29,6 +29,7 @@ function _loadTarget(msg) {
 function _loadRequest(msg, success) {
     msg.data = { id: new UUID().format() };
     _loadTarget(msg);
+    msg.req.setEncoding('base64');
     darkutil.loadBody(msg.req, msg.resp, (body) => {
         msg.data.req.body = body;
         success()

@@ -25,6 +25,7 @@ function proxy(self, msg, commandReq, commandResp) {
             reason: resp.statusMessage,
             headers: resp.headers
         };
+        resp.setEncoding('base64');
         darkutil.loadBody(resp, commandResp, (body) => {
             msg.data.resp.body = body;
             console.log('proxy resp', msg.data.resp);
@@ -37,7 +38,7 @@ function proxy(self, msg, commandReq, commandResp) {
     });
     if(msg.data.req.body) {
         console.log('sending request body', msg.data.req.body.length);
-        req.write(msg.data.req.body);
+        req.write(msg.data.req.body, 'base64');
     }
     req.end();
 }
@@ -53,7 +54,7 @@ function sendResp(self, msg, commandReq, commandResp) {
         }
         msg.resp.setHeader(name, value);
     }
-    msg.resp.end(msg.data.resp.body, null, () => {
+    msg.resp.end(msg.data.resp.body, 'base64', () => {
         darkutil.sendJson(commandResp, 'OK');
     });
 }
