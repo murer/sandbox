@@ -7,7 +7,14 @@ function proxy(self, msg, commandReq, commandResp) {
         port: 80,
         path: msg.data.req.uri,
         method: msg.data.req.method,
-        headers: msg.data.req.headers
+        headers: {}
+    }
+    for(var name in msg.data.req.headers) {
+        var value = msg.data.req.headers[name];
+        if(value == 'content-length') {
+            continue;
+        }
+        opts.headers[name] = value;
     }
     console.log('proxy', opts);
     var req = http.request(opts, (resp) => {
