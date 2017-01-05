@@ -45,8 +45,10 @@ function sendResp(self, msg, commandReq, commandResp) {
         msg.resp.setHeader(name, value);
     }
     console.log('body', msg.data.resp.body);
-    msg.resp.end(msg.data.resp.body);
-    darkutil.sendJson(commandResp, 'OK');
+    msg.resp.end(msg.data.resp.body, null, () => {
+        console.log('reponse sent');
+        darkutil.sendJson(commandResp, 'OK');
+    });
 }
 
 exports.proxy = proxy;
