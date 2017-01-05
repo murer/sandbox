@@ -41,6 +41,9 @@ function sendResp(self, msg, commandReq, commandResp) {
     console.log('sending response', msg.data.id, msg.data.resp.code, msg.data.resp.reason);
     for(var name in msg.data.resp.headers) {
         var value = msg.data.resp.headers[name];
+        if (name == 'content-length') {
+            continue;
+        }
         msg.resp.setHeader(name, value);
     }
     msg.resp.end(msg.data.resp.body, null, () => {
