@@ -22,6 +22,11 @@ MessageHolder.prototype.get = function(id) {
     return this._map[id] || null;
 }
 
+MessageHolder.prototype.remove = function(id) {
+    console.log('delete', id, this._map[id]);
+    delete(this._map[id]);
+}
+
 MessageHolder.prototype.toList = function() {
     var ret = [];
     for(var key in this._map) {

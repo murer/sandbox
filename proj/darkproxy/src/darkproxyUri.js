@@ -21,7 +21,7 @@ function receiveData(self, req, resp) {
         console.log('request changed', body.id);
         msg.data = body;
         if(msg.data.resp) {
-          proxy.sendResp(self, msg);
+          proxy.sendResp(self, msg, req, resp);
         } else {
           proxy.proxy(self, msg, req, resp);
         }
