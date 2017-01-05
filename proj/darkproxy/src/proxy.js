@@ -38,15 +38,12 @@ function proxy(self, msg, commandReq, commandResp) {
 function sendResp(self, msg, commandReq, commandResp) {
     msg.resp.statusCode = msg.data.resp.code;
     msg.resp.statusMessage = msg.data.resp.reason;
-    console.log('sendResp. code', msg.data.resp.code, msg.data.resp.reason);
+    console.log('sending response', msg.data.id, msg.data.resp.code, msg.data.resp.reason);
     for(var name in msg.data.resp.headers) {
         var value = msg.data.resp.headers[name];
-        console.log('sendResp. header', name, value);
         msg.resp.setHeader(name, value);
     }
-    console.log('body', msg.data.resp.body);
     msg.resp.end(msg.data.resp.body, null, () => {
-        console.log('reponse sent');
         darkutil.sendJson(commandResp, 'OK');
     });
 }
