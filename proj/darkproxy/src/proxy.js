@@ -11,8 +11,8 @@ function proxy(self, msg, commandReq, commandResp) {
     }
     for(var name in msg.data.req.headers) {
         var value = msg.data.req.headers[name];
-        if(value == 'content-length') {
-            continue;
+        if(name == 'content-length') {
+            value = darkutil.b64len(msg.data.req.body).toString();
         }
         opts.headers[name] = value;
     }
@@ -50,11 +50,12 @@ function sendResp(self, msg, commandReq, commandResp) {
     for(var name in msg.data.resp.headers) {
         var value = msg.data.resp.headers[name];
         if (name == 'content-length') {
-            continue;
+            value = darkutil.b64len(msg.data.resp.body).toString();
         }
         msg.resp.setHeader(name, value);
     }
     msg.resp.end(msg.data.resp.body, 'base64', () => {
+        self.msgs.remove(msg.data.id);
         darkutil.sendJson(commandResp, 'OK');
     });
 }

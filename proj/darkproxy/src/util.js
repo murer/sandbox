@@ -35,7 +35,19 @@ function loadBody(req, resp, success) {
   });
 }
 
+function b64len(encoded) {
+    var len = encoded.length;
+    if(encoded.endsWith('==')) {
+        len -= 2;
+    } else if (encoded.endsWith('=')) {
+        len--;
+    }
+    var ret = (len / 4) * 3;
+    return ~~(ret);
+}
+
 exports.loadBody = loadBody;
 exports.sendError = sendError;
 exports.sendNotFound = sendNotFound;
 exports.sendJson = sendJson;
+exports.b64len = b64len;
