@@ -14,8 +14,7 @@ def get_token(secret):
     # get 4 bytes from hash starting on offset
     h = (struct.unpack('>I', h[offset:offset+4])[0] & 0x7fffffff)
     # the result is this number mod 10^6
-    h = h % 1000000
-    return h
+    return h % 1000000
 
 def __main():
     print get_token('mysecret')
