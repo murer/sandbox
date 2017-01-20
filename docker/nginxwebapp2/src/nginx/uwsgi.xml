@@ -1,0 +1,35 @@
+<uwsgi>
+    <plugin>python</plugin>
+    <socket>/tmp/uwsgi.sock</socket>
+    <pythonpath>/home/app</pythonpath>
+    <app mountpoint="/">
+        <script>main/script>
+    </app>
+    <master/>
+    <processes>4</processes>
+    <harakiri>60</harakiri>
+    <reload-mercy>8</reload-mercy>
+    <cpu-affinity>1</cpu-affinity>
+    <stats>/tmp/stats.socket</stats>
+    <max-requests>2000</max-requests>
+    <limit-as>512</limit-as>
+    <reload-on-as>256</reload-on-as>
+    <reload-on-rss>192</reload-on-rss>
+    <no-orphans/>
+    <vacuum/>
+</uwsgi>
+
+[uwsgi]
+project = firstsite
+base = /home/app
+
+chdir = %(base)/%(project)
+home = %(base)/Env/%(project)
+module = %(project).wsgi:application
+
+master = true
+processes = 5
+
+socket = %(base)/%(project)/%(project).sock
+chmod-socket = 664
+vacuum = true
