@@ -5,15 +5,18 @@ RUN sed -i "s/\/\/archive\.ubuntu\.com/\/\/br.archive.ubuntu.com/g" /etc/apt/sou
 
 RUN apt-get update
 RUN apt-get install -y wget curl xterm firefox xvfb x11vnc
+RUN apt-get install -y vim
 
 RUN mkdir /root/.vnc && x11vnc -storepasswd 1234 /root/.vnc/passwd
 
-RUN apt-get install -y git
+ADD config /opt/config
 
-RUN git clone https://github.com/murer/sandbox /root/sandbox
+RUN chmod +x /opt/config/config.sh
 
-WORKDIR /root/sandbox/configs/murer-ubuntu
+CMD "/opt/config/config.sh"
 
-RUN ./install.sh
 
-CMD [ "x11vnc", "-forever", "-usepw", "-create" ]
+
+# Xvfb :99 -ac
+# x11vnc -display :99 -localhost &
+# x11vnc -display :99 -forever -nopw
