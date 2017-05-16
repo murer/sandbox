@@ -23,5 +23,6 @@ RUN rm -rf /etc/xdg/openbox && \
     cp -R /opt/config/openbox /etc/xdg/openbox
 
 ENV DISPLAY :99
+EXPOSE 5900
 
 CMD "/opt/config/config.sh"
