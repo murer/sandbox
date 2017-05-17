@@ -13,8 +13,6 @@ RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' |
 RUN sudo apt-get update
 RUN sudo apt-get -y install google-chrome-stable
 
-RUN mkdir /root/.vnc && x11vnc -storepasswd 1234 /root/.vnc/passwd
-
 ADD config /opt/config
 
 RUN chmod +x /opt/config/config.sh /opt/config/openbox/autostart
