@@ -37,6 +37,9 @@ RUN sed --in-place='.ori' -e "s/\${JAVA_HOME}/\/opt\/jdk/" /opt/hadoop/etc/hadoo
 WORKDIR /opt
 ADD config /opt/config
 RUN cp -v config/hadoop/core-site.xml config/hadoop/hdfs-site.xml hadoop/etc/hadoop
-RUN chmod +x /opt/config/test.sh 
+RUN chmod +x /opt/config/test.sh /opt/config/test2.sh
+
+RUN echo 'Host *' > /root/.ssh/config
+RUN echo '    StrictHostKeyChecking no' >> /root/.ssh/config
 
 WORKDIR /root

@@ -3,4 +3,20 @@
         <name>dfs.replication</name>
         <value>1</value>
     </property>
+    <property>
+        <name>dfs.blocksize</name>
+        <value>1048576</value>
+    </property>
+    <property>
+        <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/opt/repo/namenode</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/opt/repo/datanode</value>
+    </property>
 </configuration>
