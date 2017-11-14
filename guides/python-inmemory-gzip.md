@@ -18,15 +18,6 @@ SyntaxError: invalid syntax
 >>> y
 'aaa\n'
 >>> output = StringIO.StringIO()
->>> gzip.GzipFile(fileobj=output).write(y)
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "/usr/lib/python2.7/gzip.py", line 224, in write
-    raise IOError(errno.EBADF, "write() on read-only GzipFile object")
-IOError: [Errno 9] write() on read-only GzipFile object
->>> gzip.GzipFile(fileobj=output, 'w').write(y)
-  File "<stdin>", line 1
-SyntaxError: non-keyword arg after keyword arg
 >>> gzip.GzipFile(fileobj=output, mode='w').write(y)
 4
 >>> output
