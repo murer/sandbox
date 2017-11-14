@@ -9,11 +9,6 @@ Python in-memory gzip
 '\x1f\x8b\x08\x00\xb9p\nZ\x00\x03KLL\xe4\x02\x00\x95]\xf8w\x04\x00\x00\x00'
 >>> import StringIO
 >>> buffer = StringIO.StringIO(c)
->>> y = gzip.GzipFile(fileobj=buffer)).read()
-  File "<stdin>", line 1
-    y = gzip.GzipFile(fileobj=buffer)).read()
-                                     ^
-SyntaxError: invalid syntax
 >>> y = gzip.GzipFile(fileobj=buffer).read()
 >>> y
 'aaa\n'
