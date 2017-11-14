@@ -1,10 +1,6 @@
 Python in-memory gzip
 
-```shell
-murer@frostnova:~/proj/frotanet$ python
-Python 2.7.6 (default, Jun 22 2015, 17:58:13) 
-[GCC 4.8.2] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
+```python
 >>> import gzip
 >>> with open('/tmp/a.gz', 'r') as f:
 ...   c = f.read()
@@ -41,18 +37,4 @@ SyntaxError: non-keyword arg after keyword arg
 ...   f.write(output.getvalue())
 ... 
 >>> 
-murer@frostnova:~/proj/frotanet$ cat /tmp/y.gz | gunzip 
-aaa
-murer@frostnova:~/proj/frotanet$ diff /tmp/
-a.gz                              hsperfdata_murer/                 testNames6356513349115784755.txt  .X11-unix/
-cloudz/                           .ICE-unix/                        upd/                              y.gz
-.com.google.Chrome.k75TAJ/        .lxterminal-socket:0.0-murer      .X0-lock                          
-murer@frostnova:~/proj/frotanet$ diff /tmp/
-a.gz                              hsperfdata_murer/                 testNames6356513349115784755.txt  .X11-unix/
-cloudz/                           .ICE-unix/                        upd/                              y.gz
-.com.google.Chrome.k75TAJ/        .lxterminal-socket:0.0-murer      .X0-lock                          
-murer@frostnova:~/proj/frotanet$ diff /tmp/a.gz /tmp/y.gz 
-Binary files /tmp/a.gz and /tmp/y.gz differ
-murer@frostnova:~/proj/frotanet$ gunzip /tmp/a.gz /tmp/y.gz 
-murer@frostnova:~/proj/frotanet$ diff /tmp/a /tmp/y
 ```
