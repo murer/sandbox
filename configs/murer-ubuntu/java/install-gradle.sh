@@ -1,13 +1,15 @@
-#!/bin/bash -xe 
+#!/bin/bash -xe
+
+grade_version=3.3
 
 cd /opt
-if [ ! -f gradle-2.10-bin.zip ]; then
-	sudo wget "https://services.gradle.org/distributions/gradle-2.10-bin.zip"
+if [ ! -f gradle-$grade_version-bin.zip ]; then
+	sudo wget "https://services.gradle.org/distributions/gradle-$grade_version-bin.zip"
 fi
-sudo rm -rf gradle-2.10 | cat
-sudo unzip gradle-2.10-bin.zip
+sudo rm -rf gradle-$grade_version | cat
+sudo unzip gradle-$grade_version-bin.zip
 if [ ! -L gradle ]; then
-	sudo ln -s gradle-2.10 gradle;
+	sudo ln -s gradle-$grade_version gradle;
 else
 	echo 'maven link already exists. Maybe you want to change it';
 fi;
