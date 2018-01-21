@@ -43,7 +43,7 @@ chroot_clean() {
 
 check_root
 load_conf
-#clean
-#bstrap
+clean
+bstrap
 chroot_build
 chroot_clean
