@@ -12,6 +12,9 @@ load_conf() {
 }
 
 clean() {
+  chroot target/chroot umount -lf /proc || true
+  chroot target/chroot umount -lf /sys  || true
+  chroot target/chroot umount -lf /dev/pts  || true
   umount target/chroot/dev || true
   rm -rf target || true
 }
