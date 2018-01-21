@@ -61,9 +61,11 @@ check_root
 load_conf
 
 case "$conf_action" in
-  prepare)
+  bootstrap)
     drop
     bstrap
+    ;;
+  prepare)
     chroot_prepare
     ;;
   customize)
@@ -76,6 +78,6 @@ case "$conf_action" in
     drop
     ;;
   *)
-    echo $"Usage: $0 {prepare|customize|cleanup}"
+    echo $"Usage: $0 {bootstrap|prepare|customize|cleanup}"
     exit 1
 esac

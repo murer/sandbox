@@ -2,6 +2,12 @@
 
 ## Build
 
+### Bootstrap chroot
+
+```shell
+sudo ./src/build/build.sh bootstrap
+```
+
 ### Prepare chroot
 
 ```shell
