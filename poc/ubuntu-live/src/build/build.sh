@@ -32,11 +32,14 @@ chroot_prepare() {
   sed -e "s/CONF_HOSTNAME/$conf_hostname/g" src/build/conf/hosts > target/chroot/etc/hosts
   cp src/build/conf/resolv.conf target/chroot/etc/resolv.conf
   sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" src/build/conf/sources.list > target/chroot/etc/apt/sources.list
-  mkdir target/chroot/livebuild
-  cp src/build/helper/chroot_build.sh target/chroot/livebuild/chroot_build.sh
+  cp -R src/build/helper target/chroot/livebuild
 
   mount --bind /dev target/chroot/dev
   chroot target/chroot /bin/bash -xe /livebuild/chroot_prepare.sh
+}
+
+chroot_customize() {
+  chroot target/chroot /bin/bash -xe /livebuild/chroot_customize.sh
 }
 
 check_root
@@ -55,6 +58,6 @@ case "$conf_action" in
     chroot_cleanup
     ;;
   *)
-    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    echo $"Usage: $0 {prepare|customize|cleanup}"
     exit 1
 esac
