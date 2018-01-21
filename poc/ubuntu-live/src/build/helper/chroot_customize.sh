@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 export HOME=/root
 export LC_ALL=C
 
-apt-get install git
+apt-get install -y git
 
 [[ -d /livebuild/sandbox ]] || git clone https://github.com/murer/sandbox /livebuild/sandbox
 
