@@ -75,3 +75,5 @@ create_manifest
 compress_chroot
 config_ubunturemix
 create_iso
+
+echo 'ISO Created'
