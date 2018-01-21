@@ -1,4 +1,6 @@
 #!/bin/bash -xe
 
-./src/build/build_clean.sh || true
+[[ "$UID" == "0" ]]
+
+./src/build/build.sh drop || true
 rm -rf target
