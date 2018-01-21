@@ -64,6 +64,7 @@ case "$conf_action" in
   bootstrap)
     drop
     bstrap
+    chroot_prepare
     ;;
   prepare)
     chroot_prepare
