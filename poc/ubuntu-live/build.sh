@@ -27,23 +27,15 @@ chroot_prepare() {
   sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" conf/sources.list > target/chroot/etc/apt/sources.list
   mkdir target/chroot/livebuild
   cp conf/chroot_build.sh target/chroot/livebuild/chroot_build.sh
-  cp conf/chroot_clean.sh target/chroot/livebuild/chroot_clean.sh
 
   mount --bind /dev target/chroot/dev
   chroot target/chroot /bin/bash -xe /livebuild/chroot_build.sh
-}
-
-chroot_clean() {
-  chroot target/chroot /bin/bash -xe /livebuild/chroot_clean.sh
-  rm target/chroot/etc/resolv.conf
+  umount target/chroot/dev
   rm -rf target/chroot/livebuild
-  umount target/chroot/dev || true
 }
-
 
 check_root
 load_conf
 clean
 bstrap
 chroot_build
-chroot_clean

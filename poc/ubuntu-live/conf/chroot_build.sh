@@ -17,3 +17,10 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 apt-get install -y ubuntu-standard casper lupin-casper
 apt-get install -y discover laptop-detect os-prober
 apt-get install -y linux-generic
+
+rm /var/lib/dbus/machine-id
+apt-get clean
+rm -rf /tmp/*
+umount -lf /proc
+umount -lf /sys
+umount -lf /dev/pts
