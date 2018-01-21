@@ -19,23 +19,25 @@ clean() {
 bstrap() {
   mkdir -p target/chroot
   debootstrap "--arch=$conf_arch" "$conf_ubuntuname" target/chroot
-  mount --bind /dev target/chroot/dev
 }
 
 chroot_prepare() {
   sed -e "s/CONF_HOSTNAME/$conf_hostname/g" conf/hosts > target/chroot/etc/hosts
   cp conf/resolv.conf target/chroot/etc/resolv.conf
   sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" conf/sources.list > target/chroot/etc/apt/sources.list
-  cp conf/chroot_build.sh target/chroot/chroot_build.sh
-  cp conf/chroot_clean.sh target/chroot/chroot_clean.sh
-}
+  mkdir target/chroot/livebuild
+  cp conf/chroot_build.sh target/chroot/livebuild/chroot_build.sh
+  cp conf/chroot_clean.sh target/chroot/livebuild/chroot_clean.sh
 
-chroot_build() {
-  chroot target/chroot /bin/bash -xe /chroot_build.sh
+  mount --bind /dev target/chroot/dev
+  chroot target/chroot /bin/bash -xe /livebuild/chroot_build.sh
 }
 
 chroot_clean() {
-  chroot target/chroot /bin/bash -xe /chroot_clean.sh
+  chroot target/chroot /bin/bash -xe /livebuild/chroot_clean.sh
+  rm target/chroot/etc/resolv.conf
+  rm -rf target/chroot/livebuild
+  umount target/chroot/dev || true
 }
 
 
@@ -43,5 +45,5 @@ check_root
 load_conf
 #clean
 #bstrap
-chroot_prepare
 chroot_build
+chroot_clean
