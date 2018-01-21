@@ -21,7 +21,7 @@ bstrap() {
   debootstrap "--arch=$conf_arch" "$conf_ubuntuname" target/chroot
 }
 
-chroot_prepare() {
+chroot_build() {
   sed -e "s/CONF_HOSTNAME/$conf_hostname/g" conf/hosts > target/chroot/etc/hosts
   cp conf/resolv.conf target/chroot/etc/resolv.conf
   sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" conf/sources.list > target/chroot/etc/apt/sources.list
