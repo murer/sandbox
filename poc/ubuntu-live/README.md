@@ -1,7 +1,21 @@
 # My ubuntu live poc
 
-## Build chroot
+## Build
+
+### Prepare chroot
 
 ```shell
-sudo ./src/build/build.sh
+sudo ./src/build/build.sh prepare
+```
+
+### Customize chroot
+
+```shell
+sudo ./src/build/build.sh customize
+```
+
+### Cleanup chroot
+
+```shell
+sudo ./src/build/build.sh cleanup
 ```
