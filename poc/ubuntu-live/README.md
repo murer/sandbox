@@ -3,5 +3,5 @@
 ## Build chroot
 
 ```shell
-sudo ./src/build/build.sh
+sudo ./src/chroot/build.sh
 ```
