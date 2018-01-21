@@ -44,9 +44,32 @@ compress_chroot() {
     xargs echo -n > target/image/casper/filesystem.size
 }
 
+config_ubunturemix() {
+  cd target/image
+  touch ubuntu
+  mkdir .disk
+  touch .disk/base_installable
+  echo "full_cd/single" > .disk/cd_type
+  echo "Ubuntu Remix 14.04" > .disk/info
+  echo "http//your-release-notes-url.com" > .disk/release_notes_url
+  find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
+  cd ../..
+}
+
+create_iso() {
+  cd target/image
+  sudo mkisofs -r -V "ubuntu-live" -cache-inodes -J -l \
+    -b isolinux/isolinux.bin -c isolinux/boot.cat \
+    -no-emul-boot -boot-load-size 4 -boot-info-table \
+    -o ../ubuntu-remix.iso .
+  cd ..
+}
+
 check_root
 clean
 prepare_host
 image_build
 create_manifest
 compress_chroot
+config_ubunturemix
+create_iso
