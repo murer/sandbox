@@ -42,7 +42,6 @@ compress_chroot() {
   mksquashfs target/chroot target/image/casper/filesystem.squashfs
   du -sx --block-size=1 target/chroot | cut -f1 | \
     xargs echo -n > target/image/casper/filesystem.size
-  mksquashfs target/chroot target/image/casper/filesystem.squashfs -e boot
 }
 
 check_root
