@@ -1,0 +1,22 @@
+
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME main restricted
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME main restricted
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates main restricted
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates main restricted
+
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME universe
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME universe
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates universe
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates universe
+
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME multiverse
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME multiverse
+deb http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates multiverse
+deb-src http://br.archive.ubuntu.com/ubuntu/ CONF_UBUNTUNAME-updates multiverse
+
+deb http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security main restricted
+deb-src http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security main restricted
+deb http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security universe
+deb-src http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security universe
+deb http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security multiverse
+deb-src http://security.ubuntu.com/ubuntu CONF_UBUNTUNAME-security multiverse
