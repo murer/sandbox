@@ -1,5 +1,7 @@
 #!/bin/bash -xe
 
+export DEBIAN_FRONTEND=noninteractive
+
 check_root() {
   [[ "$UID" == "0" ]]
 }
@@ -16,7 +18,7 @@ clean() {
   chroot target/chroot umount -lf /sys  || true
   chroot target/chroot umount -lf /dev/pts  || true
   umount target/chroot/dev || true
-  rm -rf target || true
+  rm -rf target/chroot || true
 }
 
 bstrap() {
