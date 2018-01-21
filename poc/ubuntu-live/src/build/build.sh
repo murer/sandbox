@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-conf_action="${1?'Use preapre, customize or cleanup'}"
+conf_action="${1?'Use preapre, customize, cleanup or drop'}"
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -15,7 +15,7 @@ load_conf() {
   [[ "$conf_arch" == "x86_64" ]] && conf_arch=amd64
 }
 
-chroot_cleanup() {
+drop() {
   chroot target/chroot umount -lf /proc || true
   chroot target/chroot umount -lf /sys  || true
   chroot target/chroot umount -lf /dev/pts  || true
@@ -28,18 +28,30 @@ bstrap() {
   debootstrap "--arch=$conf_arch" "$conf_ubuntuname" target/chroot
 }
 
+update_livebuild() {
+  rm -rf target/chroot/livebuild || true
+  cp -R src/build/helper target/chroot/livebuild
+}
+
 chroot_prepare() {
   sed -e "s/CONF_HOSTNAME/$conf_hostname/g" src/build/conf/hosts > target/chroot/etc/hosts
   cp src/build/conf/resolv.conf target/chroot/etc/resolv.conf
   sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" src/build/conf/sources.list > target/chroot/etc/apt/sources.list
-  cp -R src/build/helper target/chroot/livebuild
+  update_livebuild
 
   mount --bind /dev target/chroot/dev
   chroot target/chroot /bin/bash -xe /livebuild/chroot_prepare.sh
 }
 
 chroot_customize() {
+  update_livebuild
   chroot target/chroot /bin/bash -xe /livebuild/chroot_customize.sh
+}
+
+chroot_cleanup() {
+  chroot target/chroot /bin/bash -xe /livebuild/chroot_cleanup.sh
+  umount target/chroot/dev
+  rm -rf target/chroot/livebuild
 }
 
 check_root
@@ -47,7 +59,7 @@ load_conf
 
 case "$conf_action" in
   prepare)
-    chroot_cleanup
+    drop
     bstrap
     chroot_prepare
     ;;
@@ -56,6 +68,9 @@ case "$conf_action" in
     ;;
   cleanup)
     chroot_cleanup
+    ;;
+  drop)
+    drop
     ;;
   *)
     echo $"Usage: $0 {prepare|customize|cleanup}"
