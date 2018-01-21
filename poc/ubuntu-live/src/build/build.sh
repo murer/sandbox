@@ -22,11 +22,11 @@ bstrap() {
 }
 
 chroot_build() {
-  sed -e "s/CONF_HOSTNAME/$conf_hostname/g" conf/hosts > target/chroot/etc/hosts
-  cp conf/resolv.conf target/chroot/etc/resolv.conf
-  sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" conf/sources.list > target/chroot/etc/apt/sources.list
+  sed -e "s/CONF_HOSTNAME/$conf_hostname/g" src/build/conf/hosts > target/chroot/etc/hosts
+  cp src/build/conf/resolv.conf target/chroot/etc/resolv.conf
+  sed -e "s/CONF_UBUNTUNAME/$conf_ubuntuname/g" src/build/conf/sources.list > target/chroot/etc/apt/sources.list
   mkdir target/chroot/livebuild
-  cp conf/chroot_build.sh target/chroot/livebuild/chroot_build.sh
+  cp src/build/helper/chroot_build.sh target/chroot/livebuild/chroot_build.sh
 
   mount --bind /dev target/chroot/dev
   chroot target/chroot /bin/bash -xe /livebuild/chroot_build.sh
