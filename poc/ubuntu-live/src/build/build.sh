@@ -1,5 +1,5 @@
 #!/bin/bash -xe
 
-./build/prepare.sh
-#./build/customize.sh
-#./build/clean.sh
+./src/build/prepare.sh
+./src/build/customize.sh
+./src/build/clean.sh
