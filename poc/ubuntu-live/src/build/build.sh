@@ -41,17 +41,20 @@ chroot_prepare() {
 
   mount --bind /dev target/chroot/dev
   chroot target/chroot /bin/bash -xe /livebuild/chroot_prepare.sh
+  echo 'Preapred'
 }
 
 chroot_customize() {
   update_livebuild
   chroot target/chroot /bin/bash -xe /livebuild/chroot_customize.sh
+  echo 'Customized'
 }
 
 chroot_cleanup() {
   chroot target/chroot /bin/bash -xe /livebuild/chroot_cleanup.sh
   umount target/chroot/dev
   rm -rf target/chroot/livebuild
+  echo 'Cleaned up'
 }
 
 check_root
