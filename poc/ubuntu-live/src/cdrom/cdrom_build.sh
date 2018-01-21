@@ -8,6 +8,7 @@ check_root() {
 
 clean() {
   rm -rf target/image || true
+  rm -rf target/cdrom || true
 }
 
 prepare_host() {
@@ -57,11 +58,12 @@ config_ubunturemix() {
 }
 
 create_iso() {
+  mkdir target/cdrom
   cd target/image
   sudo mkisofs -r -V "ubuntu-live" -cache-inodes -J -l \
     -b isolinux/isolinux.bin -c isolinux/boot.cat \
     -no-emul-boot -boot-load-size 4 -boot-info-table \
-    -o ../ubuntu-remix.iso .
+    -o ../cdrom/ubuntu-remix.iso .
   cd ..
 }
 
