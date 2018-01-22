@@ -29,3 +29,5 @@ wget --no-check-certificate -q -O - https://dl-ssl.google.com/linux/linux_signin
 echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 sudo apt-get update
 sudo apt-get -y install google-chrome-stable
+
+cp /livebuild/conf/network.conf /etc/network/interfaces
