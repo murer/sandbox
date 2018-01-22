@@ -1,9 +1,7 @@
 
-# start up the tint2 task bar
-tint2 &
 
-# Start up power management
+tint2 -c /etc/xdg/tint2/tint2rc &
+
 xfce4-power-manager &
 
-# More
 xscreensaver -no-splash &
