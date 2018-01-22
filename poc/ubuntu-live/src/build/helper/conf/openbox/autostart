@@ -1,0 +1,9 @@
+
+# start up the tint2 task bar
+tint2 &
+
+# Start up power management
+xfce4-power-manager &
+
+# More
+xscreensaver -no-splash &
