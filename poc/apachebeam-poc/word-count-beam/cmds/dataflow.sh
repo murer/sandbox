@@ -2,7 +2,7 @@
 
 echo You must 'gcloud auth application-default login'
 
-mvn package -Pdataflow
+mvn package -Pdataflow-runner
 
 java -cp ./target/word-count-beam-bundled-0.1.jar \
   org.apache.beam.examples.WordCount \
