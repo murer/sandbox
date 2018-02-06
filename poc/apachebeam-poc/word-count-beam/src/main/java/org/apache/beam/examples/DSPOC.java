@@ -8,6 +8,7 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PDone;
 
@@ -41,7 +42,7 @@ public class DSPOC {
 		Pipeline p = Pipeline.create(options);
 
 		PCollection<String> c = p.apply(TextIO.read().from("sample/input.csv"));
-		PCollection<Serializable> c2 = c.apply(ParDo.of(new DoFn<String, Serializable>() {
+		PCollection<KV<String, Serializable>> c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Serializable>>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
 				String[] words = c.element().split(",");
@@ -49,21 +50,23 @@ public class DSPOC {
 					Company company = new Company();
 					company.id = words[1];
 					company.name = words[2];
-					c.output(company);
+					c.output(KV.of(company.id, (Serializable) company));
 				} else {
 					Cargo cargo = new Cargo();
 					cargo.id = words[1];
 					cargo.companyId = words[2];
-					c.output(cargo);
+					c.output(KV.of(cargo.companyId, (Serializable) cargo));
 				}
 			}
 		}));
-		PCollection<String> c3 = c2.apply(ParDo.of(new DoFn<Serializable, String>() {
+
+		PCollection<String> c3 = c2.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
 				c.output(c.element().toString());
 			}
 		}));
+
 		// c = c.apply(Combine.globally(new CombineFn<String, Map<String, Long>,
 		// String>() {
 		//
