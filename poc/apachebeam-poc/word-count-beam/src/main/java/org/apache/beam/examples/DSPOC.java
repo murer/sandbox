@@ -8,10 +8,12 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.PDone;
+import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.TupleTag;
+import org.apache.beam.sdk.values.TupleTagList;
 
 public class DSPOC {
 
@@ -42,11 +44,11 @@ public class DSPOC {
 		PipelineOptions options = PipelineOptionsFactory.create();
 		Pipeline p = Pipeline.create(options);
 
-		PCollection<String> c = p.apply(TextIO.read().from("sample/input.csv"));
-		PCollection<KV<String, Serializable>> c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Serializable>>() {
-			final TupleTag<KV<String, Company>> companyTag = new TupleTag<>();
-			final TupleTag<KV<String, Cargo>> cargoTag = new TupleTag<>();
+		final TupleTag<KV<String, Company>> companyTag = new TupleTag<>();
+		final TupleTag<KV<String, Cargo>> cargoTag = new TupleTag<>();
 
+		PCollection<String> c = p.apply(TextIO.read().from("sample/input.csv"));
+		PCollectionTuple c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Company>>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
 				String[] words = c.element().split(",");
@@ -62,14 +64,20 @@ public class DSPOC {
 					c.output(cargoTag, KV.of(cargo.companyId, cargo));
 				}
 			}
-		}));
+		}).withOutputTags(companyTag, TupleTagList.of(cargoTag)));
 
-		PCollection<String> c3 = c2.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
-			@ProcessElement
-			public void processElement(ProcessContext c) {
-				c.output(c.element().toString());
-			}
-		}));
+		PCollection<KV<String, Company>> comps = c2.get(companyTag);
+		PCollection<KV<String, Cargo>> cargos = c2.get(cargoTag);
+
+		KeyedPCollectionTuple<String> c3 = KeyedPCollectionTuple.of(new TupleTag<Company>(), comps).and(new TupleTag<Cargo>(), cargos);
+
+		// PCollection<String> c3 = c2.apply(ParDo.of(new DoFn<KV<String, Company>,
+		// String>() {
+		// @ProcessElement
+		// public void processElement(ProcessContext c) {
+		// c.output(c.element().toString());
+		// }
+		// }));
 
 		// c = c.apply(Combine.globally(new CombineFn<String, Map<String, Long>,
 		// String>() {
@@ -105,7 +113,7 @@ public class DSPOC {
 		// return accumulator.toString();
 		// }
 		// }));
-		PDone done = c3.apply(TextIO.write().to("target/poc/output"));
+		// PDone done = c3.apply(TextIO.write().to("target/poc/output"));
 
 		p.run().waitUntilFinish();
 	}
