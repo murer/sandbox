@@ -11,9 +11,8 @@ import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PDone;
-import org.apache.beam.sdk.values.TupleTag;
 
-public class DSPOC {
+public class DSPOCOld {
 
 	public static class Company implements Serializable {
 		String id;
@@ -44,9 +43,6 @@ public class DSPOC {
 
 		PCollection<String> c = p.apply(TextIO.read().from("sample/input.csv"));
 		PCollection<KV<String, Serializable>> c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Serializable>>() {
-			final TupleTag<KV<String, Company>> companyTag = new TupleTag<>();
-			final TupleTag<KV<String, Cargo>> cargoTag = new TupleTag<>();
-
 			@ProcessElement
 			public void processElement(ProcessContext c) {
 				String[] words = c.element().split(",");
@@ -54,12 +50,12 @@ public class DSPOC {
 					Company company = new Company();
 					company.id = words[1];
 					company.name = words[2];
-					c.output(companyTag, KV.of(company.id, company));
+					c.output(KV.of(company.id, (Serializable) company));
 				} else {
 					Cargo cargo = new Cargo();
 					cargo.id = words[1];
 					cargo.companyId = words[2];
-					c.output(cargoTag, KV.of(cargo.companyId, cargo));
+					c.output(KV.of(cargo.companyId, (Serializable) cargo));
 				}
 			}
 		}));
