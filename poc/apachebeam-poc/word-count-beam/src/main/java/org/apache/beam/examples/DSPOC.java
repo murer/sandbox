@@ -112,6 +112,11 @@ public class DSPOC {
 		PCollection<String> c4 = cargos.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
+				try {
+					Thread.sleep(5000L);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
 				Iterable<KV<String, Serializable>> comps = c.sideInput(sideInput);
 				for (KV<String, Serializable> company : comps) {
 					CompCargo ret = new CompCargo();
