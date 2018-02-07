@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-gsutil -m rm -r gs://mydataflow-poc/sample gs://mydataflow-poc/result gs://mydataflow-poc/tmp || true
+gsutil -m rm -r gs://mydataflow-poc/sample gs://mydataflow-poc/ret gs://mydataflow-poc/tmp || true
 gsutil -m cp -r sample gs://mydataflow-poc
 
 mvn compile exec:java \
