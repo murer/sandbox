@@ -92,31 +92,32 @@ public class DSPOC {
 					Company company = new Company();
 					company.id = words[1];
 					company.name = words[2];
-					c.output(KV.of(company.id, (Serializable) company));
+					c.output(companyTag, KV.of(company.id, (Serializable) company));
 				} else {
 					Cargo cargo = new Cargo();
 					cargo.id = words[1];
 					cargo.companyId = words[2];
-					c.output(cargoTag, KV.of(cargo.companyId, (Serializable) cargo));
+					c.output(KV.of(cargo.companyId, (Serializable) cargo));
 				}
 			}
-		}).withOutputTags(companyTag, TupleTagList.of(cargoTag)));
+		}).withOutputTags(cargoTag, TupleTagList.of(companyTag)));
 
 		final PCollection<KV<String, Serializable>> companies = c2.get(companyTag);
 		PCollection<KV<String, Serializable>> cargos = c2.get(cargoTag);
-		cargos.setCoder(companies.getCoder());
+		companies.setCoder(cargos.getCoder());
 
-		final PCollectionView<Iterable<KV<String, Serializable>>> sideInput = companies
+		final PCollectionView<Iterable<KV<String, Serializable>>> sideInput = cargos
 				.apply(View.<KV<String, Serializable>>asIterable());
 
-		PCollection<String> c4 = cargos.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
+		PCollection<String> c4 = companies.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
-				Iterable<KV<String, Serializable>> comps = c.sideInput(sideInput);
-				for (KV<String, Serializable> company : comps) {
+				Company company = (Company) c.element().getValue();
+				Iterable<KV<String, Serializable>> cargos = c.sideInput(sideInput);
+				for (KV<String, Serializable> cargo : cargos) {
 					CompCargo ret = new CompCargo();
-					ret.cargo = (Cargo) c.element().getValue();
-					ret.company = (Company) company.getValue();
+					ret.cargo = (Cargo) cargo.getValue();
+					ret.company = company;
 					if (ret.company.id.equals(ret.cargo.companyId)) {
 						c.output(ret.toString());
 					}
