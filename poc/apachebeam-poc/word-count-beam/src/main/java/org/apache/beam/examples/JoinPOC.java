@@ -19,7 +19,7 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TupleTag;
 
-public class DSPOC {
+public class JoinPOC {
 
 	public static class Company implements Serializable {
 		String id;
