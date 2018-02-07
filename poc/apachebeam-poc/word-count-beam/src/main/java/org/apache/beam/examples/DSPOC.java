@@ -1,7 +1,6 @@
 package org.apache.beam.examples;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
@@ -9,12 +8,11 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
-import org.apache.beam.sdk.transforms.join.CoGbkResult;
-import org.apache.beam.sdk.transforms.join.CoGroupByKey;
-import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple;
+import org.apache.beam.sdk.transforms.View;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
+import org.apache.beam.sdk.values.PCollectionView;
 import org.apache.beam.sdk.values.TupleTag;
 import org.apache.beam.sdk.values.TupleTagList;
 
@@ -42,6 +40,17 @@ public class DSPOC {
 
 	}
 
+	public static class CompCargo implements Serializable {
+		private Cargo cargo;
+		private Company company;
+
+		@Override
+		public String toString() {
+			return "[CompCargo cargo=" + cargo + ", company=" + company + "]";
+		}
+
+	}
+
 	public static void main(String[] args) {
 
 		PipelineOptions options = PipelineOptionsFactory.create();
@@ -50,7 +59,7 @@ public class DSPOC {
 		final TupleTag<KV<String, Serializable>> companyTag = new TupleTag<>();
 		final TupleTag<KV<String, Serializable>> cargoTag = new TupleTag<>();
 
-		PCollection<String> c = p.apply(TextIO.read().from("sample/input.csv"));
+		PCollection<String> c = p.apply(TextIO.read().from("sample/input.simple.csv"));
 		PCollectionTuple c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Serializable>>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
@@ -69,72 +78,29 @@ public class DSPOC {
 			}
 		}).withOutputTags(companyTag, TupleTagList.of(cargoTag)));
 
-		PCollection<KV<String, Serializable>> companies = c2.get(companyTag);
+		final PCollection<KV<String, Serializable>> companies = c2.get(companyTag);
 		PCollection<KV<String, Serializable>> cargos = c2.get(cargoTag);
 		cargos.setCoder(companies.getCoder());
 
-		System.out.println(companies.getCoder());
-		System.out.println(cargos.getCoder());
+		final PCollectionView<Iterable<KV<String, Serializable>>> sideInput = companies
+				.apply(View.<KV<String, Serializable>>asIterable());
 
-		final TupleTag<Serializable> compT = new TupleTag<Serializable>();
-		final TupleTag<Serializable> cargoT = new TupleTag<Serializable>();
-		KeyedPCollectionTuple<String> c3 = KeyedPCollectionTuple.of(compT, companies).and(cargoT, cargos);
-
-		PCollection<KV<String, CoGbkResult>> c4 = c3.apply(CoGroupByKey.<String>create());
-
-		c4.apply(ParDo.of(new DoFn<KV<String, CoGbkResult>, String>() {
+		PCollection<String> c4 = cargos.apply(ParDo.of(new DoFn<KV<String, Serializable>, String>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
-				KV<String, CoGbkResult> e = c.element();
-				String name = e.getKey();
-				Iterable<Serializable> emailsIter = e.getValue().getAll(compT);
-				List<Serializable> phonesIter = (List<Serializable>) e.getValue().getAll(cargoT);
-				String result = String.format("name: '%s', emailsIter: '%s', phonesIter: '%s'", name,
-						emailsIter, phonesIter.size());
-				System.out.println(result);
-				c.output(result);
+				Iterable<KV<String, Serializable>> comps = c.sideInput(sideInput);
+				for (KV<String, Serializable> company : comps) {
+					CompCargo ret = new CompCargo();
+					ret.cargo = (Cargo) c.element().getValue();
+					ret.company = (Company) company.getValue();
+					if (ret.company.id.equals(ret.cargo.companyId)) {
+						c.output(ret.toString());
+					}
+				}
 			}
-		}));
+		}).withSideInputs(sideInput));
 
-		// c3.apply(CoGroupByKey.<String> create());
-
-		// final List<KV<String, String>> emailsList = Arrays.asList(KV.of("amy",
-		// "amy@example.com"),
-		// KV.of("carl", "carl@example.com"), KV.of("julia", "julia@example.com"),
-		// KV.of("carl", "carl@email.com"));
-		//
-		// final List<KV<String, String>> phonesList = Arrays.asList(KV.of("amy",
-		// "111-222-3333"),
-		// KV.of("james", "222-333-4444"), KV.of("amy", "333-444-5555"), KV.of("carl",
-		// "444-555-6666"));
-		//
-		// PCollection<KV<String, String>> emails = p.apply("CreateEmails",
-		// Create.of(emailsList));
-		// PCollection<KV<String, String>> phones = p.apply("CreatePhones",
-		// Create.of(phonesList));
-		//
-		// final TupleTag<String> emailsTag = new TupleTag();
-		// final TupleTag<String> phonesTag = new TupleTag();
-		//
-		// PCollection<KV<String, CoGbkResult>> results =
-		// KeyedPCollectionTuple.of(emailsTag, emails)
-		// .and(phonesTag, phones).apply(CoGroupByKey.<String>create());
-		//
-		// PCollection<String> contactLines = results.apply(ParDo.of(new DoFn<KV<String,
-		// CoGbkResult>, String>() {
-		// @ProcessElement
-		// public void processElement(ProcessContext c) {
-		// KV<String, CoGbkResult> e = c.element();
-		// String name = e.getKey();
-		// Iterable<String> emailsIter = e.getValue().getAll(emailsTag);
-		// Iterable<String> phonesIter = e.getValue().getAll(phonesTag);
-		// String result = String.format("name: '%s', emailsIter: '%s', phonesIter:
-		// '%s'", name, emailsIter,
-		// phonesIter);
-		// System.out.println(result);
-		// c.output(result);
-		// }
-		// }));
+		c4.apply(TextIO.write().to("target/poc/result"));
 
 		p.run().waitUntilFinish();
 	}
