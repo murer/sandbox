@@ -4,8 +4,10 @@ import java.io.Serializable;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.options.Validation.Required;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.View;
@@ -51,15 +53,37 @@ public class DSPOC {
 
 	}
 
+	public interface MyOptions extends PipelineOptions {
+
+		/**
+		 * By default, this example reads from a public dataset containing the text of
+		 * King Lear. Set this option to choose a different input file or glob.
+		 */
+		@Description("Path of the file to read from")
+		@Required
+		String getInputFile();
+
+		void setInputFile(String value);
+
+		/**
+		 * Set this required option to specify where to write the output.
+		 */
+		@Description("Path of the file to write to")
+		@Required
+		String getOutput();
+
+		void setOutput(String value);
+	}
+
 	public static void main(String[] args) {
 
-		PipelineOptions options = PipelineOptionsFactory.create();
+		MyOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(MyOptions.class);
 		Pipeline p = Pipeline.create(options);
 
 		final TupleTag<KV<String, Serializable>> companyTag = new TupleTag<>();
 		final TupleTag<KV<String, Serializable>> cargoTag = new TupleTag<>();
 
-		PCollection<String> c = p.apply(TextIO.read().from("sample/input.simple.csv"));
+		PCollection<String> c = p.apply(TextIO.read().from(options.getInputFile()));
 		PCollectionTuple c2 = c.apply(ParDo.of(new DoFn<String, KV<String, Serializable>>() {
 			@ProcessElement
 			public void processElement(ProcessContext c) {
@@ -100,7 +124,7 @@ public class DSPOC {
 			}
 		}).withSideInputs(sideInput));
 
-		c4.apply(TextIO.write().to("target/poc/result"));
+		c4.apply(TextIO.write().to(options.getOutput()));
 
 		p.run().waitUntilFinish();
 	}
