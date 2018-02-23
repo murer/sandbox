@@ -1,0 +1,12 @@
+{
+  "name": "react-poc",
+  "version": "1.0.0",
+  "devDependencies": {
+    "create-react-app": "1.5.2",
+    "serve": "6.4.11"
+  },
+  "scripts": {
+    "create-react-app": "create-react-app",
+    "serve": "serve"
+  }
+}
