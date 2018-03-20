@@ -21,6 +21,14 @@ RUN mv git-2.16.2 git
 
 WORKDIR /opt/proj/git
 
-RUN make prefix=/opt/git-static CFLAGS="${CFLAGS} -static-libgcc"
+#RUN make prefix=/opt/git-static CFLAGS="${CFLAGS} -static-libgcc"
+
+RUN make CFLAGS="${CFLAGS} -static-libgcc"
+RUN make install
+
+WORKDIR /root
+
+RUN cp -R bin git
+RUN tar czf git.tar.gz git
 
 CMD /bin/bash
