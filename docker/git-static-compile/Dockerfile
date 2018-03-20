@@ -1,34 +1,31 @@
 FROM ubuntu:14.04
 
 RUN apt-get update
-RUN apt-get install -y wget curl
-RUN apt-get install -y build-essential
+RUN apt-get install -y wget curl zip \
+  build-essential \
+  libssl-dev \
+  libcurl4-openssl-dev \
+  libexpat1-dev \
+  gettext
 
-#RUN apt-get install -y git
+RUN adduser --disabled-password --gecos '' git
 
-WORKDIR /opt/proj
+USER git
+RUN mkdir /home/git/proj
+WORKDIR /home/git/proj
 
-RUN wget -nv https://github.com/git/git/archive/v2.16.2.zip -O git.zip
+#RUN wget -nv https://github.com/git/git/archive/v2.16.2.zip -O git.zip
+RUN wget -nv 'https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.16.2.tar.gz' -O git.tar.gz
 
-RUN apt-get install -y zip
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y libcurl4-openssl-dev
-RUN apt-get install -y libexpat1-dev
-RUN apt-get install -y gettext
-
-RUN unzip git.zip
+RUN tar xzf git.tar.gz
 RUN mv git-2.16.2 git
 
-WORKDIR /opt/proj/git
+WORKDIR /home/git/proj/git
 
-#RUN make prefix=/opt/git-static CFLAGS="${CFLAGS} -static-libgcc"
-
-RUN make CFLAGS="${CFLAGS} -static-libgcc"
+RUN ./configure prefix=/home/git/git-static/ CFLAGS="${CFLAGS} -static-libgcc"
+RUN make
 RUN make install
 
-WORKDIR /root
-
-RUN cp -R bin git
-RUN tar czf git.tar.gz git
+RUN tar czf git-static.tar.gz git-static
 
 CMD /bin/bash
