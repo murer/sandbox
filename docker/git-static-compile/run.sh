@@ -1,4 +1,10 @@
 #!/bin/bash -xe
 
+rm -rf target || true
+mkdir target
+
 docker rm -f git-static-compile || true
-docker run --rm -it --name git-static-compile git-static-compile
+docker run -it --name git-static-compile git-static-compile /bin/true
+docker cp git-static-compile:/opt/proj/git/git target/git
+docker rm -f git-static-compile || true
+ 
