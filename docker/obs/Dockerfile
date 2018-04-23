@@ -22,6 +22,7 @@ RUN apt-get -y install \
 RUN mkdir -p /home/obs
 RUN echo "obs:x:1000:1000:OpenBroadcastSoftware,,,:/home/obs:/bin/bash" >> /etc/passwd
 RUN echo "obs:x:1000:" >> /etc/group
+RUN chown obs:obs -R /home/obs
 
 USER obs
 ENV HOME /home/obs
