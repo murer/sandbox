@@ -26,6 +26,8 @@ RUN ./configure prefix=/home/git/git-static/ CFLAGS="${CFLAGS} -static-libgcc"
 RUN make
 RUN make install
 
+WORKDIR /home/git
+
 RUN tar czf git-static.tar.gz git-static
 
 CMD /bin/bash
