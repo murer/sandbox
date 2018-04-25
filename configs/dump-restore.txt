@@ -1,5 +1,0 @@
-dump -0af sda1-root-level0.dump /dev/sda1
-
-
-/mnt/new-filesystem; restore -rf /some-location/sda1-root-level0.dump.
-
