@@ -32,7 +32,7 @@ class TestSuite {
     this.current = null;
     this.running = [].concat(this.cases);
     this._next(() => {
-      console.log('Done')
+      console.log('SUCCESS')
     });
   }
 
