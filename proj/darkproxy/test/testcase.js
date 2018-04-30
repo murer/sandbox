@@ -42,9 +42,9 @@ class TestSuite {
       return;
     }
     this.current = this.running.shift();
-    console.log(`TestCase [${this.current.constructor.name}] started`);
+    //console.log(`TestCase [${this.current.constructor.name}] started`);
     this.current.start(() => {
-      console.log(`TestCase [${this.current.constructor.name}] ended`);
+      //console.log(`TestCase [${this.current.constructor.name}] ended`);
       this._next(end);
     });
   }
@@ -68,7 +68,7 @@ class TestCase {
     this.current = this.running.shift();
     console.log(`Test [${this.constructor.name}.${this.current}] started`);
     this[this.current](() => {
-      console.log(`Test [${this.constructor.name}.${this.current}] ended`);
+      //console.log(`Test [${this.constructor.name}.${this.current}] ended`);
       this._next(() => {
         end();
       });
