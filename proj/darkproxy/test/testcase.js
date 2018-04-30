@@ -1,4 +1,21 @@
 
+class TestUtil {
+
+  static getTestMethodNames(clazz) {
+    let names = {};
+    do {
+      Object.getOwnPropertyNames(clazz).forEach(name => {
+        if(name.startsWith('test')) {
+          names[name] = true;
+        }
+      });
+      clazz = Object.getPrototypeOf(clazz);
+    } while(clazz instanceof TestCase);
+    return Object.keys(names);
+  }
+
+}
+
 class TestSuite {
 
   constructor() {
@@ -12,26 +29,50 @@ class TestSuite {
   }
 
   start() {
+    this.current = null;
     this.running = [].concat(this.cases);
-    if(this.running.length) {
-      this.current = this.running.shift();
-      this.current.start();
+    this._next(() => {
+      console.log('Done')
+    });
+  }
+
+  _next(end) {
+    if(!this.running.length) {
+      end();
+      return;
     }
+    this.current = this.running.shift();
+    console.log(`TestCase [${this.current.constructor.name}] started`);
+    this.current.start(() => {
+      console.log(`TestCase [${this.current.constructor.name}] ended`);
+      this._next(end);
+    });
   }
 
 }
 
 class TestCase {
 
-  start() {
+  start(end) {
+    this.current = null;
     let proto = Object.getPrototypeOf(this);
-    Object.getOwnPropertyNames(proto).forEach(name => {
-      if(name.startsWith('test')) {
-        this[name](() => {
+    this.running = TestUtil.getTestMethodNames(proto);
+    this._next(end);
+  }
 
-        });
-      }
-    })
+  _next(end) {
+    if(!this.running.length) {
+      end();
+      return;
+    }
+    this.current = this.running.shift();
+    console.log(`Test [${this.constructor.name}.${this.current}] started`);
+    this[this.current](() => {
+      console.log(`Test [${this.constructor.name}.${this.current}] ended`);
+      this._next(() => {
+        end();
+      });
+    });
   }
 
 }
