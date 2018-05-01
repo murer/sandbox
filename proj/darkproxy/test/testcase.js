@@ -1,4 +1,9 @@
 
+process.on('unhandledRejection', (reason, p) => {
+  console.log('FAIL', reason);
+  process.exit(1);
+});
+
 class TestUtil {
 
   static getTestMethodNames(clazz) {

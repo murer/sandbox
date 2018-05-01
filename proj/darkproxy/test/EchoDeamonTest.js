@@ -1,18 +1,24 @@
 const suite = require('./testcase').suite;
 const TestCase = require('./testcase').TestCase;
 const assert = require('assert');
-const EchoDeamin = require('../src/Deamon').EchoDeamon;
+const EchoDeamon = require('../src/EchoDeamon').EchoDeamon;
 
 class EchoDeamonTest extends TestCase {
 
-  testSimple(end) {
-    //assert.fail('fail')
-    end();
+  testDeamon(end) {
+    let deamon = new EchoDeamon();
+    deamon.start(0).then((port) => {
+      assert.ok(port > 1024);
+      deamon.stop().then(() => {
+        end();
+      }).catch((err) => {
+        assert.fail(err);
+      });
+    }).catch((err) => {
+      assert.fail(err);
+    });
   }
 
-  testTwice(end) {
-    this.testSimple(end);
-  }
 
 }
 

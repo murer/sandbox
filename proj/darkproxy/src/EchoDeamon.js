@@ -39,8 +39,12 @@ class EchoDeamon {
     this.server = net.createServer((c) => {
       this._onConnection(c);
     });
-    this.server.listen(port, () => {
-      console.log(`Listening ${this.server.address().port}`);
+    return new Promise((r, e) => {
+      this.server.listen(port, () => {
+        let localPort = this.server.address().port;
+        console.log(`Listening ${localPort}`);
+        r(localPort);
+      });
     });
   }
 
@@ -53,8 +57,11 @@ class EchoDeamon {
     if(!this.connections) {
         return;
     }
-    this.server.close(() => {
-      console.log('Stopped');
+    return new Promise((r, e) => {
+      this.server.close(() => {
+        console.log('Stopped');
+        r();
+      });
     });
   }
 
@@ -81,3 +88,5 @@ function main() {
 if (require.main === module) {
     main();
 }
+
+exports.EchoDeamon = EchoDeamon;
