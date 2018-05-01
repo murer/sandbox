@@ -1,6 +1,14 @@
 
 const net = require('net');
 
+class Connection {
+
+  constructor(conn) {
+      this.conn = conn;
+  }
+
+}
+
 class EchoDeamon {
 
   constructor() {
@@ -22,7 +30,7 @@ class EchoDeamon {
   }
 
   _onConnection(c) {
-    this.connections.push(c);
+    this.connections.push(new Connection(c));
     console.log('client connect');
     c.on('error', () => {
       console.log('client error');
@@ -49,7 +57,7 @@ class EchoDeamon {
   kill() {
     this.connections.forEach((c, i) => {
       console.log(`Killing ${i}`);
-      c.destroy();
+      c.conn.destroy();
     });
   }
 
