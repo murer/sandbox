@@ -2,6 +2,7 @@ const suite = require('./testcase').suite;
 const TestCase = require('./testcase').TestCase;
 const assert = require('assert');
 const EchoDeamon = require('../src/EchoDeamon').EchoDeamon;
+const net = require('net');
 
 class EchoDeamonTest extends TestCase {
 
@@ -9,13 +10,15 @@ class EchoDeamonTest extends TestCase {
     let deamon = new EchoDeamon();
     deamon.start(0).then((port) => {
       assert.ok(port > 1024);
-      deamon.stop().then(() => {
-        end();
-      }).catch((err) => {
-        assert.fail(err);
+      let client = net.createConnection(port, 'localhost', (c) => {
+        client.end('test');
       });
-    }).catch((err) => {
-      assert.fail(err);
+      client.on('data', (data) => {
+        assert.equal(data, 'test');
+        deamon.stop().then(() => {
+          end();
+        });
+      });
     });
   }
 
