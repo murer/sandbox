@@ -7,10 +7,8 @@ class TcpConn {
       let ret = new TcpConn();
       ret.buffer = Buffer.from([]);
       ret.state = 'CREATED';
-      ret.maxBufferSize = 16*1024;
       ret.socket = net.connect(port, host, () => {
         ret.state = 'CONNECTED';
-        //ret.socket.resume();
         resolve(ret);
       });
       console.log('readableHighWaterMark', ret.socket.readableHighWaterMark)
@@ -22,27 +20,16 @@ class TcpConn {
         console.log('error', err);
       });
 
+      /*
       ret.socket.on('end', () => {
         console.log('connection end');
       });
+      */
 
       ret.socket.on('close', (hasError) => {
         console.log('connection close', hasError);
         ret.state = 'CLOSED';
       });
-
-      //ret.socket.pause();
-
-      /*
-      ret.socket.on('data', (data) => {
-        console.log('internal data', data.length, ret.buffer.length + data.length);
-        ret.buffer = Buffer.concat([ret.buffer, data]);
-        if(ret.buffer.length >= ret.maxBufferSize) {
-          console.log('pause')
-          ret.socket.pause();
-        }
-      });
-      */
 
     });
   }
@@ -53,7 +40,7 @@ class TcpConn {
       this.socket.write(data);
       setTimeout(() => {
         resolve();
-      }, 500);
+      }, 0);
     });
   }
 
@@ -69,6 +56,13 @@ class TcpConn {
           console.log('reading closed socket');
           return null;
         }
+        if(!data) {
+          this.socket.once('readable', async () => {
+            console.log('readable');
+            resolve(await this.read(max));
+          });
+          return;
+        }
         console.log('internal data', data.length, max);
         if(data.length < max) {
           return resolve(data);
@@ -78,7 +72,7 @@ class TcpConn {
         console.log('unshift', remaining.length);
         this.socket.unshift(remaining);
         resolve(ret);
-      }, 500);
+      }, 0);
       /*
       console.log('check resume', max, this.buffer.length, this.socket.isPaused());
       if(max > this.buffer.length) {
@@ -102,6 +96,16 @@ class TcpConn {
       console.log('reading', max, ret.length, this.buffer.length);
       resolve(ret);
       */
+    });
+  }
+
+  async end(data) {
+    return new Promise((resolve, reject) => {
+      console.log('write end', data, this.socket.allowHalfOpen);
+      this.socket.end(data);
+      setTimeout(() => {
+        resolve();
+      }, 0);
     });
   }
 
@@ -131,6 +135,8 @@ async function main(args) {
   console.log(`connected ${conn}`);
   //await conn.write('01234');
   //await conn.write('56789');
+
+  /*
   while(true) {
     let data = await conn.read(10000);
     if(!data) {
@@ -139,6 +145,16 @@ async function main(args) {
     console.log('read', data.length, conn.socket.bufferLength);
     await sleep(1000);
   }
+  */
+
+  console.log('data1', await conn.read(3));
+  await conn.end();
+  console.log('data2', await conn.read(3));
+  console.log('data3', await conn.read(10));
+  console.log('data4', await conn.read(10));
+  console.log('data5', await conn.read(10));
+  console.log('data6', await conn.read(10));
+
   console.log('done');
 }
 
