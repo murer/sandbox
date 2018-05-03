@@ -49,6 +49,15 @@ class TcpServer {
     });
   }
 
+  async waitFor() {
+    return new Promise((resolve, reject) => {
+      console.log('waitFor')
+      this.server.once('close', () => {
+        resolve();
+      });
+    });
+  }
+
   toString() {
     return `${this.socket.localAddress}:${this.socket.localPort}-${this.socket.remoteAddress}:${this.socket.remotePort}`;
   }
@@ -69,10 +78,14 @@ async function main(args) {
   console.log('args', args);
 
   let server = await TcpServer.start(args[2]);
-  await sleep(3000);
-  await server.close();
 
-  console.log('done');
+  setTimeout(() => { server.close(); }, 3000);
+
+  await server.waitFor();
+
+  //await sleep(3000);
+  //await server.close();
+
 }
 
 if (require.main === module) {
