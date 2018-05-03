@@ -28,11 +28,15 @@ class TcpServer {
 
   _onConnected(socket) {
     let socketId = `${socket.localAddress}:${socket.localPort}-${socket.remoteAddress}:${socket.remotePort}`;
-    console.log('start conn', socketId);
+    console.log('client connected', socketId);
     if(this.connections[socketId]) {
       throw 'wrong ' + socketId;
     }
     this.connections[socketId] = socket;
+    socket.once('close', () => {
+      console.log('client disconnected', socketId);
+      delete(this.connections[socketId]);
+    });
     socket.pipe(socket);
   }
 
@@ -66,7 +70,7 @@ async function main(args) {
 
   let server = await TcpServer.start(args[2]);
   await sleep(3000);
-  //await server.close();
+  await server.close();
 
   console.log('done');
 }
