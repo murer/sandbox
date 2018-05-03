@@ -34,7 +34,7 @@ class EchoDeamon {
     if(this.connections) {
       throw 'Server has already started';
     }
-    this.connections = [];
+    this.connections = {};
 
     this.server = net.createServer((c) => {
       this._onConnection(c);
