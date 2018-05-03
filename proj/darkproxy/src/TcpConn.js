@@ -1,5 +1,6 @@
 const net = require('net');
 const util = require('util');
+const yld = util.promisify(setImmediate);
 
 class TcpConn {
   static connect(host, port) {
@@ -35,44 +36,43 @@ class TcpConn {
   }
 
   async write(data) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       console.log('write', data);
       this.socket.write(data);
-      setTimeout(() => {
-        resolve();
-      }, 0);
+      await yld();
+      resolve();
     });
   }
 
   async read(max) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if(max === 0) {
-          return resolve(Buffer.from([]));
-        }
-        let data = this.socket.read();
-        console.log('internal read', max, data, this.state);
-        if(!data && this.state === 'CLOSED') {
-          console.log('reading closed socket');
-          return null;
-        }
-        if(!data) {
-          this.socket.once('readable', async () => {
-            console.log('readable');
-            resolve(await this.read(max));
-          });
-          return;
-        }
-        console.log('internal data', data.length, max);
-        if(data.length < max) {
-          return resolve(data);
-        }
-        let ret = data.slice(0, max);
-        let remaining = data.slice(max, data.length);
-        console.log('unshift', remaining.length);
-        this.socket.unshift(remaining);
-        resolve(ret);
-      }, 0);
+    return new Promise(async (resolve, reject) => {
+      await yld();
+
+      if(max === 0) {
+        return resolve(Buffer.from([]));
+      }
+      let data = this.socket.read();
+      console.log('internal read', max, data, this.state);
+      if(!data && this.state === 'CLOSED') {
+        console.log('reading closed socket');
+        return null;
+      }
+      if(!data) {
+        this.socket.once('readable', async () => {
+          console.log('readable');
+          resolve(await this.read(max));
+        });
+        return;
+      }
+      console.log('internal data', data.length, max);
+      if(data.length < max) {
+        return resolve(data);
+      }
+      let ret = data.slice(0, max);
+      let remaining = data.slice(max, data.length);
+      console.log('unshift', remaining.length);
+      this.socket.unshift(remaining);
+      resolve(ret);
       /*
       console.log('check resume', max, this.buffer.length, this.socket.isPaused());
       if(max > this.buffer.length) {
@@ -100,12 +100,11 @@ class TcpConn {
   }
 
   async end(data) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       console.log('write end', data, this.socket.allowHalfOpen);
       this.socket.end(data);
-      setTimeout(() => {
-        resolve();
-      }, 0);
+      await yld();
+      resolve();
     });
   }
 
@@ -116,13 +115,7 @@ class TcpConn {
 
 async function main(args) {
 
-  async function sleep(time) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve();
-      }, time);
-    });
-  }
+  const sleep = util.promisify(setTimeout);
 
   process.on('unhandledRejection', (reason, p) => {
     console.log('FAIL', reason);
@@ -133,20 +126,22 @@ async function main(args) {
 
   let conn = await TcpConn.connect(args[2], args[3]);
   console.log(`connected ${conn}`);
-  //await conn.write('01234');
-  //await conn.write('56789');
 
-  /*
+  await conn.write('01234');
+  await conn.write('56789');
+
   while(true) {
-    let data = await conn.read(10000);
+    conn.write('123')
+    let data = await conn.read(3);
     if(!data) {
       break;
     }
     console.log('read', data.length, conn.socket.bufferLength);
     await sleep(1000);
   }
-  */
 
+
+  /*
   console.log('data1', await conn.read(3));
   await conn.end();
   console.log('data2', await conn.read(3));
@@ -154,6 +149,7 @@ async function main(args) {
   console.log('data4', await conn.read(10));
   console.log('data5', await conn.read(10));
   console.log('data6', await conn.read(10));
+  */
 
   console.log('done');
 }
