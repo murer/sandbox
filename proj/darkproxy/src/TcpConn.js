@@ -12,6 +12,7 @@ class TcpConn {
         ret.state = 'CONNECTED';
         resolve(ret);
       });
+      ret.socket.setTimeout(7000);
       console.log('readableHighWaterMark', ret.socket.readableHighWaterMark)
 
       ret.socket.on('error', (err) => {
@@ -19,17 +20,20 @@ class TcpConn {
           return reject(err);
         }
         console.log('error', err);
+        this.err = err;
       });
 
-      /*
-      ret.socket.on('end', () => {
-        console.log('connection end');
+      ret.socket.on('timeout', () => {
+        console.log('timeout');
+        ret.end();
       });
-      */
 
       ret.socket.on('close', (hasError) => {
         console.log('connection close', hasError);
         ret.state = 'CLOSED';
+        if(!hasError) {
+          this.err = null;
+        }
       });
 
     });
@@ -73,29 +77,7 @@ class TcpConn {
       console.log('unshift', remaining.length);
       this.socket.unshift(remaining);
       resolve(ret);
-      /*
-      console.log('check resume', max, this.buffer.length, this.socket.isPaused());
-      if(max > this.buffer.length) {
-        console.log('resume');
-        this.socket.resume();
-      }
-      max = Math.min(this.buffer.length, max);
-      console.log('bufferSize', this.socket.bufferSize, this.buffer.length);
-      if(max === 0 && !this.socket.bufferSize && this.state === 'CLOSED') {
-        resolve(null);
-        return;
-      }
-      if(max === 0) {
-        setTimeout(() => {
-          resolve(Buffer.from([]));
-        }, 500);
-        return;
-      }
-      let ret = this.buffer.slice(0, max);
-      this.buffer = this.buffer.slice(max, this.buffer.length);
-      console.log('reading', max, ret.length, this.buffer.length);
-      resolve(ret);
-      */
+
     });
   }
 
@@ -127,19 +109,23 @@ async function main(args) {
   let conn = await TcpConn.connect(args[2], args[3]);
   console.log(`connected ${conn}`);
 
-  await conn.write('01234');
-  await conn.write('56789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
+  await conn.write('0123456789');
 
   while(true) {
-    conn.write('123')
     let data = await conn.read(3);
     if(!data) {
       break;
     }
     console.log('read', data.length, conn.socket.bufferLength);
-    await sleep(1000);
+    //await sleep(1000);
   }
-
 
   /*
   console.log('data1', await conn.read(3));
@@ -151,7 +137,7 @@ async function main(args) {
   console.log('data6', await conn.read(10));
   */
 
-  console.log('done');
+  console.log('done', conn.err);
 }
 
 if (require.main === module) {
