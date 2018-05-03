@@ -28,6 +28,14 @@ class TcpConn {
         ret.end();
       });
 
+      ret.socket.on('drain', () => {
+        console.log('drain');
+      });
+
+      ret.socket.on('lookup', (err, address, family, host) => {
+        console.log('lookup', !!err, address, family, host);
+      });
+
       ret.socket.on('close', (hasError) => {
         console.log('connection close', hasError);
         ret.state = 'CLOSED';
@@ -109,6 +117,7 @@ async function main(args) {
   let conn = await TcpConn.connect(args[2], args[3]);
   console.log(`connected ${conn}`);
 
+  /*
   await conn.write('0123456789');
   await conn.write('0123456789');
   await conn.write('0123456789');
@@ -117,6 +126,7 @@ async function main(args) {
   await conn.write('0123456789');
   await conn.write('0123456789');
   await conn.write('0123456789');
+  */
 
   while(true) {
     let data = await conn.read(3);
@@ -124,7 +134,7 @@ async function main(args) {
       break;
     }
     console.log('read', data.length, conn.socket.bufferLength);
-    //await sleep(1000);
+    await sleep(1000);
   }
 
   /*
