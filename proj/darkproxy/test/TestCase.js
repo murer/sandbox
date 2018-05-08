@@ -32,7 +32,6 @@ class TestSuite {
   }
   async execute() {
     for(let testcase of this.testcases) {
-      console.log(`TestCase [${testcase.constructor.name}] started`);
       await testcase.execute();
     }
     console.log('Suite SUCCESS');
@@ -41,6 +40,7 @@ class TestSuite {
 
 class TestCase {
   async execute() {
+    console.log(`TestCase [${this.constructor.name}] started`);
     for(let testMethodName of this.testMethodNames) {
       console.log(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
       await this[testMethodName];
