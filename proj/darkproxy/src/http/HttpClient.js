@@ -5,6 +5,7 @@ class HttpConn {
   constructor(req, resp) {
     this.req = req;
     this.resp = resp;
+    this.id = `${this.req.req.socket.localAddress}:${this.req.req.socket.localPort}-${this.req.req.socket.remoteAddress}:${this.req.req.socket.remotePort}`
   }
 
   static from(req, resp) {
@@ -12,7 +13,7 @@ class HttpConn {
   }
 
   toString() {
-    return `${this.req} ${this.resp}`;
+    return `${this.id} ${this.req} ${this.resp}`;
   }
 
 }
