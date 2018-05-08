@@ -1,2 +1,0 @@
-
-require('./TestCase').suite.start();
