@@ -26,6 +26,8 @@ class TestSuite {
     this.testcases = [];
   }
   add(testcase) {
+    let proto = Object.getPrototypeOf(testcase);
+    testcase.testMethodNames = TestUtil.getTestMethodNames(proto);
     this.testcases.push(testcase);
   }
   async execute() {
@@ -39,8 +41,6 @@ class TestSuite {
 
 class TestCase {
   async execute() {
-    let proto = Object.getPrototypeOf(this);
-    this.testMethodNames = TestUtil.getTestMethodNames(proto);
     for(let testMethodName of this.testMethodNames) {
       console.log(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
       await this[testMethodName];
