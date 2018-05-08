@@ -29,7 +29,7 @@ class HttpServer {
   }
 
   async _onRequest(conn) {
-    console.log(`Reimplement _onRequest: ${conn}`)
+    console.log(`_onRequest: ${conn}`)
     conn.resp.resp.statusCode = 503;
     conn.resp.resp.setHeader('Content-Type', 'text/plain; charset=UTF-8')
     conn.resp.resp.end('Implement it\r\n');
