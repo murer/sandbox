@@ -43,7 +43,7 @@ class TestCase {
     console.log(`TestCase [${this.constructor.name}] started`);
     for(let testMethodName of this.testMethodNames) {
       console.log(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
-      await this[testMethodName];
+      await this[testMethodName]();
     }
   }
 }

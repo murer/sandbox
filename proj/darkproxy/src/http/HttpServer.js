@@ -13,7 +13,8 @@ class HttpServer {
       this.server = http.createServer();
       this.server.listen(this.opts, () => {
         this.server.removeListener('error', reject);
-        console.log(`Listening ${this.server.address().port}`);
+        this.port = this.server.address().port;
+        console.log(`Listening ${this.port}`);
         resolve();
       });
       this.server.on('error', reject);
@@ -34,6 +35,15 @@ class HttpServer {
     conn.resp.resp.statusCode = 503;
     conn.resp.resp.setHeader('Content-Type', 'text/plain; charset=UTF-8')
     conn.resp.resp.end('Service Unavailable\r\n');
+  }
+
+  stop() {
+    return new Promise((resolve, reject) => {
+      this.server.close(() => {
+        console.log(`HttpServer: ${this.port}`);
+        resolve();
+      });
+    });
   }
 
 }
