@@ -1,6 +1,13 @@
 const http = require('http');
 const hc = require('./HttpClient');
 
+class HttpProxyConnection {
+  constructor(req, resp) {
+    this.req = req;
+    this.resp = resp;
+  }
+}
+
 class HttpProxy {
 
   static start(opts) {
@@ -13,12 +20,15 @@ class HttpProxy {
       });
       ret.server.on('error', reject);
       ret.server.on('request', async (req, resp) => {
-        await ret.onRequest(new hc.HttpRequest(req), new hc.HttpResponse(resp));
+        let conn = new HttpProxyConnection(new hc.HttpRequest(req), new hc.HttpResponse(resp));
+        ret.onRequest(conn);
       });
     });
   }
 
-  async onRequest(req, resp) {
+  async onRequest(conn) {
+    let req = conn.req;
+    let resp = conn.resp;
     console.log(`HttpProxy in request: ${req}`);
     let target = req.req.headers.host.split(':');
     let opts = {
