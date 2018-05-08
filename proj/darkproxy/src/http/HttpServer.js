@@ -32,7 +32,7 @@ class HttpServer {
     console.log(`HttpServer request: ${conn}`)
     conn.resp.resp.statusCode = 503;
     conn.resp.resp.setHeader('Content-Type', 'text/plain; charset=UTF-8')
-    conn.resp.resp.end('Implement it\r\n');
+    conn.resp.resp.end('Service Unavailable\r\n');
   }
 
 }
