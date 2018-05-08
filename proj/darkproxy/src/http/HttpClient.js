@@ -7,6 +7,10 @@ class HttpConn {
     this.resp = resp;
   }
 
+  static from(req, resp) {
+    return new HttpConn(new HttpRequest(req), new HttpResponse(resp));
+  }
+
   toString() {
     return `${this.req} ${this.resp}`;
   }

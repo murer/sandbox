@@ -13,7 +13,7 @@ class HttpServer {
       });
       ret.server.on('error', reject);
       ret.server.on('request', async (req, resp) => {
-        let conn = new hc.HttpConn(new hc.HttpRequest(req), new hc.HttpResponse(resp));
+        let conn = hc.HttpConn.from(req, resp);
         await ret._onRequest(conn);
         console.log('DONE')
       });
