@@ -18,12 +18,17 @@ class HttpResponse {
     this.resp = resp;
   }
 
+  toString() {
+    return `HTTP/${this.resp.httpVersion} ${this.resp.statusCode} ${this.statusMessage}`;
+  }
+
 }
 
 class HttpClient {
 
   static request(opts) {
     let client = new HttpClient();
+    client.opts = opts;
     client.req = http.request(opts);
     return client;
   }
@@ -35,6 +40,10 @@ class HttpClient {
       });
       this.req.end(data);
     });
+  }
+
+  toString() {
+    return `${this.opts.method} ${this.opts.hostname}:${this.opts.port} ${this.opts.path}`;
   }
 
 }
