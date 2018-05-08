@@ -15,13 +15,12 @@ class HttpServer {
       ret.server.on('error', reject);
       ret.server.on('request', async (req, resp) => {
         let conn = hc.HttpConn.from(req, resp);
-        if(this.conns[conn.id]) {
+        if(ret.conns[conn.id]) {
           return reject(`connection id failed: ${conn}`);
         }
-        this.conns[conn.id] = conn;
+        ret.conns[conn.id] = conn;
         await ret._onRequest(conn);
-        delete(this.conns[conn.id]);
-        console.log('DONE')
+        delete(ret.conns[conn.id]);
       });
     });
   }
