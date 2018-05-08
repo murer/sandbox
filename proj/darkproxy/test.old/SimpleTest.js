@@ -5,22 +5,25 @@ const assert = require('assert');
 
 class SimpleTest extends TestCase {
 
-  async testSimple(end) {
+  testSimple(end) {
     //assert.fail('fail')
+    end();
   }
 
-  async testTwice(end) {
-    await this.testSimple(end);
+  testTwice(end) {
+    this.testSimple(end);
   }
 
 }
 
 class SimpleTwiceTest extends SimpleTest {
-  async testSimple(end) {
+  testSimple(end) {
+    //assert.fail('fail')
+    end();
   }
 
-  async testThrice(end) {
-    await this.testTwice(end);
+  testThrice(end) {
+    this.testTwice(end);
   }
 }
 

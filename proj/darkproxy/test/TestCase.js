@@ -22,64 +22,30 @@ class TestUtil {
 }
 
 class TestSuite {
-
   constructor() {
-    this.cases = [];
-    this.running = [];
-    this.current = null;
+    this.testcases = [];
   }
-
-  add(testCase) {
-    this.cases.push(testCase);
+  add(testcase) {
+    this.testcases.push(testcase);
   }
-
-  start() {
-    this.current = null;
-    this.running = [].concat(this.cases);
-    this._next(() => {
-      console.log('SUCCESS')
-    });
-  }
-
-  _next(end) {
-    if(!this.running.length) {
-      end();
-      return;
+  async execute() {
+    for(let testcase of this.testcases) {
+      console.log(`TestCase [${testcase.constructor.name}] started`);
+      await testcase.execute();
     }
-    this.current = this.running.shift();
-    //console.log(`TestCase [${this.current.constructor.name}] started`);
-    this.current.start(() => {
-      //console.log(`TestCase [${this.current.constructor.name}] ended`);
-      this._next(end);
-    });
+    console.log('Suite SUCCESS');
   }
-
 }
 
 class TestCase {
-
-  start(end) {
-    this.current = null;
+  async execute() {
     let proto = Object.getPrototypeOf(this);
-    this.running = TestUtil.getTestMethodNames(proto);
-    this._next(end);
-  }
-
-  _next(end) {
-    if(!this.running.length) {
-      end();
-      return;
+    this.testMethodNames = TestUtil.getTestMethodNames(proto);
+    for(let testMethodName of this.testMethodNames) {
+      console.log(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
+      await this[testMethodName];
     }
-    this.current = this.running.shift();
-    console.log(`Test [${this.constructor.name}.${this.current}] started`);
-    this[this.current](() => {
-      //console.log(`Test [${this.constructor.name}.${this.current}] ended`);
-      this._next(() => {
-        end();
-      });
-    });
   }
-
 }
 
 exports.TestCase = TestCase;

@@ -1,2 +1,2 @@
 
-require('./TestCase').suite.start();
+require('./TestCase').suite.execute();
