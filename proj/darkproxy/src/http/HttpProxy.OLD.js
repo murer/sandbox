@@ -1,10 +1,33 @@
 const http = require('http');
 const hc = require('./HttpClient');
-const HttpServer = require('./HttpServer').HttpServer;
 
-class HttpProxy extends HttpServer {
+class HttpProxyConnection {
+  constructor(req, resp) {
+    this.req = req;
+    this.resp = resp;
+  }
+}
 
-  _onRequest(conn) {
+class HttpProxy {
+
+  static start(opts) {
+    return new Promise((resolve, reject) => {
+      let ret = new HttpProxy();
+      ret.server = http.createServer();
+      ret.server.listen(opts, () => {
+        ret.server.removeListener('error', reject);
+        resolve(ret);
+      });
+      ret.server.on('error', reject);
+      ret.server.on('request', async (req, resp) => {
+        let conn = new HttpProxyConnection(new hc.HttpRequest(req), new hc.HttpResponse(resp));
+        await ret.onRequest(conn);
+        console.log('DONE')
+      });
+    });
+  }
+
+  onRequest(conn) {
     return new Promise(async (resolve, reject) => {
       let req = conn.req;
       let resp = conn.resp;
@@ -22,8 +45,8 @@ class HttpProxy extends HttpServer {
       let clientResp = await clientReq.end()
       console.log(`HttpProxy in reponse: ${clientResp}`);
 
-      resp.resp.statusCode = clientResp.resp.statusCode;
-      resp.resp.statusMessage = clientResp.resp.statusMessage;
+      resp.statusCode = clientResp.resp.statusCode;
+      resp.statusMessage = clientResp.resp.statusMessage;
       for(let i = 0; i < clientResp.resp.rawHeaders.length; i+=2) {
         let name = clientResp.resp.rawHeaders[i];
         let value = clientResp.resp.rawHeaders[i+1];
@@ -40,8 +63,7 @@ class HttpProxy extends HttpServer {
 }
 
 const main = async () => {
-  let server = new HttpProxy({port: 5000});
-  await server.start();
+  let proxy = await HttpProxy.start({port: 5000});
 }
 
 if (require.main === module) {

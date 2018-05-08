@@ -37,7 +37,7 @@ class HttpResponse {
   }
 
   toString() {
-    return `HTTP/${this.resp.httpVersion} ${this.resp.statusCode} ${this.statusMessage}`;
+    return `HTTP/${this.resp.httpVersion} ${this.resp.statusCode} ${this.resp.statusMessage}`;
   }
 
 }

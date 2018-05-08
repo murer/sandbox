@@ -38,7 +38,7 @@ class HttpServer {
 }
 
 const main = async () => {
-  let server = new HttpServer({port: 5000});
+  let server = new HttpServer({port: 5001});
   await server.start();
 }
 
