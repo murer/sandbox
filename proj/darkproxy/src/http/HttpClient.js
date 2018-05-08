@@ -1,5 +1,17 @@
 const http = require('http');
 
+class HttpRequest {
+
+  constructor(req) {
+    this.req = req;
+  }
+
+  toString() {
+    return `${this.req.method} ${this.req.headers.host} ${this.req.url}`;
+  }
+
+}
+
 class HttpResponse {
 
   constructor(resp) {
@@ -43,3 +55,7 @@ if (require.main === module) {
   });
   main(process.argv);
 }
+
+exports.HttpRequest = HttpRequest;
+exports.HttpResponse = HttpResponse;
+exports.HttpClient = HttpClient;

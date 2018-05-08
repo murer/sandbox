@@ -1,4 +1,5 @@
 const http = require('http');
+const hc = require('./HttpClient');
 
 class HttpProxy {
 
@@ -11,15 +12,16 @@ class HttpProxy {
         resolve(ret);
       });
       ret.server.on('error', reject);
-      ret.server.on('request', (req, resp) => {
-        ret.onRequest(req, resp);
+      ret.server.on('request', async (req, resp) => {
+        await ret.onRequest(new hc.HttpRequest(req), new hc.HttpResponse(resp));
       });
     });
   }
 
   async onRequest(req, resp) {
-    resp.statusCode = 200;
-    resp.end('OK');
+    console.log(`HttpProxy request: ${req}`)
+    resp.resp.statusCode = 200;
+    resp.resp.end('OK');
   }
 
 }
