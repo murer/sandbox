@@ -1,5 +1,18 @@
 const http = require('http');
 
+class HttpConn {
+
+  constructor(req, resp) {
+    this.req = req;
+    this.resp = resp;
+  }
+
+  toString() {
+    return `${this.req} ${this.resp}`;
+  }
+
+}
+
 class HttpRequest {
 
   constructor(req) {
@@ -67,4 +80,5 @@ if (require.main === module) {
 
 exports.HttpRequest = HttpRequest;
 exports.HttpResponse = HttpResponse;
+exports.HttpConn = HttpConn;
 exports.HttpClient = HttpClient;
