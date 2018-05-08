@@ -3,24 +3,27 @@ const hc = require('./HttpClient');
 
 class HttpServer {
 
-  static start(opts) {
+  constructor(opts) {
+    this.opts = opts;
+  }
+
+  start() {
     return new Promise((resolve, reject) => {
-      let ret = new HttpServer();
-      ret.conns = {};
-      ret.server = http.createServer();
-      ret.server.listen(opts, () => {
-        ret.server.removeListener('error', reject);
-        resolve(ret);
+      this.conns = {};
+      this.server = http.createServer();
+      this.server.listen(this.opts, () => {
+        this.server.removeListener('error', reject);
+        resolve();
       });
-      ret.server.on('error', reject);
-      ret.server.on('request', async (req, resp) => {
+      this.server.on('error', reject);
+      this.server.on('request', async (req, resp) => {
         let conn = hc.HttpConn.from(req, resp);
-        if(ret.conns[conn.id]) {
+        if(this.conns[conn.id]) {
           return reject(`connection id failed: ${conn}`);
         }
-        ret.conns[conn.id] = conn;
-        await ret._onRequest(conn);
-        delete(ret.conns[conn.id]);
+        this.conns[conn.id] = conn;
+        await this._onRequest(conn);
+        delete(this.conns[conn.id]);
       });
     });
   }
@@ -35,7 +38,8 @@ class HttpServer {
 }
 
 const main = async () => {
-  let proxy = await HttpServer.start({port: 5000});
+  let server = new HttpServer({port: 5000});
+  await server.start();
 }
 
 if (require.main === module) {
