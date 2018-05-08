@@ -52,6 +52,7 @@ class HttpProxy {
       array.push(value);
       resp.resp.setHeader(name, array);
     }
+    console.log(`HttpProxy out response: ${resp}`);
     clientResp.resp.pipe(resp.resp);
   }
 
