@@ -13,6 +13,7 @@ class HttpServer {
       this.server = http.createServer();
       this.server.listen(this.opts, () => {
         this.server.removeListener('error', reject);
+        console.log(`Listening ${this.server.address().port}`);
         resolve();
       });
       this.server.on('error', reject);
