@@ -1,6 +1,6 @@
 
-const suite = require('./testcase').suite;
-const TestCase = require('./testcase').TestCase;
+const suite = require('./TestCase').suite;
+const TestCase = require('./TestCase').TestCase;
 const assert = require('assert');
 
 class SimpleTest extends TestCase {
