@@ -1,3 +1,4 @@
+const LOG = require('../log.js')('HttpServer');
 const http = require('http');
 const hc = require('./HttpClient');
 
@@ -14,7 +15,7 @@ class HttpServer {
       this.server.listen(this.opts, () => {
         this.server.removeListener('error', reject);
         this.port = this.server.address().port;
-        console.log(`Listening ${this.port}`);
+        LOG.info(`Listening ${this.port}`);
         resolve();
       });
       this.server.on('error', reject);
@@ -31,7 +32,7 @@ class HttpServer {
   }
 
   async _onRequest(conn) {
-    console.log(`HttpServer request: ${conn}`)
+    LOG.info(`HttpServer request: ${conn}`)
     conn.resp.resp.statusCode = 503;
     conn.resp.resp.setHeader('Content-Type', 'text/plain; charset=UTF-8')
     conn.resp.resp.end('Service Unavailable\r\n');
@@ -40,7 +41,7 @@ class HttpServer {
   stop() {
     return new Promise((resolve, reject) => {
       this.server.close(() => {
-        console.log(`HttpServer: ${this.port}`);
+        LOG.info(`HttpServer: ${this.port}`);
         resolve();
       });
     });
@@ -55,7 +56,7 @@ const main = async () => {
 
 if (require.main === module) {
   process.on('unhandledRejection', (reason, p) => {
-    console.log('FAIL', reason);
+    LOG.info('FAIL', reason);
     process.exit(1);
   });
   main(process.argv);
