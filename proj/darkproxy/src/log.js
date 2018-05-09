@@ -1,3 +1,4 @@
+const path = require('path');
 
 const target = console;
 
@@ -6,11 +7,12 @@ class Logger {
   static create(name) {
     let ret = new Logger();
     ret.name = name;
+    ret.simpleName = path.basename(ret.name).replace(/.js$/, '');
     return ret;
   }
 
   log(level, args) {
-    target[level.toLowerCase()](`${new Date().toISOString()} ${this.name} [${level}]`, ...args);
+    target[level.toLowerCase()](`${new Date().toISOString()} ${this.simpleName} [${level}]`, ...args);
   }
 
   debug(...args) { return this.log('DEBUG', args); }
