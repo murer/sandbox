@@ -19,6 +19,10 @@ class Logger {
 
 }
 
+const create = (name) => {
+  return Logger.create(name);
+}
+
 const main = async () => {
   let log = Logger.create('abc');
   log.debug('xxxxx', {a:1});
@@ -31,3 +35,5 @@ if (require.main === module) {
   });
   main(process.argv);
 }
+
+module.exports = create;

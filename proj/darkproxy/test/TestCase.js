@@ -1,6 +1,8 @@
 
+const LOG = require('../src/log.js')('TestCase');
+
 process.on('unhandledRejection', (reason, p) => {
-  console.log('FAIL', reason);
+  LOG.info('FAIL', reason);
   process.exit(1);
 });
 
@@ -34,15 +36,15 @@ class TestSuite {
     for(let testcase of this.testcases) {
       await testcase.execute();
     }
-    console.log('Suite SUCCESS');
+    LOG.info('Suite SUCCESS');
   }
 }
 
 class TestCase {
   async execute() {
-    console.log(`TestCase [${this.constructor.name}] started`);
+    LOG.info(`TestCase [${this.constructor.name}] started`);
     for(let testMethodName of this.testMethodNames) {
-      console.log(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
+      LOG.info(`TestMethod [${this.constructor.name}.${testMethodName}] started`);
       await this[testMethodName]();
     }
   }
