@@ -12,7 +12,7 @@ class Logger {
   }
 
   log(level, args) {
-    target[level.toLowerCase()](`${new Date().toISOString()} [${level}] ${this.simpleName}`, ...args);
+    target[level.toLowerCase()](`${new Date().toISOString()} ${this.simpleName} [${level}]`, ...args);
   }
 
   debug(...args) { return this.log('DEBUG', args); }
