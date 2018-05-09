@@ -1,4 +1,4 @@
-const LOG = require('../log.js')(__filename);
+const LOG = require('../Logger.js')(__filename);
 const http = require('http');
 const hc = require('./HttpClient');
 

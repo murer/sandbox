@@ -1,5 +1,5 @@
 
-const LOG = require('../src/log.js')(__filename);
+const LOG = require('../src/Logger.js')(__filename);
 
 process.on('unhandledRejection', (reason, p) => {
   LOG.info('FAIL', reason);
