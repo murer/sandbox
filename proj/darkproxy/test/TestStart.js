@@ -10,7 +10,9 @@ const test = (name) => {
 }
 
 const main = async () => {
+
   test('./SimpleTest');
+
   await suite.execute();
 }
 
