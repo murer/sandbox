@@ -1,6 +1,7 @@
+const { Console } = require('console');
 const path = require('path');
 
-const target = console;
+const target = new Console(process.stderr);
 
 class Logger {
 
