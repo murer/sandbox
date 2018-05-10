@@ -1,7 +1,7 @@
 
-const TestCase = require('./TestCase').TestCase;
+const TestCase = require('../TestCase').TestCase;
 const assert = require('assert');
-const FileHttpServer = require('../src/http/FileHttpServer').TestCase;
+const FileHttpServer = require('../../src/http/FileHttpServer').FileHttpServer;
 
 class FileHttpServerTest extends TestCase {
 
