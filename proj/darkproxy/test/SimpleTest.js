@@ -1,31 +1,28 @@
 
-// const suite = require('./TestCase').suite;
 const TestCase = require('./TestCase').TestCase;
 const assert = require('assert');
 
 class SimpleTest extends TestCase {
 
-  async testSimple(end) {
+  async testSimple() {
     //assert.fail('fail')
   }
 
-  async testTwice(end) {
-    await this.testSimple(end);
+  async testTwice() {
+    await this.testSimple();
   }
 
 }
 
 class SimpleTwiceTest extends SimpleTest {
-  async testSimple(end) {
+
+  async testSimple() {
   }
 
-  async testThrice(end) {
-    await this.testTwice(end);
+  async testThrice() {
+    await this.testTwice();
   }
 }
-
-//suite.add(new SimpleTest());
-//suite.add(new SimpleTwiceTest());
 
 exports.SimpleTest = SimpleTest;
 exports.SimpleTwiceTest = SimpleTwiceTest;
