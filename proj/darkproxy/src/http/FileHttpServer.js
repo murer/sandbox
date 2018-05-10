@@ -1,13 +1,7 @@
 
-class FileHttpServer {
+const { HttpServer } = require('./HttpServer');
 
-  async start() {
-    this.port = 5001;
-  }
-
-  async stop() {
-    
-  }
+class FileHttpServer extends HttpServer {
 
 }
 
