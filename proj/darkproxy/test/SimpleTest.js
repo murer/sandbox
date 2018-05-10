@@ -1,5 +1,5 @@
 
-const suite = require('./TestCase').suite;
+// const suite = require('./TestCase').suite;
 const TestCase = require('./TestCase').TestCase;
 const assert = require('assert');
 
@@ -24,5 +24,8 @@ class SimpleTwiceTest extends SimpleTest {
   }
 }
 
-suite.add(new SimpleTest());
-suite.add(new SimpleTwiceTest());
+//suite.add(new SimpleTest());
+//suite.add(new SimpleTwiceTest());
+
+exports.SimpleTest = SimpleTest;
+exports.SimpleTwiceTest = SimpleTwiceTest;
