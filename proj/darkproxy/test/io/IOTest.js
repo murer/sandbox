@@ -106,7 +106,7 @@ class AsyncWritableTest extends TestCase {
     assert.deepEqual(mem.strings(), [ 'aa', 'bb' ]);
     mem.err = new Error('failed');
     try {
-      await output.write('cc');
+      await output.end('cc');
       assert.fail('err expected');
     } catch(err) {
       assert.deepEqual(mem.strings(), [ 'aa', 'bb' ]);
