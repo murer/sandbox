@@ -1,8 +1,27 @@
 const TestCase = require('../TestCase').TestCase;
 const assert = require('assert');
 
-const { MemoryReadable } = require('./MemoryStream');
+const { MemoryReadable, MemoryWritable } = require('./MemoryStream');
 const { AsyncReadable } = require('../../src/io/AsyncStream');
+
+class MemoryWritableTest extends TestCase {
+
+  testWrite() {
+    return new Promise((resolve, reject) => {
+      let output = new MemoryWritable();
+      output.write('aa', () => {
+        output.write('bb', () => {
+          output.end('cc', () => {
+            let result = output.chunks.map(chunk => chunk.toString('utf8'));
+            assert.deepEqual(result, ['aa', 'bb', 'cc']);
+            resolve();
+          });
+        });
+      });
+    });
+  }
+
+}
 
 class MemoryReadableTest extends TestCase {
 
@@ -73,3 +92,4 @@ class AsyncReadableTest extends TestCase {
 
 exports.MemoryReadableTest = MemoryReadableTest;
 exports.AsyncReadableTest = AsyncReadableTest;
+exports.MemoryWritableTest = MemoryWritableTest;

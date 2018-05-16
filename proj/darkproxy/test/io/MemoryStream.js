@@ -1,4 +1,4 @@
-const { Readable } = require('stream');
+const { Readable, Writable } = require('stream');
 
 class MemoryReadable extends Readable {
 
@@ -21,4 +21,21 @@ class MemoryReadable extends Readable {
 
 }
 
+class MemoryWritable extends Writable {
+
+  constructor() {
+    super();
+    this.chunks = [];
+  }
+
+  _write(chunk, encoding, callback) {
+    setTimeout(() => {
+      this.chunks.push(chunk);
+      setTimeout(callback, 0);
+    }, 0);
+  }
+
+}
+
 exports.MemoryReadable = MemoryReadable;
+exports.MemoryWritable = MemoryWritable;
