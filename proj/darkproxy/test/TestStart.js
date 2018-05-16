@@ -13,6 +13,7 @@ const main = async () => {
 
   test('./SimpleTest');
   test('./http/FileHttpServerTest');
+  test('./io/IOTest');
 
   await suite.execute();
 }
