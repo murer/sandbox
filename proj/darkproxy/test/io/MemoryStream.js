@@ -11,7 +11,11 @@ class MemoryReadable extends Readable {
     if(!this.data.length) {
       return this.push(null);
     }
-    this.push(this.data.shift());
+    let ret = this.data.shift();
+    if(ret === null) {
+      return process.nextTick(() => this.emit('error', new Error('failed')));
+    }
+    this.push(ret);
   }
 
 }

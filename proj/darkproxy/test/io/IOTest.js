@@ -27,6 +27,24 @@ class MemoryReadableTest extends TestCase {
     });
   }
 
+  testError() {
+    return new Promise((resolve, reject) => {
+
+      let input = new MemoryReadable('aa', 'bb', null);
+      let result = [];
+      input.on('data', (data) => {
+        result.push(data);
+      });
+      input.on('error', (err) => {
+        assert.equal(err.message, 'failed');
+        resolve(err);
+      });
+      input.on('end', () => {
+        assert.fail('error expected');
+      });
+    });
+  }
+
 }
 
 class AsyncReadableTest extends TestCase {
