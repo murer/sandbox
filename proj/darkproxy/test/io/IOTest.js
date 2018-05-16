@@ -2,6 +2,7 @@ const TestCase = require('../TestCase').TestCase;
 const assert = require('assert');
 
 const { MemoryReadable } = require('./MemoryStream');
+const { AsyncReadable } = require('../../src/io/AsyncStream');
 
 class MemoryReadableTest extends TestCase {
 
@@ -28,4 +29,13 @@ class MemoryReadableTest extends TestCase {
 
 }
 
+class AsyncReadableTest extends TestCase {
+
+  async testRead() {
+    
+  }
+
+}
+
 exports.MemoryReadableTest = MemoryReadableTest;
+exports.AsyncReadableTest = AsyncReadableTest;
