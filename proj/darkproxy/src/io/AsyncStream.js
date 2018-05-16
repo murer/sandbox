@@ -1,8 +1,16 @@
 
-class AsyncWritable {
+class AsyncStream {
 
-  constructor(output) {
-    this.output = output;
+  constructor(stream) {
+    this.input = stream;
+    this.input.on('end', () => {
+      this.hasEnded = true;
+    });
+    if(this.input.pause) {
+      this.input.pause();
+    }
+
+    this.output = stream;
     this.output.on('error', err => this.err = err);
   }
 
@@ -19,21 +27,6 @@ class AsyncWritable {
 
   async end(chunk, encoding) {
     await this.write(chunk, encoding);
-  }
-
-}
-
-class AsyncReadable {
-
-  constructor(input) {
-    this.input = input;
-    this.input.on('end', () => {
-      this.hasEnded = true;
-    });
-    this.input.on('error', (err) => {
-      this.err = err;
-    });
-    this.input.pause();
   }
 
   read() {
@@ -54,5 +47,4 @@ class AsyncReadable {
 
 }
 
-exports.AsyncReadable = AsyncReadable;
-exports.AsyncWritable = AsyncWritable;
+exports.AsyncStream = AsyncStream;

@@ -2,7 +2,7 @@ const TestCase = require('../TestCase').TestCase;
 const assert = require('assert');
 
 const { MemoryReadable, MemoryWritable } = require('./MemoryStream');
-const { AsyncReadable, AsyncWritable } = require('../../src/io/AsyncStream');
+const { AsyncReadable, AsyncWritable, AsyncStream } = require('../../src/io/AsyncStream');
 
 class MemoryWritableTest extends TestCase {
 
@@ -88,7 +88,7 @@ class AsyncWritableTest extends TestCase {
 
   async testWrite() {
     let mem = new MemoryWritable();
-    let output = new AsyncWritable(mem);
+    let output = new AsyncStream(mem);
     assert.deepEqual(mem.strings(), []);
     await output.write('aa');
     assert.deepEqual(mem.strings(), [ 'aa' ]);
@@ -99,7 +99,7 @@ class AsyncWritableTest extends TestCase {
 
   async testWriteError() {
     let mem = new MemoryWritable();
-    let output = new AsyncWritable(mem);
+    let output = new AsyncStream(mem);
     assert.deepEqual(mem.strings(), []);
     await output.write('aa');
     await output.write('bb');
@@ -118,7 +118,7 @@ class AsyncWritableTest extends TestCase {
 class AsyncReadableTest extends TestCase {
 
   async testRead() {
-    let input = new AsyncReadable(new MemoryReadable('aa', 'bb', 'cc'));
+    let input = new AsyncStream(new MemoryReadable('aa', 'bb', 'cc'));
     assert.equal(await input.read(), 'aa');
     assert.equal(await input.read(), 'bb');
     assert.equal(await input.read(), 'cc');
@@ -127,7 +127,7 @@ class AsyncReadableTest extends TestCase {
   }
 
   async testError() {
-    let input = new AsyncReadable(new MemoryReadable('aa', 'bb', null));
+    let input = new AsyncStream(new MemoryReadable('aa', 'bb', null));
     try {
       assert.equal(await input.read(), 'aa');
       assert.equal(await input.read(), 'bb');
