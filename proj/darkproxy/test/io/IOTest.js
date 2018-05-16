@@ -32,7 +32,12 @@ class MemoryReadableTest extends TestCase {
 class AsyncReadableTest extends TestCase {
 
   async testRead() {
-    
+    let input = new AsyncReadable(new MemoryReadable('aa', 'bb', 'cc'));
+    assert.equal(await input.read(), 'aa');
+    assert.equal(await input.read(), 'bb');
+    assert.equal(await input.read(), 'cc');
+    assert.equal(await input.read(), null);
+    assert.equal(await input.read(), null);
   }
 
 }
