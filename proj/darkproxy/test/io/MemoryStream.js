@@ -30,6 +30,11 @@ class MemoryWritable extends Writable {
 
   _write(chunk, encoding, callback) {
     setTimeout(() => {
+      if(this.err) {
+        return setTimeout(() => {
+          callback(this.err);
+        }, 0);
+      }
       this.chunks.push(chunk);
       setTimeout(callback, 0);
     }, 0);

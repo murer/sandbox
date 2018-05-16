@@ -21,6 +21,26 @@ class MemoryWritableTest extends TestCase {
     });
   }
 
+  testError() {
+    return new Promise((resolve, reject) => {
+      let output = new MemoryWritable();
+      output.on('error', (err) => {
+        assert.equal(err.message, 'failed');
+        resolve();
+      });
+      output.write('aa', () => {
+        output.write('bb', () => {
+          let result = output.chunks.map(chunk => chunk.toString('utf8'));
+          assert.deepEqual(result, ['aa', 'bb' ]);
+          output.err = new Error('failed');
+          output.write('cc', (err) => {
+            assert.equal(err.message, 'failed');
+          });
+        });
+      });
+    });
+  }
+
 }
 
 class MemoryReadableTest extends TestCase {
