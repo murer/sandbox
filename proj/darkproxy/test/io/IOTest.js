@@ -2,7 +2,7 @@ const TestCase = require('../TestCase').TestCase;
 const assert = require('assert');
 
 const { MemoryReadable, MemoryWritable } = require('./MemoryStream');
-const { AsyncReadable } = require('../../src/io/AsyncStream');
+const { AsyncReadable, AsyncWritable } = require('../../src/io/AsyncStream');
 
 class MemoryWritableTest extends TestCase {
 
@@ -12,8 +12,7 @@ class MemoryWritableTest extends TestCase {
       output.write('aa', () => {
         output.write('bb', () => {
           output.end('cc', () => {
-            let result = output.chunks.map(chunk => chunk.toString('utf8'));
-            assert.deepEqual(result, ['aa', 'bb', 'cc']);
+            assert.deepEqual(output.strings(), ['aa', 'bb', 'cc']);
             resolve();
           });
         });
@@ -30,8 +29,7 @@ class MemoryWritableTest extends TestCase {
       });
       output.write('aa', () => {
         output.write('bb', () => {
-          let result = output.chunks.map(chunk => chunk.toString('utf8'));
-          assert.deepEqual(result, ['aa', 'bb' ]);
+          assert.deepEqual(output.strings(), ['aa', 'bb' ]);
           output.err = new Error('failed');
           output.write('cc', (err) => {
             assert.equal(err.message, 'failed');
@@ -86,6 +84,37 @@ class MemoryReadableTest extends TestCase {
 
 }
 
+class AsyncWritableTest extends TestCase {
+
+  async testWrite() {
+    let mem = new MemoryWritable();
+    let output = new AsyncWritable(mem);
+    assert.deepEqual(mem.strings(), []);
+    await output.write('aa');
+    assert.deepEqual(mem.strings(), [ 'aa' ]);
+    await output.write('bb');
+    await output.end('cc');
+    assert.deepEqual(mem.strings(), [ 'aa', 'bb', 'cc' ]);
+  }
+
+  async testWriteError() {
+    let mem = new MemoryWritable();
+    let output = new AsyncWritable(mem);
+    assert.deepEqual(mem.strings(), []);
+    await output.write('aa');
+    await output.write('bb');
+    assert.deepEqual(mem.strings(), [ 'aa', 'bb' ]);
+    mem.err = new Error('failed');
+    try {
+      await output.write('cc');
+      assert.fail('err expected');
+    } catch(err) {
+      assert.deepEqual(mem.strings(), [ 'aa', 'bb' ]);
+    }
+  }
+
+}
+
 class AsyncReadableTest extends TestCase {
 
   async testRead() {
@@ -103,6 +132,7 @@ class AsyncReadableTest extends TestCase {
       assert.equal(await input.read(), 'aa');
       assert.equal(await input.read(), 'bb');
       await input.read();
+      assert.fail('err expected');
     } catch (err) {
       assert.equal(err.message, 'failed');
     }
@@ -113,3 +143,4 @@ class AsyncReadableTest extends TestCase {
 exports.MemoryReadableTest = MemoryReadableTest;
 exports.AsyncReadableTest = AsyncReadableTest;
 exports.MemoryWritableTest = MemoryWritableTest;
+exports.AsyncWritableTest = AsyncWritableTest;

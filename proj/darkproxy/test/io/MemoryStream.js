@@ -28,6 +28,10 @@ class MemoryWritable extends Writable {
     this.chunks = [];
   }
 
+  strings() {
+    return this.chunks.map(chunk => chunk.toString('utf8'))
+  }
+
   _write(chunk, encoding, callback) {
     setTimeout(() => {
       if(this.err) {

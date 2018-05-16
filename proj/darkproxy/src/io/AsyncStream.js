@@ -1,4 +1,28 @@
 
+class AsyncWritable {
+
+  constructor(output) {
+    this.output = output;
+    this.output.on('error', err => this.err = err);
+  }
+
+  write(chunk, encoding) {
+    return new Promise((resolve, reject) => {
+      this.output.write(chunk, encoding, (err) => {
+        if(err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }
+
+  async end(chunk, encoding) {
+    await this.write(chunk, encoding);
+  }
+
+}
+
 class AsyncReadable {
 
   constructor(input) {
@@ -31,3 +55,4 @@ class AsyncReadable {
 }
 
 exports.AsyncReadable = AsyncReadable;
+exports.AsyncWritable = AsyncWritable;
