@@ -58,6 +58,17 @@ class AsyncReadableTest extends TestCase {
     assert.equal(await input.read(), null);
   }
 
+  async testError() {
+    let input = new AsyncReadable(new MemoryReadable('aa', 'bb', null));
+    try {
+      assert.equal(await input.read(), 'aa');
+      assert.equal(await input.read(), 'bb');
+      await input.read();
+    } catch (err) {
+      assert.equal(err.message, 'failed');
+    }
+  }
+
 }
 
 exports.MemoryReadableTest = MemoryReadableTest;

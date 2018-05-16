@@ -14,6 +14,7 @@ class MemoryReadable extends Readable {
     let ret = this.data.shift();
     if(ret === null) {
       return process.nextTick(() => this.emit('error', new Error('failed')));
+      //throw new Error('failed');
     }
     this.push(ret);
   }

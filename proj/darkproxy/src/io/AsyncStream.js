@@ -6,11 +6,17 @@ class AsyncReadable {
     this.input.on('end', () => {
       this.hasEnded = true;
     });
+    this.input.on('error', (err) => {
+      this.err = err;
+    });
     this.input.pause();
   }
 
   read() {
     return new Promise((resolve, reject) => {
+      if(this.err) {
+        return reject(this.err);
+      }
       if(this.hasEnded) {
         return resolve(null);
       }
