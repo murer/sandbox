@@ -1,5 +1,5 @@
 
-const TestCase = require('./TestCase').TestCase;
+const { TestCase } = require('./TestCase');
 const assert = require('assert');
 
 class SimpleTest extends TestCase {

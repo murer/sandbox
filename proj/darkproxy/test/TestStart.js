@@ -12,7 +12,7 @@ const test = (name) => {
 const main = async () => {
 
   test('./SimpleTest');
-  test('./http/FileHttpServerTest');
+  test('./http/ReplyHttpServerTest');
   test('./io/IOTest');
 
   await suite.execute();
