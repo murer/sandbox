@@ -9,8 +9,10 @@ rm -rf target/result3 || true
 
 set +x
 
-cat target/result/part*
+#cat target/result/part*
 
 cat target/result/part* | wc
+cat target/result2/part* | wc
+cat target/result3/part* | wc
 
 set -x
