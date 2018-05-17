@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 
 rm -rf target/result || true
-rm -rf target/result2 || true
+rm -rf target/result{2, 3} || true
 
 ./gen/spark/bin/spark-submit --master local[5] "$@"
 
