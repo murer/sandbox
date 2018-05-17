@@ -10,7 +10,6 @@ words = sc.textFile("./gen/data/nums")
 #print 'count', words.count()
 
 root = words.map(lambda line: (int(line), 1))
-
 root.saveAsTextFile('./target/result3')
 
 root.reduceByKey(lambda a, b: a + b) \
