@@ -23,7 +23,7 @@ public class Bins {
 			FileUtils.deleteDirectory(new File("./target/result2"));
 			FileUtils.deleteDirectory(new File("./target/result3"));
 
-			JavaPairRDD<String, PortableDataStream> x = sc.binaryFiles("../gen/data/nums");
+			JavaRDD<byte[]> x = sc.binaryRecords("../gen/data/nums", 3);
 		}
 
 		sc.stop();
