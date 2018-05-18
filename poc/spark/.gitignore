@@ -1,4 +1,6 @@
 gen
 target
 *.pyc
-
+.classpath
+.project
+.settings
