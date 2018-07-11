@@ -1,4 +1,6 @@
 *~
 target
 *.pyc
-
+.settings
+.project
+.classpath
