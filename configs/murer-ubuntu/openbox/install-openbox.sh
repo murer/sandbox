@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-sudo apt-get -y install openbox nitrogen tint2 xfce4-power-manager volti xscreensaver gmrun arandr pcmanfm
+sudo apt-get -y install openbox nitrogen tint2 xscreensaver gmrun arandr pcmanfm libnotify-bin
 
 if [ ! -f /etc/X11/openbox.original.tar.gz ]; then
 	cd /etc/X11
