@@ -21,15 +21,5 @@ nitrogen --restore &
 # start up the tint2 task bar
 tint2 &
 
-# Start up power management
-xfce4-power-manager &
-
-# Start the Clipboard manager after 3 seconds wait
-#(sleep 3s && clipit) &
-#(sleep 3s && glipper) &
-
-# start volume manager after 3 seconds
-(sleep 3s && volti) &
-
 # More
 xscreensaver -no-splash &
