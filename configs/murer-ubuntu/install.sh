@@ -3,8 +3,8 @@
 cd xorg
 ./install-xorg.sh
 cd -
-cd wicd
-./install-wicd.sh
+cd network-manager
+./install-network-manager.sh
 cd -
 cd graphics-util
 ./install-graphics-util.sh
@@ -18,4 +18,3 @@ cd -
 cd slim
 #./install-slim.sh
 cd -
-
