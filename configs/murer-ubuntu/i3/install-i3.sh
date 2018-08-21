@@ -9,7 +9,7 @@ if [ ! -f /etc/i3.original.tar.gz ]; then
 	cd -
 fi
 
-sudo cp -Rv etc/i3 /etc/i3
+sudo cp -TRv etc/i3 /etc/i3
 
 cp -v home/xinitrc ~/.xinitrc
 cp -v home/xinitrc ~/.xsessionrc
