@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-sudo apt-get -y install i3 gmrun arandr pcmanfm
+sudo apt-get -y install i3 xautolock gmrun arandr pcmanfm
 
 if [ ! -f /etc/i3.original.tar.gz ]; then
 	cd /etc
