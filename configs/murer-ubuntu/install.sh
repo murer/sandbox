@@ -9,8 +9,11 @@ cd -
 cd graphics-util
 ./install-graphics-util.sh
 cd -
-cd openbox
-./install-openbox.sh
+#cd openbox
+#./install-openbox.sh
+#cd -
+cd i3
+./install-i3.sh
 cd -
 cd chrome
 ./install-chrome.sh
