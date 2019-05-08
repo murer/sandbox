@@ -26,6 +26,7 @@ cmd_cluster_create() {
       --scopes cloud-platform \
       --enable-component-gateway \
       --optional-components=ANACONDA,JUPYTER \
+      --properties 'spark:spark.ui.killEnabled=true' \
       --initialization-actions "gs://$dataproc_sandbox_bucket/src/conf/init.sh"
 }
 
