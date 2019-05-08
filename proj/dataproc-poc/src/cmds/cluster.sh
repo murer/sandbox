@@ -23,6 +23,7 @@ cmd_cluster_create() {
       --num-workers 2 \
       --num-preemptible-workers 10 \
       --scopes cloud-platform \
+      --optional-components=JUPYTER \
       --initialization-actions "gs://$dataproc_sandbox_bucket/src/conf/init.sh"
 }
 
