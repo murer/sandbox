@@ -14,7 +14,7 @@ cmd_cluster_delete() {
 cmd_cluster_create() {
   gsutil -m rsync -dc src/conf "gs://$dataproc_sandbox_bucket/src/conf"
 
-  gcloud dataproc clusters create sandbox-dataproc \
+  gcloud beta dataproc clusters create sandbox-dataproc \
       --project "$dataproc_sandbox_project" \
       --zone "$dataproc_sandbox_zone" \
       --master-machine-type n1-standard-1 \
