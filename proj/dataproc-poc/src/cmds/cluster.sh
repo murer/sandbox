@@ -2,19 +2,20 @@
 
 basedir="$(dirname "$0")/../.."
 
+dataproc_sandbox_cluster_name=sandbox-dataproc
 dataproc_sandbox_project=dxtserasa
 dataproc_sandbox_zone=us-east1-b
-dataproc_sandbox_bucket=sandbox-dataproc
+dataproc_sandbox_bucket="$dataproc_sandbox_cluster_name"
 
 cmd_cluster_delete() {
-  gcloud dataproc clusters delete sandbox-dataproc -q \
+  gcloud dataproc clusters delete "$dataproc_sandbox_cluster_name" -q \
       --project "$dataproc_sandbox_project" || true
 }
 
 cmd_cluster_create() {
   gsutil -m rsync -dc src/conf "gs://$dataproc_sandbox_bucket/src/conf"
 
-  gcloud beta dataproc clusters create sandbox-dataproc \
+  gcloud beta dataproc clusters create "$dataproc_sandbox_cluster_name" \
       --project "$dataproc_sandbox_project" \
       --zone "$dataproc_sandbox_zone" \
       --master-machine-type n1-standard-1 \
@@ -34,10 +35,8 @@ cmd_cluster_recreate() {
 }
 
 cmd_ssh_master() {
-  gcloud compute ssh sandbox-dataproc-m \
-    --zone "$dataproc_sandbox_zone" \
-    -- \
-    -L 8085:localhost:8085
+  gcloud compute ssh "$dataproc_sandbox_cluster_name-m" \
+    --zone "$dataproc_sandbox_zone"
 }
 
 cd "$basedir"
