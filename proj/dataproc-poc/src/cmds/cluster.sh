@@ -31,6 +31,10 @@ cmd_cluster_recreate() {
   cmd_cluster_create
 }
 
+cmd_ssh_master() {
+    gcloud compute ssh sandbox-dataproc-m --zone "$dataproc_sandbox_zone"
+}
+
 cd "$basedir"
 _cmd=${1?'command'}
 shift
