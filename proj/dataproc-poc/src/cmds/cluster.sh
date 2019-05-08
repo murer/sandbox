@@ -32,7 +32,10 @@ cmd_cluster_recreate() {
 }
 
 cmd_ssh_master() {
-    gcloud compute ssh sandbox-dataproc-m --zone "$dataproc_sandbox_zone"
+  gcloud compute ssh sandbox-dataproc-m \
+    --zone "$dataproc_sandbox_zone" \
+    -- \
+    -L 8085:localhost:8085
 }
 
 cd "$basedir"
