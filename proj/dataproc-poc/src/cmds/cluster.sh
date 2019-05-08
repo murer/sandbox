@@ -21,7 +21,7 @@ cmd_cluster_create() {
       --worker-machine-type n1-standard-1 \
       --bucket "$dataproc_sandbox_bucket" \
       --num-workers 2 \
-      --num-preemptible-workers 10 \
+      --num-preemptible-workers 3 \
       --scopes cloud-platform \
       --enable-component-gateway \
       --optional-components=ANACONDA,JUPYTER \
