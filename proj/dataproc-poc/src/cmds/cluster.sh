@@ -4,7 +4,8 @@ basedir="$(dirname "$0")/../.."
 
 dataproc_sandbox_cluster_name=sandbox-dataproc
 dataproc_sandbox_project=dxtserasa
-dataproc_sandbox_zone=us-east1-b
+dataproc_sandbox_region=us-east1
+dataproc_sandbox_zone="$dataproc_sandbox_region-b"
 dataproc_sandbox_bucket="$dataproc_sandbox_cluster_name"
 
 cmd_cluster_delete() {
@@ -18,6 +19,7 @@ cmd_cluster_create() {
   gcloud beta dataproc clusters create "$dataproc_sandbox_cluster_name" \
       --project "$dataproc_sandbox_project" \
       --zone "$dataproc_sandbox_zone" \
+      --region "$dataproc_sandbox_region" \
       --master-machine-type n1-standard-1 \
       --worker-machine-type n1-standard-1 \
       --bucket "$dataproc_sandbox_bucket" \
