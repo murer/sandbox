@@ -2,5 +2,7 @@
 
 docker rm -f sshvpn-shell || true
 docker run -it --rm --name sshvpn-shell \
-  -v "$HOME/.ssh:/root/.ssh" \
+  --privileged \
   murer/sshvpn:latest /bin/bash
+
+# sudo sshuttle -r murer@fuweweu.com 0/0 -vvvvv
