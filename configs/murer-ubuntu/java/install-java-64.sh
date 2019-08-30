@@ -4,7 +4,7 @@ install() {
 	filename=$1
 	dirname=$2
 	if [ ! -f $filename ]; then
-	        sudo wget http://repoz.dextra.com.br/repoz/r/pub/jdk/oracle/$filename
+	        sudo wget "http://repoz.dextra.com.br/repoz/r/pub/jdk/oracle/$filename"
 	fi
 	sudo rm -rf $dirname | cat
 	sudo tar xzvf $filename
@@ -12,7 +12,7 @@ install() {
 
 cd /opt
 
-install jdk-8u20-linux-x64.tar.gz jdk1.8.0_20
+install jdk-8u221-linux-x64.tar.gz jdk1.8.0_221
 install jdk-7u67-linux-x64.tar.gz jdk1.7.0_67
 install jdk1.6.0_45.tar.gz jdk1.6.0_45
 
