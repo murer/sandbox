@@ -9,12 +9,16 @@ gcp_project=dxtdna
 gcp_zone=us-east1-b
 
 cmd_docker_build() {
-  docker build -t 'murer/couchdb:latest' docker
+  docker build -t 'gcr.io/dxtdna/couchdb:latest' docker
+}
+
+cmd_docker_push() {
+  docker push 'gcr.io/dxtdna/couchdb:latest'
 }
 
 cmd_docker_network() {
   docker network rm couchdb || true
-  docker network createb
+  docker network create couchdb
 }
 
 cmd_docker_run() {
@@ -24,7 +28,7 @@ cmd_docker_run() {
     --network couchdb \
     -h "$db_name" \
     -e "db_name=$db_name" \
-    'murer/couchdb:latest'
+    'gcr.io/dxtdna/couchdb:latest'
 }
 # -e 'ERL_FLAGS=-setcookie monster -name couchdb@db1.couchdb' \
 # -e "COUCHDB_USER=admin" \
