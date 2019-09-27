@@ -22,12 +22,12 @@ echo "q = 8" >> /opt/couchdb/etc/default.d/20-cluster.ini
 echo "n = 2" >> /opt/couchdb/etc/default.d/20-cluster.ini
 echo "seedlist = couchdb@couchdb1.c.${gcp_project}.internal,couchdb@couchdb2.c.${gcp_project}.internal" >> /opt/couchdb/etc/default.d/20-cluster.ini
 
+cp /opt/couchdb/etc/vm.args /opt/couchdb/etc/vm.args.bak
+grep -v '^-name' /opt/couchdb/etc/vm.args.bak | grep -v '^-setcookie' > /opt/couchdb/etc/vm.args
 echo "-name couchdb@${gcp_inst_name}.c.${gcp_project}.internal" >> /opt/couchdb/etc/vm.args
 echo '-setcookie monster' >> /opt/couchdb/etc/vm.args
 
 echo '[admins]' > /opt/couchdb/etc/local.d/admins.ini
 echo 'admin = 123' >> /opt/couchdb/etc/local.d/admins.ini
 
-(tail -f /opt/couchdb/var/log/couchdb.log >> /dev/ttyS1 &)
-
-service couchdb start
+(service couchdb start &)
