@@ -5,8 +5,6 @@ export DEBIAN_FRONTEND=noninteractive
 gcp_inst_name="$(hostname)"
 gcp_project="$(curl -H "Metadata-Flavor: Google" 'http://metadata.google.internal/computeMetadata/v1/project/project-id')"
 
-gcloud auth configure-docker -q
-
 apt-get -y update
 apt-get -y install \
      apt-transport-https \
@@ -26,6 +24,11 @@ add-apt-repository \
 apt-get -y update
 apt-get -y install docker-ce
 
+curl https://sdk.cloud.google.com | \
+    CLOUDSDK_CORE_DISABLE_PROMPTS=1 CLOUDSDK_INSTALL_DIR="$/root/opt" bash
+export PATH="/root/opt/google-cloud-sdk/bin:$PATH"
+gcloud config set disable_usage_reporting true
+gcloud components install docker-credential-gcr -q
 gcloud auth configure-docker -q
 
 docker run \
