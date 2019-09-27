@@ -27,9 +27,9 @@ apt-get -y install docker-ce
 curl https://sdk.cloud.google.com | \
     CLOUDSDK_CORE_DISABLE_PROMPTS=1 CLOUDSDK_INSTALL_DIR="$/root/opt" bash > /dev/null
 export PATH="/root/opt/google-cloud-sdk/bin:$PATH"
-gcloud config set disable_usage_reporting true
-gcloud components install docker-credential-gcr -q
-gcloud auth configure-docker -q
+/root/opt/google-cloud-sdk/bin/gcloud config set disable_usage_reporting true
+/root/opt/google-cloud-sdk/bin/gcloud components install docker-credential-gcr -q
+/root/opt/google-cloud-sdk/bin/gcloud auth configure-docker -q
 
 docker run \
   -d --rm --name "$gcp_inst_name" \
