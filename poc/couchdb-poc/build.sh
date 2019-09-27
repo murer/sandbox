@@ -57,7 +57,7 @@ cmd_cluster_delete() {
 cmd_cluster_create() {
   gcloud compute instances create couchdb1 couchdb2 \
     --project "$gcp_project" --zone "$gcp_zone" \
-    --source-instance-template=couchdb-v2 \
+    --source-instance-template=couchdb-v5 \
     --metadata-from-file 'startup-script=gcp/gcp-entrypoint.sh'
 }
 

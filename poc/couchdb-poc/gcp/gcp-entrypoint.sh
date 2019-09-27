@@ -1,9 +1,43 @@
 #!/bin/bash -xe
 
-# export DEBIAN_FRONTEND=noninteractive
-#
-# gcp_inst_name="$(hostname)"
-# gcp_project="$(curl -H "Metadata-Flavor: Google" 'http://metadata.google.internal/computeMetadata/v1/project/project-id')"
+export DEBIAN_FRONTEND=noninteractive
+
+gcp_inst_name="$(hostname)"
+gcp_project="$(curl -H "Metadata-Flavor: Google" 'http://metadata.google.internal/computeMetadata/v1/project/project-id')"
+
+gcloud auth configure-docker -q
+
+apt-get -y update
+apt-get -y install \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     gnupg2 \
+     software-properties-common \
+     nmap htop
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+apt-get -y update
+apt-get -y install docker-ce
+
+gcloud auth configure-docker -q
+
+docker run \
+  -d --rm --name "$gcp_inst_name" \
+  -h "$gcp_inst_name" \
+  -e "db_name=$gcp_inst_name" \
+  -e "db_dns=c.dxtdna.internal" \
+  -p 5984:5984 \
+  -p 5986:5986 \
+  -p 4369:4369 \
+  'gcr.io/dxtdna/couchdb:latest'
+
 #
 # echo "deb https://apache.bintray.com/couchdb-deb "$(lsb_release -cs)" main" \
 #     > /etc/apt/sources.list.d/couchdb.list
@@ -33,5 +67,3 @@
 # echo 'admin = 123' >> /opt/couchdb/etc/local.d/admins.ini
 #
 # (service couchdb start &)
-
-echo aaaa
