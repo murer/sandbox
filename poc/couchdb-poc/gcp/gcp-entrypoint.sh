@@ -4,6 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 gcp_inst_name="$(hostname)"
 gcp_project="$(curl -H "Metadata-Flavor: Google" 'http://metadata.google.internal/computeMetadata/v1/project/project-id')"
+gcp_inst_ip="$(curl -H "Metadata-Flavor: Google" 'http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip')"
 
 apt-get -y update
 apt-get -y install \
@@ -36,10 +37,17 @@ docker run \
   -h "$gcp_inst_name" \
   -e "db_name=$gcp_inst_name" \
   -e "db_dns=c.dxtdna.internal" \
-  -p 5984:5984 \
-  -p 5986:5986 \
-  -p 4369:4369 \
+  -p "$gcp_inst_ip:5984:5984" \
+  -p "$gcp_inst_ip:5986:5986" \
+  -p "$gcp_inst_ip:4369:4369" \
+  -p "127.0.0.1:5984:5984" \
+  -p "127.0.0.1:5986:5986" \
+  -p "127.0.0.1:4369:4369" \
   'gcr.io/dxtdna/couchdb:latest'
+
+  # -p "$gcp_inst_name:5984:5984" \
+  # -p "$gcp_inst_name:5986:5986" \
+  # -p "$gcp_inst_name:4369:4369" \
 
 #
 # echo "deb https://apache.bintray.com/couchdb-deb "$(lsb_release -cs)" main" \
