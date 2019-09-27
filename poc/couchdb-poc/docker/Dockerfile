@@ -9,9 +9,7 @@ RUN apt-get -y install net-tools nmap iputils-ping vim jq
 RUN cp /docker-entrypoint.sh /docker-entrypoint-original.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-
-
-#EXPOSE 5984
+EXPOSE 5984
 
 #CMD [ "tini", "--", "/docker-entrypoint.sh", "/opt/couchdb/bin/couchdb" ]
 
