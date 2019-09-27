@@ -68,10 +68,12 @@ cmd_cluster_proxy() {
 }
 
 cmd_cluster_browser() {
-  google-chrome \
+  (google-chrome \
     --user-data-dir="$workdir/gen/chrome-proxy" \
     --proxy-server="socks5://localhost:1080" \
-    'http://couchdb1:5984/_utils'
+    'http://couchdb1:5984/_utils' \
+    'http://couchdb2:5984/_utils' \
+    > /dev/null 2>&1 &)
 }
 
 cd "$workdir"

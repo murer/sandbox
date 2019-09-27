@@ -28,6 +28,6 @@ echo '-setcookie monster' >> /opt/couchdb/etc/vm.args
 echo '[admins]' > /opt/couchdb/etc/local.d/admins.ini
 echo 'admin = 123' >> /opt/couchdb/etc/local.d/admins.ini
 
-tail -f /opt/couchdb/var/log/couchdb.log >> /dev/ttyS1
+(tail -f /opt/couchdb/var/log/couchdb.log >> /dev/ttyS1 &)
 
 service couchdb start
