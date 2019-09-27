@@ -1,0 +1,2 @@
+docker run --rm -it --name db2 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=123 -e NODENAME=db2 apache/couchdb:2.3.0
+docker run --rm -it --name db1 -p 5984:5984 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=123 -e NODENAME=db1 apache/couchdb:2.3.0
