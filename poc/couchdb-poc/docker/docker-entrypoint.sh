@@ -3,7 +3,7 @@
 echo '[cluster]' > /opt/couchdb/etc/default.d/20-cluster.ini
 echo 'q = 8' >> /opt/couchdb/etc/default.d/20-cluster.ini
 echo 'n = 2' >> /opt/couchdb/etc/default.d/20-cluster.ini
-echo "seedlist = couchdb@db1.${db_dns},couchdb@db2.${db_dns}" >> /opt/couchdb/etc/default.d/20-cluster.ini
+echo "seedlist = couchdb@couchdb1.${db_dns},couchdb@couchdb2.${db_dns}" >> /opt/couchdb/etc/default.d/20-cluster.ini
 
 echo "-name couchdb@${db_name}.${db_dns}" >> /opt/couchdb/etc/vm.args
 echo '-setcookie monster' >> /opt/couchdb/etc/vm.args
