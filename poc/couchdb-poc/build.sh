@@ -28,6 +28,7 @@ cmd_docker_run() {
     --network couchdb \
     -h "$db_name" \
     -e "db_name=$db_name" \
+    -e "db_dns=couchdb" \
     'gcr.io/dxtdna/couchdb:latest'
 }
 # -e 'ERL_FLAGS=-setcookie monster -name couchdb@db1.couchdb' \
