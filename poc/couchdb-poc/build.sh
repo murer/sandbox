@@ -5,6 +5,9 @@ workdir="$(
   pwd -P
 )"
 
+gcp_project=dxtdna
+gcp_zone=us-east1-b
+
 cmd_docker_build() {
   docker build -t 'murer/couchdb:latest' docker
 }
@@ -35,6 +38,27 @@ cmd_docker_run() {
 cmd_docker_exec() {
   db_name="${1?'db_name'}"
   docker exec -it "$db_name" /bin/bash
+}
+
+cmd_cluster_prepare() {
+  gcloud compute
+}
+
+cmd_cluster_delete() {
+  gcloud compute instances delete -q couchdb1 couchdb2 \
+    --project "$gcp_project" --zone "$gcp_zone"
+}
+
+cmd_cluster_create() {
+  gcloud compute instances create couchdb1 couchdb2 \
+    --project "$gcp_project" --zone "$gcp_zone" \
+    --source-instance-template=couchdb \
+    --metadata-from-file 'startup-script=gcp/gcp-entrypoint.sh'
+}
+
+cmd_cluster_recreate() {
+  cmd_cluster_delete || true
+  cmd_cluster_create
 }
 
 cd "$workdir"
