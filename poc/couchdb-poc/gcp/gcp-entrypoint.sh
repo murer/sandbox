@@ -14,8 +14,10 @@ apt-get -y install net-tools nmap iputils-ping vim jq couchdb
 
 service couchdb stop
 
-echo '[chttpd]' > /opt/couchdb/etc/local.d/chttpd.ini
-echo 'bind_address = 0.0.0.0' >> /opt/couchdb/etc/local.d/chttpd.ini
+echo '[chttpd]' > /opt/couchdb/etc/default.d/20-chttpd.ini
+echo 'bind_address = any' >> /opt/couchdb/etc/default.d/20-chttpd.ini
+echo '[httpd]' >> /opt/couchdb/etc/default.d/20-chttpd.ini
+echo 'bind_address = any' >> /opt/couchdb/etc/default.d/20-chttpd.ini
 
 echo "[cluster]" > /opt/couchdb/etc/default.d/20-cluster.ini
 echo "q = 8" >> /opt/couchdb/etc/default.d/20-cluster.ini
