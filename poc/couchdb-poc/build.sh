@@ -61,6 +61,19 @@ cmd_cluster_recreate() {
   cmd_cluster_create
 }
 
+cmd_cluster_proxy() {
+  gcloud compute ssh couchdb1 \
+    --project "$gcp_project" --zone "$gcp_zone" \
+    -- -D 1080
+}
+
+cmd_cluster_browser() {
+  google-chrome \
+    --user-data-dir="$workdir/gen/chrome-proxy" \
+    --proxy-server="socks5://localhost:1080" \
+    'http://couchdb1:5984/_utils'
+}
+
 cd "$workdir"
 _cmd=${1?'command'}
 shift

@@ -14,6 +14,9 @@ apt-get -y install net-tools nmap iputils-ping vim jq couchdb
 
 service couchdb stop
 
+echo '[chttpd]' > /opt/couchdb/etc/local.d/chttpd.ini
+echo 'bind_address = 127.0.0.1' >> /opt/couchdb/etc/local.d/chttpd.ini
+
 echo "[cluster]" > /opt/couchdb/etc/default.d/20-cluster.ini
 echo "q = 8" >> /opt/couchdb/etc/default.d/20-cluster.ini
 echo "n = 2" >> /opt/couchdb/etc/default.d/20-cluster.ini
@@ -24,5 +27,7 @@ echo '-setcookie monster' >> /opt/couchdb/etc/vm.args
 
 echo '[admins]' > /opt/couchdb/etc/local.d/admins.ini
 echo 'admin = 123' >> /opt/couchdb/etc/local.d/admins.ini
+
+tail -f /opt/couchdb/var/log/couchdb.log >> /dev/ttyS1
 
 service couchdb start
