@@ -8,7 +8,7 @@ echo 'lavaburst' > /mnt/etc/hostname
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/Brazil/West /etc/localtime
 arch-chroot /mnt locale-gen
 #arch-chroot /mnt localectl --no-convert set-x11-keymap br
-arch-chroot /mnt pacman --noconfirm -S wpa_supplicant refind-efi networkmanager binutils sudo vim
+arch-chroot /mnt pacman --noconfirm -S wpa_supplicant refind-efi networkmanager binutils sudo vim git
 
 mkdir -p /mnt/esp/EFI/Boot
 cp /mnt/usr/share/refind/refind_x64.efi /mnt/esp/EFI/Boot/bootx64.efi
