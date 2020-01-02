@@ -23,7 +23,8 @@ arch-chroot /mnt perl -i -pe 's/# (%wheel ALL=\(ALL\) ALL)/$1/' /etc/sudoers
 
 arch-chroot /mnt passwd -l root
 
-umount -R /mnt
+echo you want to: umount -R /mnt
+echo and restart :)
 
 # arch-chroot /mnt
 # LANG=C perl -i -pe 's/#(en_US.UTF)/$1/' /etc/locale.gen
