@@ -3,7 +3,8 @@
 basedir="$(dirname "$0")"
 cd "$basedir"
 
-sudo pacman --noconfirm -S i3-wm i3lock i3status xautolock
+sudo pacman --noconfirm -S i3-wm i3lock i3status xautolock \
+	ttf-liberation ttf-droid
 
 if [ ! -f /etc/i3.original.tar.gz ]; then
 	cd /etc
