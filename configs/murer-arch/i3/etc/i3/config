@@ -179,4 +179,4 @@ bar {
         #tray_output primary
 }
 
-exec --no-startup-id /etc/i3/autostart
+exec --no-startup-id /etc/i3/autostart.sh
