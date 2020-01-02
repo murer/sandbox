@@ -1,4 +1,3 @@
 #!/bin/bash -xe
 
-sudo pacman -S --noconfirm terminator network-manager-applet firefox gmrun
-
+sudo pacman -S --noconfirm terminator network-manager-applet firefox dmenu
