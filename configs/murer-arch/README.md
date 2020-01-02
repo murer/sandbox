@@ -56,11 +56,3 @@ mount /dev/sdXY /mnt # Root Partition
 mkdir -p /mnt/esp
 mount /dev/sdXY /mnt/esp # EFI System partition
 ```
-
-Fixing mirrors to BR
-
-```shell
-cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-cat /etc/pacman.d/mirrorlist.bak | grep '## Brazil' -A 1 | grep -v '\-\-' > /tmp/mirrors.selected.txt
-cat /tmp/mirrors.selected.txt /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
-```
