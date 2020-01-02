@@ -13,7 +13,7 @@ echo 'lavaburst' > /mnt/etc/hostname
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/Brazil/West /etc/localtime
 arch-chroot /mnt locale-gen
 #arch-chroot /mnt localectl --no-convert set-x11-keymap br
-arch-chroot /mnt pacman --noconfirm -S wpa_supplicant refind-efi networkmanager
+arch-chroot /mnt pacman --noconfirm -S wpa_supplicant refind-efi networkmanager binutils sudo vim
 
 mkdir -p /mnt/esp/EFI/Boot
 cp /mnt/usr/share/refind/refind_x64.efi /mnt/esp/EFI/Boot/bootx64.efi
@@ -21,6 +21,14 @@ cp -r /mnt/usr/share/refind/drivers_x64/ /mnt/esp/EFI/Boot/
 echo 'extra_kernel_version_strings linux,linux-hardened,linux-lts,linux-zen,linux-git;' > /mnt/esp/EFI/Boot/refind.conf
 echo 'fold_linux_kernels false' >> /mnt/esp/EFI/Boot/refind.conf
 echo 'default_selection "linux from"' >> /mnt/esp/EFI/Boot/refind.conf
+
+arch-chroot /mnt useradd -m -G wheel -s /bin/bash murer
+echo 'murer:123' | arch-chroot /mnt chpasswd murer
+arch-chroot /mnt perl -i -pe 's/# (%wheel ALL=\(ALL\) ALL)/$1/' /etc/sudoers
+
+arch-chroot /mnt passwd -l root
+
+umount -R /mnt
 
 # arch-chroot /mnt
 # LANG=C perl -i -pe 's/#(en_US.UTF)/$1/' /etc/locale.gen
