@@ -1,20 +1,21 @@
 #!/bin/bash -xe
 
-ssh_bak_cmd=${1?"enc|dec"}
-ssh_bak_file=${2?"tar.gz.crypt file"}
+basedir="$(dirname "$0")"
 
-ssh_enc() {
+cmd_enc() {
   cd
-  tar czvf - .ssh | openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -out "$ssh_bak_file"
+  tar czvf - .ssh | openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -out "$basedir/ssh.keys.tar.gz.crypt"
   cd -
 }
 
-ssh_dec() {
+cmd_dec() {
+  cd
   [[ ! -d ".ssh" ]]
   [[ ! -f ".ssh" ]]
-  openssl enc -aes-256-cbc -d -pbkdf2 -iter 100000 -salt -in "$ssh_bak_file" | tar xvzf -
+  openssl enc -aes-256-cbc -d -pbkdf2 -iter 100000 -salt -in "$basedir/ssh.keys.tar.gz.crypt" | tar xvzf -
+  cd -
 }
 
-if   [ "x$ssh_bak_cmd" == "xenc" ]; then ssh_enc;
-elif [ "x$ssh_bak_cmd" == "xdec" ]; then ssh_dec;
-else false; fi
+_cmd="${1?'cmd is required'}"
+shift
+cmd_${_cmd} "$@"
