@@ -41,3 +41,26 @@ Number  Start (sector)    End (sector)  Size       Code  Name
    2          514048       147314687   70.0 GiB    8300  Linux filesystem
    5       147314688       164091903   8.0 GiB     8200  Linux swap
 ```
+
+Format
+
+```shell
+mkfs.fat -F32 /dev/sdXY # EFI System
+mkfs.ext4 /dev/sdXY # Root partition
+```
+
+Mount
+
+```shell
+mount /dev/sdXY /mnt # Root Partition
+mkdir -p /mnt/esp
+mount /dev/sdXY /mnt/esp # EFI System partition
+```
+
+Fixing mirrors to BR
+
+```shell
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
+cat /etc/pacman.d/mirrorlist.bak | grep '## Brazil' -A 1 | grep -v '\-\-' > /tmp/mirrors.selected.txt
+cat /etc/pacman.d/mirrorlist.bak /tmp/mirrors.selected.txt > /etc/pacman.d/mirrorlist
+```
