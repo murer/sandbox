@@ -13,6 +13,8 @@ arch-chroot /mnt pacman --noconfirm -S \
 	networkmanager iw iproute2 net-tools \
 	openssh binutils sudo vim git
 
+arch-chroot /mnt systemctl enable NetworkManager
+
 mkdir -p /mnt/esp/EFI/Boot
 cp /mnt/usr/share/refind/refind_x64.efi /mnt/esp/EFI/Boot/bootx64.efi
 cp -r /mnt/usr/share/refind/drivers_x64/ /mnt/esp/EFI/Boot/
