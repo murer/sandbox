@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 
-basedir="$(dirname "$0")"
+cd "$(dirname "$0")"
+basedir="$(pwd)"
+cd -
 
 cmd_enc() {
   cd
