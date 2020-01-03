@@ -2,6 +2,7 @@
 
 cd basics
 ./install-basics.sh
+./install-audio.sh
 cd -
 cd xorg
 ./install-xorg.sh
