@@ -8,7 +8,10 @@ echo 'lavaburst' > /mnt/etc/hostname
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/Brazil/West /etc/localtime
 arch-chroot /mnt locale-gen
 #arch-chroot /mnt localectl --no-convert set-x11-keymap br
-arch-chroot /mnt pacman --noconfirm -S wpa_supplicant refind-efi networkmanager binutils sudo vim git
+arch-chroot /mnt pacman --noconfirm -S \
+	wpa_supplicant refind-efi \
+	networkmanager iw iproute2 net-tools \
+	openssh binutils sudo vim git
 
 mkdir -p /mnt/esp/EFI/Boot
 cp /mnt/usr/share/refind/refind_x64.efi /mnt/esp/EFI/Boot/bootx64.efi
@@ -23,8 +26,8 @@ arch-chroot /mnt perl -i -pe 's/# (%wheel ALL=\(ALL\) ALL)/$1/' /etc/sudoers
 
 arch-chroot /mnt passwd -l root
 
-echo you want to: umount -R /mnt
-echo and restart :)
+echo 'you want to: umount -R /mnt'
+echo 'and restart :)'
 
 # arch-chroot /mnt
 # LANG=C perl -i -pe 's/#(en_US.UTF)/$1/' /etc/locale.gen
