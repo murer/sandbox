@@ -2,7 +2,7 @@
 
 ```shell
 
-sudo apt-get install cryptsetup debootstrap software-properties-common vim
+sudo apt-get -y install cryptsetup debootstrap software-properties-common vim
 
 # Configure lux patition on linux type partition
 sudo cryptsetup -v -y --type luks2 --cipher aes-xts-plain64 --hash sha256 luksFormat /dev/sdXY
@@ -106,10 +106,18 @@ sudo arch-chroot /mnt/installer apt-get -y install language-pack-en-base
 # basics
 sudo arch-chroot /mnt/installer apt-get -y install ubuntu-standard network-manager
 
-# user
-sudo arch-chroot /mnt/installer useradd -m -G sudo -s /bin/bash murer
-echo 'murer:123' | sudo arch-chroot /mnt/installer chpasswd murer
+# user murer 123
+sudo arch-chroot /mnt/installer useradd -m -G sudo -s /bin/bash murer -p '$6$init$GyPRia4gtDwk6vb9hKUEvKBjZwIxodN7afESIJNKWv7REsPSA6IvdBoBjKCFdWNh9NpTDglTLN1fmTekbR9gN/'
 
+# kernel
+sudo arch-chroot /mnt/installer apt-get install -y linux-image-generic linux-headers-generic grub-efi cryptsetup
 
-arch-chroot /mnt/installer
+# grub
+sudo sed -i.bak 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT="verbose nosplash"/g' /mnt/installer/etc/default/grub
+echo "GRUB_ENABLE_CRYPTODISK=y" | sudo tee -a /mnt/installer/etc/default/grub
+echo -e "ROOT\t/dev/sdLUKS\tnone\tluks" | sudo tee -a /mnt/installer/etc/crypttab
+sudo arch-chroot /mnt/installer update-grub
+sudo arch-chroot /mnt/installer grub-install /dev/sda
+
+sudo umount -R /mnt/installer
 ```
