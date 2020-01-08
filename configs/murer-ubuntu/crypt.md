@@ -105,6 +105,11 @@ sudo arch-chroot /mnt/installer apt-get -y install language-pack-en-base
 
 # basics
 sudo arch-chroot /mnt/installer apt-get -y install ubuntu-standard network-manager
+sudo tee /mnt/installer/etc/netplan/01-netcfg.yaml <<-EOF
+network:
+  version: 2
+  renderer: NetworkManager
+EOF
 
 # user murer 123
 sudo arch-chroot /mnt/installer useradd -m -G sudo -s /bin/bash murer -p '$6$init$GyPRia4gtDwk6vb9hKUEvKBjZwIxodN7afESIJNKWv7REsPSA6IvdBoBjKCFdWNh9NpTDglTLN1fmTekbR9gN/'
