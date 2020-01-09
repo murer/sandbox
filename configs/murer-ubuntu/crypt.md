@@ -5,14 +5,14 @@
 sudo apt-get -y install cryptsetup debootstrap software-properties-common vim
 
 # Configure lux patition on linux type partition
-sudo cryptsetup -v -y --type luks --cipher aes-xts-plain64 --hash sha256 luksFormat /dev/sdXY
+sudo cryptsetup -v -y --type luks --cipher aes-xts-plain64 --hash sha256 luksFormat /dev/sda1
 
 # open partition
-sudo cryptsetup open /dev/sdXY ROOT
+sudo cryptsetup open /dev/sda2 ROOT
 
 # format
 sudo mkfs.ext4 /dev/mapper/ROOT
-sudo mkfs.fat -F32 /dev/sdaEFI
+sudo mkfs.fat -F32 /dev/sda1
 sudo mkfs.ext4 /dev/sdBOOT
 
 # mount root
@@ -115,17 +115,14 @@ EOF
 sudo arch-chroot /mnt/installer useradd -m -G sudo -s /bin/bash murer -p '$6$init$GyPRia4gtDwk6vb9hKUEvKBjZwIxodN7afESIJNKWv7REsPSA6IvdBoBjKCFdWNh9NpTDglTLN1fmTekbR9gN/'
 
 # kernel
-sudo arch-chroot /mnt/installer apt-get install -y linux-image-generic linux-headers-generic grub-efi cryptsetup
+sudo arch-chroot /mnt/installer apt-get install -y linux-image-generic linux-headers-generic grub-efi cryptsetup lvm2
 
 # grub
-
-sudo arch-chroot /mnt/installer update-initramfs -u -k all
-
-sudo sed -i.bak 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT="verbose nosplash"/g' /mnt/installer/etc/default/grub
 echo "GRUB_ENABLE_CRYPTODISK=y" | sudo tee -a /mnt/installer/etc/default/grub
-echo -e "ROOT\t/dev/sdLUKS\tnone\tluks" | sudo tee -a /mnt/installer/etc/crypttab
 sudo arch-chroot /mnt/installer update-grub
 sudo arch-chroot /mnt/installer grub-install /dev/sda
+
+sudo arch-chroot /mnt/installer update-initramfs -u -k all
 
 sudo umount -R /mnt/installer
 ```
