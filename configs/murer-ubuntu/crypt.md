@@ -5,7 +5,7 @@
 sudo apt-get -y install cryptsetup debootstrap software-properties-common vim
 
 # Configure lux patition on linux type partition
-sudo cryptsetup -v -y --type luks2 --cipher aes-xts-plain64 --hash sha256 luksFormat /dev/sdXY
+sudo cryptsetup -v -y --type luks --cipher aes-xts-plain64 --hash sha256 luksFormat /dev/sdXY
 
 # open partition
 sudo cryptsetup open /dev/sdXY ROOT
@@ -118,6 +118,9 @@ sudo arch-chroot /mnt/installer useradd -m -G sudo -s /bin/bash murer -p '$6$ini
 sudo arch-chroot /mnt/installer apt-get install -y linux-image-generic linux-headers-generic grub-efi cryptsetup
 
 # grub
+
+sudo arch-chroot /mnt/installer update-initramfs -u -k all
+
 sudo sed -i.bak 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT="verbose nosplash"/g' /mnt/installer/etc/default/grub
 echo "GRUB_ENABLE_CRYPTODISK=y" | sudo tee -a /mnt/installer/etc/default/grub
 echo -e "ROOT\t/dev/sdLUKS\tnone\tluks" | sudo tee -a /mnt/installer/etc/crypttab
