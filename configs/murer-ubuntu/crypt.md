@@ -97,7 +97,7 @@ genfstab -U /mnt/installer | sudo tee /mnt/installer/etc/fstab
 echo "ubuntu" | sudo tee /mnt/installer/etc/hostname
 echo 'LANG="en_US.UTF-8"' | sudo tee /mnt/installer/etc/default/locale
 echo 'America/Sao_Paulo' | sudo tee /mnt/installer/etc/timezone
-sudo cp /mnt/installer/usr/share/zoneinfo/America/Sao_Paulo /mnt/installer/etc/localtime
+sudo arch-chroot /mnt/installer ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 sudo arch-chroot /mnt/installer locale-gen en_US.UTF-8
 sudo arch-chroot /mnt/installer dpkg-reconfigure -f non-interactive tzdata
 sudo arch-chroot /mnt/installer apt-get -y update
