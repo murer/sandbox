@@ -55,7 +55,7 @@ sudo rm -rf /mnt/installer/boot/efi || true
 sudo mkdir -p /mnt/installer/boot/efi
 ```
 
-# Mount EFI
+## Mount EFI
 
 ```shell
 # Use this if EFI IS NOT already mounted on your installer env
@@ -65,7 +65,15 @@ sudo mount "$HEX_DEV_EFI" /mnt/installer/boot/efi
 sudo mount --bind /boot/efi /mnt/installer/boot/efi
 ```
 
-# Umount
+## Configure
+
+```shell
+./cmds/config-init.sh
+```
+
+Edit files in ```target/config``` to configure username, password, etc.
+
+## Umount
 
 ```shell
 sudo umount -R /mnt/installer
