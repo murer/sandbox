@@ -7,7 +7,7 @@ apt-get -y install \
 apt-add-repository universe
 
 apt-get install -y \
-  gdisk \
+  gdisk fdisk gpart \
   cryptsetup \
   debootstrap \
   arch-install-scripts \
