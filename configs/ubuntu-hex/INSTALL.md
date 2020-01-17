@@ -21,8 +21,8 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 ## Export configs
 
 ```shell
-HEX_DEV_EFI=/dev/sda1
-HEX_DEV_ROOT=/dev/sda9
+export HEX_DEV_EFI=/dev/sda1
+export HEX_DEV_LVM=/dev/sda9
 ```
 
 # Format partitions
@@ -36,8 +36,8 @@ sudo mkfs.fat -n ESP -F32 "$HEX_DEV_EFI"
 LVM on LUKS
 
 ```shell
-sudo cryptsetup -v -y --type luks --cipher aes-xts-plain64 --hash sha256 luksFormat "$HEX_DEV_ROOT"
-sudo cryptsetup open "$HEX_DEV_ROOT" CRYPTED
+sudo cryptsetup -v -y --type luks --cipher aes-xts-plain64 --hash sha256 luksFormat "$HEX_DEV_LVM"
+sudo cryptsetup open "$HEX_DEV_LVM" CRYPTED
 sudo pvcreate /dev/mapper/CRYPTED
 sudo vgcreate MAIN /dev/mapper/CRYPTED
 sudo lvcreate -L 8G MAIN -n SWAP
