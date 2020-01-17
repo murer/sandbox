@@ -3,7 +3,7 @@
 ## Prepare install (live) env
 
 ```shell
-./cmds/10-install-prepare.sh
+./cmds/installer-prepare.sh
 ```
 
 ## Partition
