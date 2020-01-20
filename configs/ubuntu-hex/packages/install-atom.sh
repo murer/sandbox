@@ -2,7 +2,7 @@
 
 [[ "x$UID" != "x0" ]]
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")"
 pwd
 
 mkdir -p target

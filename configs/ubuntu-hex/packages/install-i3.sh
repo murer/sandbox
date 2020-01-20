@@ -1,5 +1,8 @@
 #!/bin/bash -xe
 
+cd "$(dirname "$0")"
+pwd
+
 sudo apt-get -y install xorg i3 xautolock arandr
 
 if [ ! -f /etc/i3.original.tar.gz ]; then
@@ -9,7 +12,7 @@ if [ ! -f /etc/i3.original.tar.gz ]; then
 	cd -
 fi
 
-sudo cp -TRv etc/i3 /etc/i3
+sudo cp -TRv i3/etc/i3 /etc/i3
 
 cp -v home/xinitrc ~/.xinitrc
 cp -v home/xinitrc ~/.xsessionrc
