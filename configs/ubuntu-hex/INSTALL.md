@@ -93,3 +93,13 @@ Edit files in ```target/config``` to configure username, password, etc.
 ```shell
 sudo umount -R /mnt/installer
 ```
+
+## Reboot into the system
+
+Connect to the internet using command line ```nmcli```
+
+Clone repository and execute:
+
+```shell
+./packages/install-all.sh
+```
