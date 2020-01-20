@@ -65,13 +65,27 @@ sudo mount "$HEX_DEV_EFI" /mnt/installer/boot/efi
 sudo mount --bind /boot/efi /mnt/installer/boot/efi
 ```
 
+## Strap
+
+```shell
+./cmds/strap.sh
+```
+
 ## Configure
+
+You can configure things while strap is running
 
 ```shell
 ./cmds/config-init.sh
 ```
 
 Edit files in ```target/config``` to configure username, password, etc.
+
+## Install packages
+
+*** MAKE SURE STRAP IS FINISHED ***
+
+./cmds/chroot-install.sh
 
 ## Umount
 
