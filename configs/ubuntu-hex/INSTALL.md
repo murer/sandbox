@@ -46,9 +46,10 @@ sudo mkfs.ext4 -L ROOT /dev/mapper/MAIN-ROOT
 sudo mkswap -L SWAP /dev/mapper/MAIN-SWAP
 ```
 
-## Mount ROOT
+## Mount SWAP and ROOT
 
 ```shell
+sudo swapon /dev/mapper/MAIN-SWAP
 sudo mkdir -p /mnt/installer
 sudo mount /dev/mapper/MAIN-ROOT /mnt/installer
 sudo rm -rf /mnt/installer/boot/efi || true
