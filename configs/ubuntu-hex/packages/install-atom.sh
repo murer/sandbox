@@ -11,8 +11,8 @@ wget --progress=dot -e dotbytes=1M -c \
   'https://github.com/atom/atom/releases/latest/download/atom-amd64.deb' \
   -O target/atom-amd64.deb
 
-sudo dpkg -i target/atom-amd64.deb || true
-
-sudo apt-get install -f
-
-sudo dpkg -i target/atom-amd64.deb
+if ! atom -v; then
+  sudo dpkg -i target/atom-amd64.deb || true
+  sudo apt-get install -f
+  sudo dpkg -i target/atom-amd64.deb
+fi
