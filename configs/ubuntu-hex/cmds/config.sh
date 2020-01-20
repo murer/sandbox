@@ -7,19 +7,19 @@ cmd_init() {
   mkdir target
   cp -R config target
   hex_lvm_id="$(sudo blkid -o value -s UUID "$HEX_DEV_LVM")"
-  echo -e "CRYPTED\tUUID=$hex_lvm_id\tnone\tluks,initramfs" > target/config/etc/crypttab
+  echo -e "CRYPTED\tUUID=$hex_lvm_id\tnone\tluks,initramfs" > target/config/etc.pre/crypttab
 }
 
 cmd_hostname() {
   hex_hostname="${hex_hostname?'hostname'}"
-  echo "$hex_hostname" > target/config/etc/hostname
+  echo "$hex_hostname" > target/config/etc.pre/hostname
   echo "
   127.0.0.1 localhost
   ::1 localhost ip6-localhost ip6-loopback
   ff02::1 ip6-allnodes
   ff02::2 ip6-allrouters
   127.0.0.1 $hex_hostname.localdomain $hex_hostname
-  " > target/config/etc/hosts
+  " > target/config/etc.pre/hosts
 }
 
 cmd_user() {
