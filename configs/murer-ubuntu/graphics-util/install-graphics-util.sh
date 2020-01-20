@@ -1,3 +1,3 @@
 #!/bin/bash -xe
 
-sudo apt-get -y install firefox gedit gmrun lxterminal gedit gnome-screenshot terminator
+sudo apt-get -y install firefox gedit lxterminal gedit shutter
