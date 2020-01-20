@@ -46,7 +46,7 @@ sudo mkfs.ext4 -L ROOT /dev/mapper/MAIN-ROOT
 sudo mkswap -L SWAP /dev/mapper/MAIN-SWAP
 ```
 
-## Mount SWAP and ROOT
+## Mount SWAP and ROOT2
 
 ```shell
 sudo swapon /dev/mapper/MAIN-SWAP
