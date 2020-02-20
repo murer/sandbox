@@ -10,7 +10,7 @@ cmd_run() {
 }
 
 cmd_start() {
-  cmd_run mitmproxy  --showhost # --mode transparent
+  cmd_run mitmproxy  --showhost --mode transparent
 }
 
 cmd_shell() {
