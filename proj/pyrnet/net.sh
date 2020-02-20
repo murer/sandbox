@@ -18,14 +18,17 @@ cmd_wifi() {
 	nmcli con up "$pyrnet_name"
 }
 
-cmd_redirect() {
+cmd_remove() {
 	iptables -t nat -v -L PREROUTING -n --line-number
 
 	sudo iptables -t nat -v -L PREROUTING -n --line-number | grep '8080$' | \
 		cut -d' ' -f1 | tac | while read k; do \
 			sudo iptables -t nat -D PREROUTING "$k";
 		done
+}
 
+cmd_redirect() {
+	cmd_remove
 	sysctl -w net.ipv4.ip_forward=1
 	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 80 -j REDIRECT --to-port 8080
 	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 443 -j REDIRECT --to-port 8080

@@ -17,4 +17,8 @@ cmd_shell() {
   docker exec -it pyrnet /bin/bash
 }
 
+cmd_local() {
+  ~/.local/bin/mitmproxy --mode transparent --showhost --set "confdir=$(pwd)/conf"
+}
+
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
