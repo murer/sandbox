@@ -6,7 +6,11 @@ cmd_image() {
 
 cmd_run() {
   docker rm -f pyrnet || true
-  docker run -it --rm --name pyrnet --privileged murer/pyrnet "$@"
+  docker run -it --rm --name pyrnet \
+    --privileged \
+    --network host \
+    --volume /var/run/dbus:/var/run/dbus \
+    murer/pyrnet "$@"
 }
 
 cmd_start() {
