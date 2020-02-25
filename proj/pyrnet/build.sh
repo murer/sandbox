@@ -1,16 +1,17 @@
 #!/bin/bash -xe
 
-cmd_build() {
+cmd_image() {
   docker build -t murer/pyrnet:latest .
 }
 
 cmd_run() {
   docker rm -f pyrnet || true
-  docker run -it --rm -p 8080:8080 --name pyrnet murer/pyrnet "$@"
+  docker run -it --rm --name pyrnet --privileged murer/pyrnet "$@"
 }
 
 cmd_start() {
-  cmd_run mitmproxy  --showhost --mode transparent
+  #cmd_run mitmproxy  --showhost --mode transparent
+  cmd_run
 }
 
 cmd_shell() {
