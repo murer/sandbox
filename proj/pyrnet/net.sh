@@ -30,10 +30,14 @@ cmd_remove() {
 cmd_redirect() {
 	cmd_remove
 	sysctl -w net.ipv4.ip_forward=1
-	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 80 -j REDIRECT --to-port 8080
-	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 443 -j REDIRECT --to-port 8080
+	#iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 80 -j REDIRECT --to-port 8080
+	#iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 443 -j REDIRECT --to-port 8080
 	#ip6tables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 80 -j REDIRECT --to-port 8080
 	#ip6tables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 443 -j REDIRECT --to-port 8080
+
+	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 80 -j REDIRECT --to 172.17.0.2:8080
+	iptables -t nat -A PREROUTING -i "$pyrnet_device" -p tcp --dport 443 -j REDIRECT --to 172.17.0.2:8080
+
 }
 
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
