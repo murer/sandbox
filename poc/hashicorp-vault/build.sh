@@ -1,16 +1,16 @@
 #!/bin/bash -xe
 
 cmd_image() {
-  docker build -t murer/hashcorp-vault:latest .
+  docker build -t murer/hashicorp-vault:latest .
 }
 
 cmd_run() {
   docker rm -f pyrnet || true
-  docker run -it --rm --name pyrnet \
+  docker run -it --rm --name hashicorp-vault \
     --privileged \
     --network host \
     --volume /var/run/dbus:/var/run/dbus \
-    murer/pyrnet "$@"
+    murer/hashicorp-vault "$@"
 }
 
 cmd_start() {

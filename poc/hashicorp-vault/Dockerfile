@@ -19,3 +19,10 @@ RUN usermod -a -G supersudo vault
 USER vault
 WORKDIR /home/vault
 RUN vault -h
+
+COPY conf conf
+
+RUN sudo chown -R vault:vault /home/vault
+
+# CMD [ "vault", "server", "--config", "conf/vault.conf" ]
+CMD [ "vault", "server", "-dev", "-dev-root-token-id=root" ]
