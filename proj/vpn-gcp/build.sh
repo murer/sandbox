@@ -66,10 +66,10 @@ cmd_instance_create() {
   instance_create ivpn-neta-2 \
     --network-interface network=neta,subnet=neta-main,private-network-ip=10.1.20.102 &
   instance_create ivpn-netb-1 \
-    --network-interface network=neta,subnet=netb-main,private-network-ip=10.2.20.101 \
+    --network-interface network=netb,subnet=netb-main,private-network-ip=10.2.20.101 \
     --network-interface network=nets,subnet=nets-main,private-network-ip=10.0.20.209,no-address &
   instance_create ivpn-netb-2 \
-    --network-interface network=neta,subnet=netb-main,private-network-ip=10.2.20.102 &
+    --network-interface network=netb,subnet=netb-main,private-network-ip=10.2.20.102 &
   wait
 }
 
