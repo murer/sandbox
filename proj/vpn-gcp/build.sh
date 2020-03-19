@@ -3,26 +3,34 @@
 cmd_network_delete() {
   gcloud compute firewall-rules delete neta-allow-basic -q &
   gcloud compute firewall-rules delete netb-allow-basic -q &
+  gcloud compute firewall-rules delete nets-allow-basic -q &
   gcloud beta compute networks subnets delete neta-main --project dsavault -q --region us-east1 &
   gcloud beta compute networks subnets delete netb-main --project dsavault -q --region us-east1 &
+  gcloud beta compute networks subnets delete nets-main --project dsavault -q --region us-east1 &
   wait
   gcloud compute networks delete neta --project dsavault -q &
   gcloud compute networks delete netb --project dsavault -q &
+  gcloud compute networks delete nets --project dsavault -q &
   wait
 }
 
 cmd_network_create() {
   gcloud compute networks create neta --project dsavault --subnet-mode custom &
   gcloud compute networks create netb --project dsavault --subnet-mode custom &
+  gcloud compute networks create nets --project dsavault --subnet-mode custom &
   wait
   gcloud beta compute networks subnets create neta-main --project dsavault \
     --network neta --region us-east1 \
-    --range=10.0.20.0/24 --enable-private-ip-google-access &
+    --range=10.1.20.0/24 --enable-private-ip-google-access &
   gcloud beta compute networks subnets create netb-main --project dsavault \
     --network neta --region us-east1 \
-    --range=10.1.20.0/24 --enable-private-ip-google-access &
+    --range=10.2.20.0/24 --enable-private-ip-google-access &
+  gcloud beta compute networks subnets create nets-main --project dsavault \
+    --network nets --region us-east1 \
+    --range=10.0.20.0/24 --enable-private-ip-google-access &
   gcloud compute firewall-rules create neta-allow-basic --network neta --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create netb-allow-basic --network netb --allow tcp:22,tcp:3389,icmp &
+  gcloud compute firewall-rules create nets-allow-basic --network nets --allow tcp:22,tcp:3389,icmp &
   wait
 }
 
@@ -52,10 +60,16 @@ instance_create() {
 }
 
 cmd_instance_create() {
-  instance_create ivpn-neta-1 --network-interface network=neta,subnet=neta-main,private-network-ip=10.0.20.100 &
-  instance_create ivpn-neta-2 --network-interface network=neta,subnet=neta-main,private-network-ip=10.0.20.101 &
-  instance_create ivpn-netb-1 --network-interface network=neta,subnet=netb-main,private-network-ip=10.1.20.100 &
-  instance_create ivpn-netb-2 --network-interface network=neta,subnet=netb-main,private-network-ip=10.1.20.102 &
+  instance_create ivpn-neta-1 \
+    --network-interface network=neta,subnet=neta-main,private-network-ip=10.1.20.101 \
+    --network-interface network=nets,subnet=nets-main,private-network-ip=10.0.20.208,no-address &
+  instance_create ivpn-neta-2 \
+    --network-interface network=neta,subnet=neta-main,private-network-ip=10.1.20.102 &
+  instance_create ivpn-netb-1 \
+    --network-interface network=neta,subnet=netb-main,private-network-ip=10.2.20.101 \
+    --network-interface network=nets,subnet=nets-main,private-network-ip=10.0.20.209,no-address &
+  instance_create ivpn-netb-2 \
+    --network-interface network=neta,subnet=netb-main,private-network-ip=10.2.20.102 &
   wait
 }
 
@@ -71,9 +85,10 @@ check_access() {
 }
 
 cmd_test() {
-  check_access ivpn-neta-1 ivpn-neta-2
-  check_access ivpn-netb-1 ivpn-netb-2
-  check_access ivpn-neta-1 ivpn-netb1
+  check_access ivpn-neta-1 10.1.20.102
+  check_access ivpn-neta-1 10.0.20.209
+  check_access ivpn-neta-1 10.2.20.101
+  check_access ivpn-neta-1 10.2.20.102
   echo "Success"
 }
 
