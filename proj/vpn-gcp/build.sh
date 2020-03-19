@@ -23,7 +23,7 @@ cmd_network_create() {
     --network neta --region us-east1 \
     --range=10.1.20.0/24 --enable-private-ip-google-access &
   gcloud beta compute networks subnets create netb-main --project dsavault \
-    --network neta --region us-east1 \
+    --network netb --region us-east1 \
     --range=10.2.20.0/24 --enable-private-ip-google-access &
   gcloud beta compute networks subnets create nets-main --project dsavault \
     --network nets --region us-east1 \
