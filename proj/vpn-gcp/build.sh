@@ -52,10 +52,10 @@ instance_create() {
 }
 
 cmd_instance_create() {
-  instance_create ivpn-neta-1 --network-interface network=neta,subnet=neta-main &
-  instance_create ivpn-neta-2 --network-interface network=neta,subnet=neta-main &
-  instance_create ivpn-netb-1 --network-interface network=neta,subnet=netb-main &
-  instance_create ivpn-netb-2 --network-interface network=neta,subnet=netb-main &
+  instance_create ivpn-neta-1 --network-interface network=neta,subnet=neta-main,private-network-ip=10.0.20.100 &
+  instance_create ivpn-neta-2 --network-interface network=neta,subnet=neta-main,private-network-ip=10.0.20.101 &
+  instance_create ivpn-netb-1 --network-interface network=neta,subnet=netb-main,private-network-ip=10.1.20.100 &
+  instance_create ivpn-netb-2 --network-interface network=neta,subnet=netb-main,private-network-ip=10.1.20.102 &
   wait
 }
 
