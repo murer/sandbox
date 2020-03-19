@@ -4,6 +4,9 @@ cmd_network_delete() {
   gcloud compute firewall-rules delete neta-allow-basic -q &
   gcloud compute firewall-rules delete netb-allow-basic -q &
   gcloud compute firewall-rules delete nets-allow-basic -q &
+  gcloud compute firewall-rules delete neta-allow-internal -q &
+  gcloud compute firewall-rules delete netb-allow-internal -q &
+  gcloud compute firewall-rules delete nets-allow-internal -q &
   gcloud beta compute networks subnets delete neta-main --project dsavault -q --region us-east1 &
   gcloud beta compute networks subnets delete netb-main --project dsavault -q --region us-east1 &
   gcloud beta compute networks subnets delete nets-main --project dsavault -q --region us-east1 &
@@ -31,6 +34,9 @@ cmd_network_create() {
   gcloud compute firewall-rules create neta-allow-basic --network neta --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create netb-allow-basic --network netb --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create nets-allow-basic --network nets --allow tcp:22,tcp:3389,icmp &
+  gcloud compute firewall-rules create neta-allow-internal --network neta --allow tcp,udp,icmp --source-range 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
+  gcloud compute firewall-rules create netb-allow-internal --network netb --allow tcp,udp,icmp --source-range 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
+  gcloud compute firewall-rules create nets-allow-internal --network nets --allow tcp,udp,icmp --source-range 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   wait
 }
 

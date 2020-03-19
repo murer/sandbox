@@ -54,6 +54,8 @@ conn paris-to-amsterdam
   auto=start
 EOF
 
+cat /etc/ipsec.conf
+
 iptables -t nat -A POSTROUTING -s "$vpn_ipsec_other_net" -d "$vpn_ipsec_me_net" -j MASQUERADE
 
 ipsec restart
