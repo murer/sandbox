@@ -67,18 +67,13 @@ cmd_recreate() {
 }
 
 check_access() {
-  gcloud compute ssh "${1?'source'}" -- nc -zvw 5 "${2?'dest'}" 22
+  gcloud compute ssh "${1?'source'}" --project dsavault --zone us-east1-b -- nc -zvw 5 "${2?'dest'}" 22
 }
 
 cmd_test() {
-  check_access ivpn-neta-suba-1 ivpn-neta-subb-1
-  check_access ivpn-neta-suba-1 ivpn-netb-def-1
-  # check_access ivpn-neta-suba-1 ivpn-neta-suba-2
-  # check_access ivpn-neta-suba-2 ivpn-neta-suba-1
-  # check_access ivpn-neta-subb-1 ivpn-neta-subb-2
-  # check_access ivpn-neta-subb-2 ivpn-neta-subb-1
-  # check_access ivpn-netb-def-1 ivpn-netb-def-2
-  # check_access ivpn-netb-def-2 ivpn-netb-def-1
+  check_access ivpn-neta-1 ivpn-neta-2
+  check_access ivpn-netb-1 ivpn-netb-2
+  check_access ivpn-neta-1 ivpn-netb1
   echo "Success"
 }
 
