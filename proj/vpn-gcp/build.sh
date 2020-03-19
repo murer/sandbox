@@ -79,6 +79,11 @@ cmd_instance_create() {
   wait
 }
 
+cmd_delete() {
+    cmd_instance_delete
+    cmd_network_delete
+}
+
 cmd_instance_recreate() {
   cmd_instance_delete
   cmd_instance_create
