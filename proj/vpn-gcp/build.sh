@@ -27,12 +27,10 @@ cmd_network_create() {
 }
 
 cmd_instance_delete() {
-  gcloud compute instances delete ivpn-neta-suba-1 --project dsavault --zone us-east1-b -q &
-  gcloud compute instances delete ivpn-neta-suba-2 --project dsavault --zone us-east1-b -q &
-  gcloud compute instances delete ivpn-neta-subb-1 --project dsavault --zone us-east1-b -q &
-  gcloud compute instances delete ivpn-neta-subb-2 --project dsavault --zone us-east1-b -q &
-  gcloud compute instances delete ivpn-netb-def-1 --project dsavault --zone us-east1-b -q &
-  gcloud compute instances delete ivpn-netb-def-2 --project dsavault --zone us-east1-b -q &
+  gcloud compute instances delete ivpn-neta-1 --project dsavault --zone us-east1-b -q &
+  gcloud compute instances delete ivpn-neta-2 --project dsavault --zone us-east1-b -q &
+  gcloud compute instances delete ivpn-netb-1 --project dsavault --zone us-east1-b -q &
+  gcloud compute instances delete ivpn-netb-2 --project dsavault --zone us-east1-b -q &
   wait
 }
 
