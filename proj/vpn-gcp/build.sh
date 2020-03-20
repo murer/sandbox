@@ -31,8 +31,8 @@ cmd_network_create() {
   gcloud compute firewall-rules create neta-allow-internal --network neta --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create netb-allow-internal --network netb --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create nets-allow-internal --network nets --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
-  gcloud compute routes create neta-netb --project dsavault --destination-range 10.2.20.0/24 --next-hop-address 10.1.20.101 --network neta
-  gcloud compute routes create netb-neta --project dsavault --destination-range 10.1.20.0/24 --next-hop-address 10.2.20.101 --network netb
+  gcloud compute routes create neta-netb --project dsavault --destination-range 10.2.20.0/24 --next-hop-address 10.1.20.101 --network neta-main
+  gcloud compute routes create netb-neta --project dsavault --destination-range 10.1.20.0/24 --next-hop-address 10.2.20.101 --network netb-main
   wait
 }
 
