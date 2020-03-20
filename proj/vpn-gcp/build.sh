@@ -1,6 +1,9 @@
 #!/bin/bash -xe
 
 cmd_network_delete() {
+  gcloud compute routes delete neta-netb --project dsavault -q &
+  gcloud compute routes delete netb-neta --project dsavault -q &
+  wait
   gcloud compute firewall-rules delete neta-allow-basic -q &
   gcloud compute firewall-rules delete netb-allow-basic -q &
   gcloud compute firewall-rules delete nets-allow-basic -q &
@@ -31,8 +34,9 @@ cmd_network_create() {
   gcloud compute firewall-rules create neta-allow-internal --network neta --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create netb-allow-internal --network netb --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create nets-allow-internal --network nets --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
-  gcloud compute routes create neta-netb --project dsavault --destination-range 10.2.20.0/24 --next-hop-address 10.1.20.101 --network neta-main
-  gcloud compute routes create netb-neta --project dsavault --destination-range 10.1.20.0/24 --next-hop-address 10.2.20.101 --network netb-main
+  wait
+  gcloud compute routes create neta-netb --project dsavault --destination-range 10.2.20.0/24 --next-hop-address 10.1.20.101 --network neta
+  gcloud compute routes create netb-neta --project dsavault --destination-range 10.1.20.0/24 --next-hop-address 10.2.20.101 --network netb
   wait
 }
 
@@ -85,6 +89,11 @@ cmd_create() {
   cmd_instance_create
 }
 
+cmd_recreate() {
+  cmd_delete
+  cmd_create
+}
+
 cmd_instance_recreate() {
   cmd_instance_delete
   cmd_instance_create
@@ -103,8 +112,10 @@ cmd_test() {
 }
 
 cmd_instance_config() {
-  cat install.sh | gcloud compute ssh ivpn-neta-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe
-  cat install.sh | gcloud compute ssh ivpn-netb-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe
+  cat install.sh | gcloud compute ssh ivpn-neta-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe &
+  cat install.sh | gcloud compute ssh ivpn-netb-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe &
+  wait %1
+  wait %2
 }
 
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
