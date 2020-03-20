@@ -104,10 +104,12 @@ check_access() {
 }
 
 cmd_test() {
-  check_access ivpn-neta-1 10.1.20.102
-  check_access ivpn-neta-1 10.0.20.209
-  check_access ivpn-neta-1 10.2.20.101
+  # check_access ivpn-neta-1 10.1.20.102
+  # check_access ivpn-neta-1 10.0.20.209
+  # check_access ivpn-neta-1 10.2.20.101
   check_access ivpn-neta-1 10.2.20.102
+  check_access ivpn-neta-2 10.2.20.102
+  check_access ivpn-netb-2 10.1.20.102
   echo "Success"
 }
 
