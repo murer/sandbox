@@ -64,9 +64,9 @@ cat /etc/ipsec.conf
 
 #iptables -t nat -A POSTROUTING -s "$vpn_ipsec_other_net" -d "$vpn_ipsec_me_net" -j MASQUERADE
 
-ipsec restart
+#ipsec restart
 
-ipsec status
+#ipsec status
 
 # systemctl status strongswan.service
 # systemctl is-enabled strongswan.service

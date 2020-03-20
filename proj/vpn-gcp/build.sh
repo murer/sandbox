@@ -107,7 +107,8 @@ cmd_test() {
 }
 
 cmd_instance_config() {
-  cat install.sh | gcloud compute ssh ivpn-neta-1 --project dsavault --zone us-east1-b -- bash -xe
+  cat install.sh | gcloud compute ssh ivpn-neta-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe
+  cat install.sh | gcloud compute ssh ivpn-netb-1 --project dsavault --zone us-east1-b -- -T sudo bash -xe
 }
 
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
