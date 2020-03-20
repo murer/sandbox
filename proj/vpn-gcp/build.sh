@@ -22,21 +22,17 @@ cmd_network_create() {
   gcloud compute networks create netb --project dsavault --subnet-mode custom &
   gcloud compute networks create nets --project dsavault --subnet-mode custom &
   wait
-  gcloud beta compute networks subnets create neta-main --project dsavault \
-    --network neta --region us-east1 \
-    --range=10.1.20.0/24 --enable-private-ip-google-access &
-  gcloud beta compute networks subnets create netb-main --project dsavault \
-    --network netb --region us-east1 \
-    --range=10.2.20.0/24 --enable-private-ip-google-access &
-  gcloud beta compute networks subnets create nets-main --project dsavault \
-    --network nets --region us-east1 \
-    --range=10.0.20.0/24 --enable-private-ip-google-access &
+  gcloud beta compute networks subnets create neta-main --project dsavault --network neta --region us-east1 --range=10.1.20.0/24 &
+  gcloud beta compute networks subnets create netb-main --project dsavault --network netb --region us-east1 --range=10.2.20.0/24 &
+  gcloud beta compute networks subnets create nets-main --project dsavault --network nets --region us-east1 --range=10.0.20.0/24 &
   gcloud compute firewall-rules create neta-allow-basic --network neta --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create netb-allow-basic --network netb --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create nets-allow-basic --network nets --allow tcp:22,tcp:3389,icmp &
   gcloud compute firewall-rules create neta-allow-internal --network neta --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create netb-allow-internal --network netb --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
   gcloud compute firewall-rules create nets-allow-internal --network nets --allow tcp,udp,icmp --source-ranges 10.0.20.0/24,10.1.20.0/24,10.2.20.0/24 &
+  gcloud compute routes create neta-netb --project dsavault --destination-range 10.2.20.0/24 --next-hop-address 10.1.20.101 --network neta
+  gcloud compute routes create netb-neta --project dsavault --destination-range 10.1.20.0/24 --next-hop-address 10.2.20.101 --network netb
   wait
 }
 
