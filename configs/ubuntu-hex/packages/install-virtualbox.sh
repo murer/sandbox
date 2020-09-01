@@ -18,3 +18,5 @@ echo "# deb-src http://download.virtualbox.org/virtualbox/debian $(lsb_release -
 sudo apt-get -y update
 sudo apt-cache search virtualbox | grep ^virtualbox
 sudo apt-get install -y virtualbox-6.1 dkms
+
+sudo usermod -aG vboxusers "$USER"
