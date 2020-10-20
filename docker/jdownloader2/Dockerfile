@@ -17,5 +17,7 @@ ENV PATH "$JAVA_HOME/bin:$PATH"
 USER hexblade
 WORKDIR /home/hexblade
 RUN mkdir -p opt/JDownloader
-RUN wget  --progress=dot -e dotbytes=32K -c -O opt/JDownloader/JDownaloder.jar \
-  http://installer.jdownloader.org/JDownloader.jar
+COPY gen/JDownloader.jar opt/JDownloader
+RUN sudo chown -R hexblade:hexblade opt
+#RUN wget  --progress=dot -e dotbytes=32K -c -O opt/JDownloader/JDownaloder.jar \
+#  http://installer.jdownloader.org/JDownloader.jar
