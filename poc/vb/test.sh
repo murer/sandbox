@@ -26,7 +26,38 @@ cmd_create() {
 
 }
 
-cmd_delete() {
+cmd_vm_full() {
+  vm_name="${1?'vm_name'}"
+
+  mkdir -p "target/vm/$vm_name"
+
+  if vboxmanage showvminfo "$vm_name" > /dev/null; then false; fi
+
+  vboxmanage clonevm "hexblade1" \
+    --register \
+    --snapshot Installed \
+    --name "$vm_name"
+  
+  vm_from_disk="$(vboxmanage showvminfo hexblade1 --machinereadable | grep SATA-ImageUUID-1-0 | cut -d"=" -f2 | cut -d'"' -f2)"
+}
+
+cmd_vm_link() {
+  vm_name="${1?'vm_name'}"
+
+  mkdir -p "target/vm/$vm_name"
+
+  if vboxmanage showvminfo "$vm_name" > /dev/null; then false; fi
+
+  vboxmanage clonevm "hexblade1" \
+    --register \
+    --snapshot Installed \
+    --options link \
+    --name "$vm_name"
+  
+  vm_from_disk="$(vboxmanage showvminfo hexblade1 --machinereadable | grep SATA-ImageUUID-1-0 | cut -d"=" -f2 | cut -d'"' -f2)"
+}
+
+cmd_vm_delete() {
   vm_name="${1?'vm_name'}"
   vboxmanage unregistervm "$vm_name" --delete
 }
@@ -39,9 +70,15 @@ cmd_home_create() {
 }
 
 cmd_root_clone() {
-  mkdir -p target/home
+  mkdir -p target/root
   vm_from_disk="$(vboxmanage showvminfo hexblade1 --machinereadable | grep SATA-ImageUUID-0-0 | cut -d"=" -f2 | cut -d'"' -f2)"
-  vboxmanage clonemedium disk "$vm_from_disk" "target/root.vdi" --format VDI
+  vboxmanage clonemedium disk "$vm_from_disk" "target/root/root.vdi" --format VDI
+}
+
+cmd_root_link() {
+  mkdir -p target/root
+  vm_from_disk="$(vboxmanage showvminfo hexblade1 --machinereadable | grep SATA-ImageUUID-0-0 | cut -d"=" -f2 | cut -d'"' -f2)"
+  vboxmanage createmedium disk --filename "target/root/root.vdi" --format VDI --diffparent "$vm_from_disk"
 }
 
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
