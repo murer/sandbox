@@ -32,7 +32,8 @@ docker_devx() {
 }
 
 cmd_code() {
-  cmd_rund devx code --verbose openerssh
+  docker rm -f openerssh-vscode || true
+  OPENERSSH_DOCKER_EXTRA="--name openerssh-vscode" cmd_rund devx code --verbose openerssh
 }
 
 cmd_cleanup() {

@@ -34,5 +34,6 @@ ENV PATH "$HOME/vscode/bin:$GOROOT/bin:$PATH"
 
 RUN go get -u github.com/ramya-rao-a/go-outline
 RUN go get -u github.com/go-delve/delve/cmd/dlv
+RUN go get -u github.com/sqs/goreturns
 
 COPY docker /opt/openerssh/docker
