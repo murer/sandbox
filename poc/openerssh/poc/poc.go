@@ -50,9 +50,9 @@ func main() {
 	}
 
 	// You can generate a keypair with 'ssh-keygen -t rsa'
-	privateBytes, err := ioutil.ReadFile("id_rsa")
+	privateBytes, err := ioutil.ReadFile("gen/id_rsa")
 	if err != nil {
-		log.Fatal("Failed to load private key (./id_rsa)")
+		log.Fatal("Failed to load private key (./gen/id_rsa)")
 	}
 
 	private, err := ssh.ParsePrivateKey(privateBytes)
@@ -152,6 +152,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 	// Sessions have out-of-band requests such as "shell", "pty-req" and "env"
 	go func() {
 		for req := range requests {
+			log.Printf("REQ: %s", req.Type)
 			switch req.Type {
 			case "shell":
 				// We only accept the default shell

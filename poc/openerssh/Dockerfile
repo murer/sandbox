@@ -23,7 +23,7 @@ RUN wget --progress=dot -e dotbytes=1M -c \
 
 RUN cd go && \
     wget --progress=dot -e dotbytes=1M -c \
-        'https://golang.org/dl/go1.15.3.linux-amd64.tar.gz' \
+        'https://golang.org/dl/go1.14.10.linux-amd64.tar.gz' \
         -O go.tar.gz && \
     tar xzf go.tar.gz && \
     rm go.tar.gz
@@ -35,5 +35,8 @@ ENV PATH "$HOME/vscode/bin:$GOROOT/bin:$PATH"
 RUN go get -u github.com/ramya-rao-a/go-outline
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 RUN go get -u github.com/sqs/goreturns
+RUN go get -u github.com/uudashr/gopkgs/v2/cmd/gopkgs
+RUN go get -u github.com/stamblerre/gocode
+RUN go get -u github.com/rogpeppe/godef
 
 COPY docker /opt/openerssh/docker
