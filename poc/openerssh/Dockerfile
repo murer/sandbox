@@ -3,14 +3,7 @@ FROM murer/hexblade:edge
 USER root
 
 RUN apt-get -y update
-RUN apt-get -y install git wget xauth net-tools openssh-server
-# RUN rm -rf /opt/hexblade && \
-#     git clone https://github.com/murer/hexblade /opt/hexblade && \
-#     cd /opt/hexblade && \
-#     ./packages/golang/install-golang.sh && \
-#     ./packages/vscode/install-vscode.sh && \
-#     chown -R root:root /opt && \
-#     chmod 4755 /opt/VSCode-linux-x64/chrome-sandbox
+RUN apt-get -y install git wget xauth net-tools openssh-server inetutils-syslogd vim
 
 USER hexblade
 WORKDIR /home/hexblade
@@ -37,3 +30,4 @@ ENV PATH "$HOME/vscode/bin:$GOROOT/bin:$PATH"
 RUN go get -u github.com/ramya-rao-a/go-outline
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 
+COPY docker /opt/openerssh/docker

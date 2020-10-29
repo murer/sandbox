@@ -26,9 +26,14 @@ docker_devx() {
   docker run $OPENERSSH_DOCKER_EXTRA --rm --label openerssh_dev \
     --mount source=openerssh_vscode_dev,target=/home/hexblade/.vscode \
     -v "$(pwd)":/home/hexblade/openerssh \
-    -e "DISPLAY=$DISPLAY" \
+    -e "DISPLAY=unix$DISPLAY" \
     -v "/tmp/.X11-unix:/tmp/.X11-unix" \
+    -v "$HOME/.ssh:/home/hexblade/.ssh" \
     murer/openerssh-dev:local "$@"
+}
+
+cmd_code() {
+  cmd_rund devx code --verbose openerssh
 }
 
 cmd_cleanup() {
