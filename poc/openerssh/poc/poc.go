@@ -104,6 +104,7 @@ func handleChannel(newChannel ssh.NewChannel) {
 	// "x11", "direct-tcpip" and "forwarded-tcpip"
 	// channel types.
 	if t := newChannel.ChannelType(); t != "session" {
+		log.Printf("Channel: %s", t)
 		newChannel.Reject(ssh.UnknownChannelType, fmt.Sprintf("unknown channel type: %s", t))
 		return
 	}
