@@ -1,6 +1,7 @@
 package poc_screenshot
 
 // import -window root png:- > test.png
+// xwininfo -tree -root
 
 import (
 	"context"
