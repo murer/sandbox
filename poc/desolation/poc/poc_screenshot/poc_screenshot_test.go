@@ -4,8 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/murer/desolation/poc/poc_screenshot"
 )
 
-func noop(t *testing.T) {
-	assert.Equal(t, 1, 1)
+func TestNoop(t *testing.T) {
+	assert.Equal(t, 1, poc_screenshot.Noop())
+
 }
