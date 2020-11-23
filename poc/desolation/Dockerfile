@@ -42,5 +42,6 @@ RUN go get -u github.com/uudashr/gopkgs/v2/cmd/gopkgs
 RUN go get -u github.com/stamblerre/gocode
 RUN go get -u github.com/rogpeppe/godef
 RUN go get -u github.com/acroca/go-symbols
+RUN go get -u golang.org/x/tools/gopls
 
 COPY docker /opt/openerssh/docker

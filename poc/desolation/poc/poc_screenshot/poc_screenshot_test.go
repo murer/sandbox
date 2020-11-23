@@ -8,7 +8,8 @@ import (
 	"github.com/murer/desolation/poc/poc_screenshot"
 )
 
-func TestNoop(t *testing.T) {
-	assert.Equal(t, 1, poc_screenshot.Noop())
-
+func TestScreenshot(t *testing.T) {
+	out := poc_screenshot.Screenshot()
+	assert.Equal(t, 1, 1)
+	assert.Less(t, 1, len(out))
 }
