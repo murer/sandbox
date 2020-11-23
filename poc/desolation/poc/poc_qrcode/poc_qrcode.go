@@ -1,11 +1,18 @@
 package poc_qrcode
 
-import "os/exec"
+import (
+	"context"
+	"os/exec"
+	"time"
+)
 
 // zbarimg --raw poc/poc_qrcode/sample_qrcode.png  2>/dev/null | xxd
 
 func Parse() string {
-	out, err := exec.Command("zbarimg", "--raw", "sample_qrcode.png").Output()
+	ctx, cancel := context.WithTimeout(context.Background(), 1000*time.Millisecond)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "zbarimg", "--raw", "sample_qrcode.png")
+	out, err := cmd.Output()
 	if err != nil {
 		panic(err)
 	}
