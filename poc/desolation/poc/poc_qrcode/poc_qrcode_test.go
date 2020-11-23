@@ -8,6 +8,6 @@ import (
 )
 
 func TestScreenshot(t *testing.T) {
-	poc_qrcode.Parse()
-	assert.Equal(t, 1, 1)
+	txt := poc_qrcode.Parse()
+	assert.Equal(t, "My simple text\n", txt)
 }
