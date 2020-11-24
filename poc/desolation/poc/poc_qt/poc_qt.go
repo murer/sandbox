@@ -11,7 +11,7 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-func main() {
+func QtPoc() {
 	fmt.Printf("aaaa")
 	widgets.NewQApplication(len(os.Args), os.Args)
 

@@ -1,12 +1,11 @@
-package main
+package poc_qt_test
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/murer/desolation/poc/poc_qt"
 )
 
-func main() {
-	fmt.Println("Hello, World!")
+func TestScreenshot(t *testing.T) {
 	poc_qt.QtPoc()
 }
