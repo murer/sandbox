@@ -64,6 +64,10 @@ func HandleCommand(w http.ResponseWriter, r *http.Request) {
 	} else {
 		ret = &message.Message{Name: "unknown", Headers: nil, Payload: ""}
 	}
+	rid, exists := msg.Headers["rid"]
+	if exists {
+		ret.Headers["rid"] = rid
+	}
 	respBody := message.Encode(ret)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(respBody))
