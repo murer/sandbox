@@ -42,17 +42,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func messageExtract(r *http.Request) *message.Message {
-	// contentType := r.Header.Get("Content-Type")
-	// reqBody := ""
-	// if strings.HasPrefix(contentType, "application/json") {
 	reqBody := util.ReadAllString(r.Body)
-	// } else {
-	// 	r.ParseForm()
-	// 	reqBody = r.Form.Get("msg")
-	// }
-	// if reqBody == "" {
-	// 	log.Fatalf("Message not found: %s", contentType)
-	// }
 	return message.Decode(reqBody)
 }
 
