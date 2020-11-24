@@ -21,3 +21,9 @@ func TestVersion(t *testing.T) {
 	assert.Equal(t, "text/plain; charset=UTF-8", resp.Header.Get("Content-Type"))
 	assert.Equal(t, util.Version, util.ReadAllString(resp.Body))
 }
+
+func TestWrite(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
+	defer server.Close()
+	t.Logf("URL: %s", server.URL)
+}
