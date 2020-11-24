@@ -29,7 +29,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleCommand(w http.ResponseWriter, r *http.Request) {
+func messageExtract(r *http.Request) *message.Message {
 	contentType := r.Header.Get("Content-Type")
 	reqBody := ""
 	if strings.HasPrefix(contentType, "application/json") {
@@ -41,7 +41,11 @@ func HandleCommand(w http.ResponseWriter, r *http.Request) {
 	if reqBody == "" {
 		log.Fatalf("Message not found: %s", contentType)
 	}
-	msg := message.Decode(reqBody)
+	return message.Decode(reqBody)
+}
+
+func HandleCommand(w http.ResponseWriter, r *http.Request) {
+	msg := messageExtract(r)
 	var ret *message.Message
 	if msg.Name == "echo" {
 		ret = msg
