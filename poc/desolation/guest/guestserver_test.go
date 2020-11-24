@@ -26,4 +26,10 @@ func TestWrite(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
 	defer server.Close()
 	t.Logf("URL: %s", server.URL)
+
+	// msg := &message.Message{
+	// 	Name:    "echo",
+	// 	Headers: map[string]string{"foo": "1", "bar": "2"},
+	// 	Payload: "bXVyZXI=",
+	// }
 }
