@@ -42,5 +42,6 @@ RUN go get -u github.com/stamblerre/gocode
 RUN go get -u github.com/rogpeppe/godef
 RUN go get -u github.com/acroca/go-symbols
 RUN go get -u golang.org/x/tools/gopls
+RUN go get -u golang.org/x/lint/golint
 
 COPY docker /opt/openerssh/docker
