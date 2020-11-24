@@ -13,7 +13,7 @@ import (
 )
 
 func TestVersion(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
+	server := httptest.NewServer(http.Handler(guest.Handler()))
 	defer server.Close()
 	t.Logf("URL: %s", server.URL)
 	resp, err := http.Get(server.URL + "/api/version.txt")
@@ -25,7 +25,7 @@ func TestVersion(t *testing.T) {
 }
 
 func TestUnknown(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
+	server := httptest.NewServer(http.Handler(guest.Handler()))
 	defer server.Close()
 	t.Logf("URL: %s", server.URL)
 
@@ -42,7 +42,7 @@ func TestUnknown(t *testing.T) {
 }
 
 func TestEchoJson(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
+	server := httptest.NewServer(http.Handler(guest.Handler()))
 	defer server.Close()
 	t.Logf("URL: %s", server.URL)
 
@@ -59,7 +59,7 @@ func TestEchoJson(t *testing.T) {
 }
 
 // func TestEchoForm(t *testing.T) {
-// 	server := httptest.NewServer(http.HandlerFunc(guest.Handle))
+// 	server := httptest.NewServer(http.Handler(guest.Handler()))
 // 	defer server.Close()
 // 	t.Logf("URL: %s", server.URL)
 
@@ -76,3 +76,14 @@ func TestEchoJson(t *testing.T) {
 // 	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 // 	assert.Equal(t, msg, message.Decode(util.ReadAllString(resp.Body)))
 // }
+
+func TestStatic(t *testing.T) {
+	server := httptest.NewServer(http.Handler(guest.Handler()))
+	defer server.Close()
+	t.Logf("URL: %s", server.URL)
+	resp, err := http.Get(server.URL + "/public/ping.txt")
+	util.Check(err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "text/plain; charset=utf-8", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "OK", util.ReadAllString(resp.Body))
+}

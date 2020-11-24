@@ -3,6 +3,7 @@ package util
 import (
 	"io"
 	"io/ioutil"
+	"os"
 )
 
 var Version = "dev"
@@ -21,4 +22,13 @@ func ReadAll(r io.Reader) []byte {
 
 func ReadAllString(r io.Reader) string {
 	return string(ReadAll(r))
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	Check(err)
+	return true
 }

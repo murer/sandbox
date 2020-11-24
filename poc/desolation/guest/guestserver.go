@@ -10,10 +10,22 @@ import (
 )
 
 func Start() {
-	http.HandleFunc("/", Handle)
+
+	// http.HandleFunc("/", Handle)
 	log.Printf("Starting server")
-	err := http.ListenAndServe("localhost:0", nil)
+	err := http.ListenAndServe("localhost:0", Handler())
 	util.Check(err)
+}
+
+func Handler() http.Handler {
+	static := "public"
+	if !util.FileExists(static) {
+		log.Panicf("static dir not found: %s", static)
+	}
+	mux := http.NewServeMux()
+	mux.Handle("/public/", http.StripPrefix("/public", http.FileServer(http.Dir(static))))
+	mux.Handle("/", http.HandlerFunc(Handle))
+	return mux
 }
 
 func Handle(w http.ResponseWriter, r *http.Request) {
