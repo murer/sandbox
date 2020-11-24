@@ -11,10 +11,13 @@ func TestMessage(t *testing.T) {
 	original := &message.Message{
 		Name:    "nm",
 		Headers: map[string]string{"foo": "1", "bar": "2"},
-		Payload: []byte{1, 2},
+		Payload: "bXVyZXI=",
 	}
 	assert.Equal(t, "1", original.Get("foo"))
 	assert.Equal(t, 2, original.GetInt("bar"))
+	assert.Equal(t, []byte("murer"), original.PayloadDecode())
+	original.PayloadEncode([]byte{1, 2})
+	assert.Equal(t, []byte{1, 2}, original.PayloadDecode())
 
 	// secret := []byte("12345678901234561234567890123456")
 	// buf := MessageEnc(secret, original)

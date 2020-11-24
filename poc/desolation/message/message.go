@@ -10,7 +10,7 @@ import (
 type Message struct {
 	Name    string
 	Headers map[string]string
-	Payload []byte
+	Payload string
 }
 
 func (m *Message) Get(name string) string {
@@ -25,4 +25,12 @@ func (m *Message) GetInt(name string) int {
 	ret, err := strconv.Atoi(m.Get(name))
 	util.Check(err)
 	return ret
+}
+
+func (m *Message) PayloadEncode(payload []byte) {
+	m.Payload = util.B64Enc(payload)
+}
+
+func (m *Message) PayloadDecode() []byte {
+	return util.B64Dec(m.Payload)
 }
