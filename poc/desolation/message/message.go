@@ -1,6 +1,7 @@
 package message
 
 import (
+	"encoding/json"
 	"log"
 	"strconv"
 
@@ -33,4 +34,17 @@ func (m *Message) PayloadEncode(payload []byte) {
 
 func (m *Message) PayloadDecode() []byte {
 	return util.B64Dec(m.Payload)
+}
+
+func Encode(m *Message) string {
+	ret, err := json.Marshal(m)
+	util.Check(err)
+	return string(ret)
+}
+
+func Decode(msg string) *Message {
+	ret := &Message{}
+	err := json.Unmarshal([]byte(msg), ret)
+	util.Check(err)
+	return ret
 }
