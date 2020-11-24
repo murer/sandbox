@@ -38,10 +38,4 @@ func TestParse(t *testing.T) {
 
 	msg := message.Decode(encoded)
 	assert.Equal(t, original, msg)
-
-	// secret := []byte("12345678901234561234567890123456")
-	// buf := MessageEnc(secret, original)
-	// msg := MessageDec(secret, buf)
-	// assert.Equal(t, original, msg)
-	// assert.Equal(t, 48, len(buf))
 }
