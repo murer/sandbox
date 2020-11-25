@@ -1,9 +1,9 @@
 package guest
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/murer/desolation/message"
 	"github.com/murer/desolation/util"
@@ -13,14 +13,19 @@ func Start() {
 
 	// http.HandleFunc("/", Handle)
 	log.Printf("Starting server")
-	err := http.ListenAndServe("localhost:0", Handler())
+	err := http.ListenAndServe("0.0.0.0:5010", Handler())
 	util.Check(err)
 }
 
+var static = ""
+
 func Handler() http.Handler {
-	static := "public"
+	static = "guest/public"
 	if !util.FileExists(static) {
-		log.Panicf("static dir not found: %s", static)
+		static = "public"
+		if !util.FileExists(static) {
+			log.Panicf("static dir not found: %s", static)
+		}
 	}
 	mux := http.NewServeMux()
 	mux.Handle("/public/", http.StripPrefix("/public", http.FileServer(http.Dir(static))))
@@ -34,8 +39,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		util.RespText(w, util.Version)
 	} else if r.Method == "POST" && r.URL.Path == "/api/command" {
 		HandleCommand(w, r)
-	} else if strings.HasPrefix(r.URL.Path, "/self/") {
-	} else if r.Method == "POST" {
+	} else if r.Method == "GET" && r.URL.Path == "/" {
+		HandleIndex(w, r)
 	} else {
 		http.NotFound(w, r)
 	}
@@ -44,6 +49,13 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 func messageExtract(r *http.Request) *message.Message {
 	reqBody := util.ReadAllString(r.Body)
 	return message.Decode(reqBody)
+}
+
+func HandleIndex(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadFile(static + "/index.html")
+	util.Check(err)
+	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	w.Write(body)
 }
 
 func HandleCommand(w http.ResponseWriter, r *http.Request) {

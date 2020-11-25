@@ -28,6 +28,7 @@ docker_devx() {
     -v "$(pwd)":/home/hexblade/desolation \
     -e "DISPLAY=unix$DISPLAY" \
     -v "/tmp/.X11-unix:/tmp/.X11-unix" \
+    -p 5010:5010 \
     murer/desolation-dev:local "$@"
 }
 

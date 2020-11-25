@@ -1,9 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"github.com/murer/desolation/guest"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	// cmd.Config()
+	// cmd.Execute()
+
+	guest.Start()
 }

@@ -1,0 +1,9 @@
+html { height: 100%; width: 100%; }
+
+body { display: table; height: 100%; margin: 0; padding: 0; width: 100%;}
+
+.top { display: table-row; height: 450px; text-align: center;}
+
+.bot { display: table-row; }
+.bot form { width: 100%; height: 100%; }
+.bot .msg-input { width: 95%; height: 95%; margin-left: 2%;}
