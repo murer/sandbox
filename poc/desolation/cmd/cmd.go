@@ -52,7 +52,6 @@ func configGuest() {
 			guest.TargetHost = args[0]
 			guest.TargetPort = args[1]
 			guest.Start()
-			// server.Start(args[0], util.Secret())
 			return nil
 		},
 	})
