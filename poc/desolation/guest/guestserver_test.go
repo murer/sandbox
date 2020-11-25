@@ -2,6 +2,7 @@ package guest_test
 
 import (
 	"bytes"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -38,7 +39,7 @@ func TestUnknown(t *testing.T) {
 	util.Check(err)
 	assert.Equal(t, 200, resp.StatusCode)
 	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-	assert.Equal(t, &message.Message{Name: "unknown", Headers: nil, Payload: ""}, message.Decode(util.ReadAllString(resp.Body)))
+	assert.Equal(t, &message.Message{Name: "unknown", Headers: map[string]string{}, Payload: ""}, message.Decode(util.ReadAllString(resp.Body)))
 }
 
 func TestEchoJson(t *testing.T) {
@@ -87,4 +88,28 @@ func TestCommandWrite(t *testing.T) {
 	assert.Equal(t, "ok", rmsg.Name)
 	assert.Equal(t, "a", rmsg.Get("rid"))
 	assert.Equal(t, "", rmsg.Payload)
+}
+
+func TestCommandRead(t *testing.T) {
+	original := guest.In
+	guest.In = ioutil.NopCloser(bytes.NewReader([]byte("test")))
+	defer func() { guest.In = original }()
+
+	server := httptest.NewServer(http.Handler(guest.Handler()))
+	defer server.Close()
+	t.Logf("URL: %s", server.URL)
+
+	msg := &message.Message{
+		Name:    "read",
+		Headers: map[string]string{"rid": "a"},
+		Payload: "",
+	}
+	resp, err := http.Post(server.URL+"/api/command", "application/json", bytes.NewReader([]byte(message.Encode(msg))))
+	util.Check(err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+	rmsg := message.Decode(util.ReadAllString(resp.Body))
+	assert.Equal(t, "ok", rmsg.Name)
+	assert.Equal(t, "a", rmsg.Get("rid"))
+	assert.Equal(t, "test", string(util.B64Dec(rmsg.Payload)))
 }

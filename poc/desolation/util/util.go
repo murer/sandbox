@@ -14,6 +14,17 @@ func Check(err error) {
 	}
 }
 
+func ReadMax(r io.Reader, max int) []byte {
+	ret := make([]byte, max)
+	n, err := r.Read(ret)
+	Check(err)
+	return ret[:n]
+}
+
+func ReadMaxString(r io.Reader, max int) string {
+	return string(ReadMax(r, max))
+}
+
 func ReadAll(r io.Reader) []byte {
 	ret, err := ioutil.ReadAll(r)
 	Check(err)
