@@ -141,3 +141,25 @@ func TestCommandCW(t *testing.T) {
 
 	assert.Equal(t, "", util.ReadAllString(pin))
 }
+
+func TestCommandInit(t *testing.T) {
+	server := httptest.NewServer(http.Handler(guest.Handler()))
+	defer server.Close()
+	t.Logf("URL: %s", server.URL)
+
+	msg := &message.Message{
+		Name:    "init",
+		Headers: map[string]string{"rid": "a"},
+		Payload: "",
+	}
+	resp, err := http.Post(server.URL+"/api/command", "application/json", bytes.NewReader([]byte(message.Encode(msg))))
+	util.Check(err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+	rmsg := message.Decode(util.ReadAllString(resp.Body))
+	assert.Equal(t, "ok", rmsg.Name)
+	assert.Equal(t, "a", rmsg.Get("rid"))
+	assert.Equal(t, "127.0.0.1", rmsg.Get("host"))
+	assert.Equal(t, "22", rmsg.Get("port"))
+	assert.Equal(t, "", string(util.B64Dec(rmsg.Payload)))
+}

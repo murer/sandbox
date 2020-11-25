@@ -51,12 +51,12 @@
                 generateResp(ret)
             }
         })
-        console.log('xxxx', msgInput)
     })
 
     $(window).ready(function() {
         $('.msg-input').val(JSON.stringify({
-            Name: 'init'
+            Name: 'init',
+            Headers: { "rid": "init" }
         }))
         $('form').submit()
     })
