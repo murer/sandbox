@@ -3,7 +3,7 @@ FROM murer/hexblade:edge
 USER root
 
 RUN apt-get -y update
-RUN apt-get -y install git wget xauth net-tools dnsutils inetutils-syslogd vim zbar-tools xdotool curl
+RUN apt-get -y install git wget xauth net-tools dnsutils inetutils-syslogd vim zbar-tools xdotool curl imagemagick
 RUN apt-get -y install openssh-server
 RUN apt-get -y install build-essential
 
