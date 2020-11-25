@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// zbarimg --raw poc/poc_qrcode/sample_qrcode.png  2>/dev/null | xxd
+// cat poc/poc_qrcode/sample_qrcode.png | zbarimg --raw PNG:-  2>/dev/null | xxd
 
 func Parse() string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1000*time.Millisecond)
