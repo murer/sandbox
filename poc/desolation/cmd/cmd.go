@@ -47,8 +47,10 @@ func gconf() {
 func configGuest() {
 	rootCmd.AddCommand(&cobra.Command{
 		Use:  "guest",
-		Args: cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			guest.TargetHost = args[0]
+			guest.TargetPort = args[1]
 			guest.Start()
 			// server.Start(args[0], util.Secret())
 			return nil
