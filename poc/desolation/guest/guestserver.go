@@ -67,6 +67,8 @@ func HandleCommand(w http.ResponseWriter, r *http.Request) {
 		ret = HandleCommandWrite(msg, w, r)
 	} else if msg.Name == "read" {
 		ret = HandleCommandRead(msg, w, r)
+	} else if msg.Name == "cw" {
+		ret = HandleCommandCW(msg, w, r)
 	} else {
 		ret = &message.Message{Name: "unknown", Headers: map[string]string{}, Payload: ""}
 	}

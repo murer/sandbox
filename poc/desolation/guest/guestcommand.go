@@ -25,3 +25,8 @@ func HandleCommandRead(m *message.Message, w http.ResponseWriter, r *http.Reques
 	buf = buf[:n]
 	return &message.Message{Name: "ok", Headers: map[string]string{}, Payload: util.B64Enc(buf)}
 }
+
+func HandleCommandCW(m *message.Message, w http.ResponseWriter, r *http.Request) *message.Message {
+	Out.Close()
+	return &message.Message{Name: "ok", Headers: map[string]string{}, Payload: ""}
+}

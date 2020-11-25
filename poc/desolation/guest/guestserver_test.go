@@ -2,6 +2,7 @@ package guest_test
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -112,4 +113,31 @@ func TestCommandRead(t *testing.T) {
 	assert.Equal(t, "ok", rmsg.Name)
 	assert.Equal(t, "a", rmsg.Get("rid"))
 	assert.Equal(t, "test", string(util.B64Dec(rmsg.Payload)))
+}
+
+func TestCommandCW(t *testing.T) {
+	original := guest.Out
+	pin, pout := io.Pipe()
+	guest.Out = pout
+	defer func() { guest.Out = original }()
+
+	server := httptest.NewServer(http.Handler(guest.Handler()))
+	defer server.Close()
+	t.Logf("URL: %s", server.URL)
+
+	msg := &message.Message{
+		Name:    "cw",
+		Headers: map[string]string{"rid": "a"},
+		Payload: "",
+	}
+	resp, err := http.Post(server.URL+"/api/command", "application/json", bytes.NewReader([]byte(message.Encode(msg))))
+	util.Check(err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+	rmsg := message.Decode(util.ReadAllString(resp.Body))
+	assert.Equal(t, "ok", rmsg.Name)
+	assert.Equal(t, "a", rmsg.Get("rid"))
+	assert.Equal(t, "", string(util.B64Dec(rmsg.Payload)))
+
+	assert.Equal(t, "", util.ReadAllString(pin))
 }
