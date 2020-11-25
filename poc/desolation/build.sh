@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 
 cmd_main() {
-  go run main.go
+  go run main.go "$@"
 }
 
 cmd_test() {

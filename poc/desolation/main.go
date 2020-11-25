@@ -1,12 +1,10 @@
 package main
 
-import (
-	"github.com/murer/desolation/guest"
-)
+import "github.com/murer/desolation/cmd"
 
 func main() {
-	// cmd.Config()
-	// cmd.Execute()
+	cmd.Config()
+	cmd.Execute()
 
-	guest.Start()
+	// guest.Start()
 }
