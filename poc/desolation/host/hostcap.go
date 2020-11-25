@@ -58,3 +58,17 @@ func Capture() *message.Message {
 	log.Printf("y")
 	return message.Decode(text)
 }
+
+func CaptureRid(rid string) *message.Message {
+	retries := util.TimeRetryCreate(10)
+	for {
+		msg := Capture()
+		if msg != nil && msg.Get("rid") == rid {
+			return msg
+		}
+		if retries.Expired() {
+			log.Panicf("Timeout waiting for qrcode reply: %s", rid)
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+}
