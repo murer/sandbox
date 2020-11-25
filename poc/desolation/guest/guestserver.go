@@ -63,8 +63,10 @@ func HandleCommand(w http.ResponseWriter, r *http.Request) {
 	var ret *message.Message
 	if msg.Name == "echo" {
 		ret = msg
+	} else if msg.Name == "write" {
+		ret = HandleCommandWrite(msg, w, r)
 	} else {
-		ret = &message.Message{Name: "unknown", Headers: nil, Payload: ""}
+		ret = &message.Message{Name: "unknown", Headers: map[string]string{}, Payload: ""}
 	}
 	rid, exists := msg.Headers["rid"]
 	if exists {
