@@ -47,11 +47,18 @@
             url: 'api/command',
             data: msgInput,
             success: function (ret) {
-                console.log('ret', ret)
+                $('.msg-output-text').val(JSON.stringify(ret, null, 4))
                 generateResp(ret)
             }
         })
         console.log('xxxx', msgInput)
+    })
+
+    $(window).ready(function() {
+        $('.msg-input').val(JSON.stringify({
+            Name: 'init'
+        }))
+        $('form').submit()
     })
 
 })(jQuery)
