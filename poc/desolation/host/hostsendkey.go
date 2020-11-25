@@ -9,6 +9,7 @@ import (
 )
 
 // xdotool windowactivate --sync 31457295 key l s Return
+// xdotool key a b c Return
 
 func HostSendKeys(keys []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1000*time.Millisecond)
