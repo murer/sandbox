@@ -19,9 +19,10 @@ test('stats', () => {
 
   let stats = jsdices.parse('2d4').stats(50)
   expect(stats.reduce((total, current) => total + current[1], 0)).toBe(50)
-  stats.forEach((c) => {
+  stats.forEach((c, i) => {
     expect(c[0]).toBeGreaterThan(0)
     expect(c[0]).toBeLessThan(9)
+    console.log('i', i)
   })
 });
 
