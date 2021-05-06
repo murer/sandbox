@@ -23,8 +23,8 @@ class JSDicesRoll {
     return ret
   }
 
-  statsObj(times, obj) {
-    obj = obj || {}
+  statsObj(times) {
+    let obj = {}
     let total = 0
     for (let i = 0; i < times; i++) {
       let r = this.rnd().toString()
