@@ -19,10 +19,10 @@ class JSDicesRoll {
 }
 
 const parseNameds = (template, nameds) => {
-  var myregexp = /\$\{([A-Za-z0-9_]+)\}/g;
-  var match = myregexp.exec(template);
-  var ret = ""
-  var offset = 0
+  let myregexp = /\$\{([A-Za-z0-9_]+)\}/g;
+  let match = myregexp.exec(template);
+  let ret = ""
+  let offset = 0
   while (match != null) {
     if (match.index > offset) {
       ret += template.substring(offset, match.index)
@@ -40,11 +40,34 @@ const parseNameds = (template, nameds) => {
   return ret
 }
 
+const parseBinds = (template, binds) => {
+  let myregexp = /\?/g;
+  let match = myregexp.exec(template);
+  let ret = ""
+  let offset = 0
+  let idx = 0
+  while (match != null) {
+    if (match.index > offset) {
+      ret += template.substring(offset, match.index)
+    }
+    let value = binds[idx++]
+    ret += value
+    offset = match.index + match[0].length
+    console.log('bbb: ', template, value, match.index, template.substr(match.index, match[0].length), ret)
+    match = myregexp.exec(template);
+  }
+  if (offset < template.length) {
+    ret += template.substring(offset, template.length)
+  }
+  return ret
+}
+
 class JSDices {
 
   parse(template, nameds, ...binds) {
     template = template.toString()
     template = parseNameds(template, nameds)
+    template= parseBinds(template, binds)
     return new JSDicesRoll(template)
   }
 
