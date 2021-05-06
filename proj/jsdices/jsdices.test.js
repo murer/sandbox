@@ -15,10 +15,10 @@ test('basics', () => {
 });
 
 test('stats', () => {
-  expect(jsdices.parse('3').stats(100)).toEqual([[3, 100]])
+  expect(jsdices.parse('3').stats(100)).toEqual([[3, 1]])
 
   let stats = jsdices.parse('2d4').stats(50)
-  expect(stats.reduce((total, current) => total + current[1], 0)).toBe(50)
+  expect(stats.reduce((total, current) => total + current[1], 0)).toBe(1)
   stats.forEach((c, i) => {
     expect(c[0]).toBeGreaterThan(0)
     expect(c[0]).toBeLessThan(9)
@@ -30,7 +30,7 @@ test('stats', () => {
 });
 
 test('dataset', () => {
-  expect(jsdices.dataset(10, "1", "2", jsdices.parse("1"), "3")).toEqual([[1, 10, 0, 10, 0], [2, 0, 10, 0, 0], [3, 0, 0, 0, 10]])
+  expect(jsdices.dataset(10, "1", "2", jsdices.parse("1"), "3")).toEqual([[1, 1, 0, 1, 0], [2, 0, 1, 0, 0], [3, 0, 0, 0, 1]])
 });
 
 test('round', () => {

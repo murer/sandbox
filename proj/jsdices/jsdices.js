@@ -35,6 +35,9 @@ class JSDicesRoll {
       }
       obj[r]++
     }
+    for(let k in obj) {
+      obj[k] = obj[k]/times
+    }
     return obj
   }
 
