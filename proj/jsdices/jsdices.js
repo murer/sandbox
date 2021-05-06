@@ -40,9 +40,7 @@ class JSDicesRoll {
 
   stats(times) {
     let obj = this.statsObj(times)
-    let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
-    ret = ret.sort((a, b) => a[0] - b[0])
-    return ret
+    return jsdices.statsObj2Array(obj)
   }
 
   toString() {
@@ -130,6 +128,12 @@ class JSDices {
       let v = Math.floor(Math.random() * face) + 1
       ret += v
     }
+    return ret
+  }
+
+  statsObj2Array(obj) {
+    let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
+    ret = ret.sort((a, b) => a[0] - b[0])
     return ret
   }
 }
