@@ -92,7 +92,7 @@ const parseNameds = (template, nameds) => {
 }
 
 const parseBinds = (template, binds) => {
-  let myregexp = /\?/g;
+  let myregexp = /\$/g;
   let match = myregexp.exec(template);
   let ret = ""
   let offset = 0
