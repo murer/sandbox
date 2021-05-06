@@ -22,7 +22,10 @@ test('stats', () => {
   stats.forEach((c, i) => {
     expect(c[0]).toBeGreaterThan(0)
     expect(c[0]).toBeLessThan(9)
-    console.log('i', i)
+    if (i > 0) {
+      expect(c[0]).toBeGreaterThan(stats[i-1][0])
+    }
+    expect(c[1]).toBeGreaterThan(0)
   })
 });
 
