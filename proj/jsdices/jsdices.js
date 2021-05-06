@@ -4,6 +4,10 @@ class JSDicesRoll {
     return 1
   }
 
+  rnd() {
+    return 1
+  }
+
 }
 
 class JSDices {
