@@ -1,4 +1,10 @@
-class JSDicesRoll {}
+class JSDicesRoll {
+
+  avg() {
+    return 1
+  }
+
+}
 
 class JSDices {
 
