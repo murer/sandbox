@@ -56,11 +56,9 @@ class JSDicesRoll {
   statsRange(times, start, end) {
     let l = this.stats(times)
     if (start === 0 || !!start) {
-      console.log('start', start)
       l = l.filter(c => c[0]>=start)
     }
     if (end === 0 || !!end) {
-      console.log('end', end)
       l = l.filter(c => c[0]<=end)
     }
     return l.reduce((total, c) => total + c[1], 0)
