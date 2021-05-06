@@ -1,7 +1,7 @@
 class JSDicesRoll {
 
-  constructor(roll) {
-    this.roll = roll
+  constructor(compiled) {
+    this.compiled = compiled
   }
 
   avg() {
@@ -13,7 +13,7 @@ class JSDicesRoll {
   }
 
   toString() {
-    return this.roll
+    return this.compiled.map((c) => c.template).join('')
   }
 
 }
@@ -62,13 +62,34 @@ const parseBinds = (template, binds) => {
   return ret
 }
 
+const parseDices = (template) => {
+  let myregexp = /([0-9]*)[dD]([0-9]+)/g;
+  var match = myregexp.exec(template);
+  var ret = []
+  var offset = 0
+  while (match != null) {
+      if (match.index > offset) {
+        ret.push({type: "literal", template: template.substring(offset, match.index)})
+      } 
+      var n = match[1] || "1"
+      ret.push({type:"dice", template: match[0], n: parseInt(n), f: parseInt(match[2])})
+      offset = match.index + match[0].length
+      match = myregexp.exec(template);
+  }
+  if (offset < template.length) {
+    ret.push({type: "literal", template: template.substring(offset, template.length)})
+  } 
+  return ret
+}
+
 class JSDices {
 
   parse(template, nameds, ...binds) {
     template = template.toString()
     template = parseNameds(template, nameds)
-    template= parseBinds(template, binds)
-    return new JSDicesRoll(template)
+    template = parseBinds(template, binds)
+    let compiled = parseDices(template)
+    return new JSDicesRoll(compiled)
   }
 
 }
