@@ -24,7 +24,19 @@ class JSDicesRoll {
   }
 
   stats(times) {
-    return null
+    let obj = {}
+    let total = 0
+    for(let i = 0; i < times; i++) {
+      let r = this.rnd().toString()
+      if (!(r in obj)) {
+        if (total > 1000) throw 'too many: ' + total
+        obj[r] = 0
+        total++
+      }
+      obj[r]++
+    }
+    let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
+    return ret
   }
 
   toString() {
