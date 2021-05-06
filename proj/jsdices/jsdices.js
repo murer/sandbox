@@ -48,9 +48,22 @@ class JSDicesRoll {
     return ret
   }
 
-  statstrue(times) {
-    var stats = this.statsObj(times)
+  statsTrue(times) {
+    let stats = this.statsObj(times)
     return stats['true'] || 0
+  }
+
+  statsRange(times, start, end) {
+    let l = this.stats(times)
+    if (start === 0 || !!start) {
+      console.log('start', start)
+      l = l.filter(c => c[0]>=start)
+    }
+    if (end === 0 || !!end) {
+      console.log('end', end)
+      l = l.filter(c => c[0]<=end)
+    }
+    return l.reduce((total, c) => total + c[1], 0)
   }
 
   toString() {

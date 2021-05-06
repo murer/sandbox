@@ -43,10 +43,23 @@ test('round', () => {
 
 
 test('statstrue', () => {
-  expect(jsdices.parse('2>1').statstrue(100)).toEqual(1)
-  expect(jsdices.parse('2<1').statstrue(100)).toEqual(0)
+  expect(jsdices.parse('2>1').statsTrue(100)).toEqual(1)
+  expect(jsdices.parse('2<1').statsTrue(100)).toEqual(0)
 
-  expect(jsdices.parse("1d2>1").statstrue(100)).toBeGreaterThan(0)
-  expect(jsdices.parse("1d2>1").statstrue(100)).toBeLessThanOrEqual(1)
+  expect(jsdices.parse("1d2>1").statsTrue(100)).toBeGreaterThan(0)
+  expect(jsdices.parse("1d2>1").statsTrue(100)).toBeLessThanOrEqual(1)
+});
+
+test('statsrange', () => {
+  // expect(jsdices.parse('2').statsRange(100, 0, 1)).toEqual(0)
+  // expect(jsdices.parse('2').statsRange(100, 0, 3)).toEqual(1)
+  // expect(jsdices.parse('2').statsRange(100, 3, 5)).toEqual(0)
+  // expect(jsdices.parse('2').statsRange(100, 3)).toEqual(0)
+  expect(jsdices.parse('2').statsRange(100, 1)).toEqual(1)
+  // expect(jsdices.parse('2').statsRange(100, null, 1)).toEqual(0)
+  // expect(jsdices.parse('2').statsRange(100, null, 3)).toEqual(3)
+
+
+
 });
 
