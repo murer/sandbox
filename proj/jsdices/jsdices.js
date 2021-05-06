@@ -23,6 +23,10 @@ class JSDicesRoll {
     return ret
   }
 
+  stats(times) {
+    return null
+  }
+
   toString() {
     return this.compiled.map((c) => c.template).join('')
   }

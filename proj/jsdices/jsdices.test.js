@@ -14,4 +14,8 @@ test('basics', () => {
   expect(roll.rnd()).toBeGreaterThan(0)
 });
 
+test('stats', () => {
+  expect(jsdices.parse('3').stats(100)).toBe([[3, 100]])
+});
+
 
