@@ -1,5 +1,9 @@
 class JSDicesRoll {
 
+  constructor(roll) {
+    this.roll = roll
+  }
+
   avg() {
     return 1
   }
@@ -9,7 +13,7 @@ class JSDicesRoll {
   }
 
   toString() {
-    return "aaa"
+    return this.roll
   }
 
 }
@@ -17,10 +21,11 @@ class JSDicesRoll {
 class JSDices {
 
   parse(template, nameds, ...binds) {
-    return new JSDicesRoll()
-  } 
+    template = template.toString()
+    return new JSDicesRoll(template)
+  }
 
-} 
+}
 
 
 module.exports = new JSDices()
