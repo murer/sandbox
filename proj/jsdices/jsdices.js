@@ -8,6 +8,10 @@ class JSDicesRoll {
     return 1
   }
 
+  toString() {
+    return "aaa"
+  }
+
 }
 
 class JSDices {
