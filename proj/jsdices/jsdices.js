@@ -73,17 +73,26 @@ const parseDices = (template) => {
   var ret = []
   var offset = 0
   while (match != null) {
-      if (match.index > offset) {
-        ret.push({type: "literal", template: template.substring(offset, match.index)})
-      } 
-      var n = match[1] || "1"
-      ret.push({type:"dice", template: match[0], n: parseInt(n), f: parseInt(match[2])})
-      offset = match.index + match[0].length
-      match = myregexp.exec(template);
+    if (match.index > offset) {
+      ret.push({ type: "literal", template: template.substring(offset, match.index) })
+    }
+    var n = match[1] || "1"
+    ret.push({ type: "dice", template: match[0], n: parseInt(n), f: parseInt(match[2]) })
+    offset = match.index + match[0].length
+    match = myregexp.exec(template);
   }
   if (offset < template.length) {
-    ret.push({type: "literal", template: template.substring(offset, template.length)})
-  } 
+    ret.push({ type: "literal", template: template.substring(offset, template.length) })
+  }
+  return ret
+}
+
+const rollDice = (face, n) => {
+  n = n || 1
+  let ret = 0
+  for (let i = 0; i < n; i++) {
+    ret += Math.floor(Math.random() * face) + 1
+  }
   return ret
 }
 
@@ -97,6 +106,7 @@ class JSDices {
     return new JSDicesRoll(compiled)
   }
 
+  rollDice = rollDice
 }
 
 
