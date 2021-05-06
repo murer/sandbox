@@ -57,7 +57,7 @@ test('statsrange', () => {
   expect(jsdices.parse('2').statsRange(100, 3)).toEqual(0)
   expect(jsdices.parse('2').statsRange(100, 1)).toEqual(1)
   expect(jsdices.parse('2').statsRange(100, null, 1)).toEqual(0)
-  expect(jsdices.parse('2').statsRange(100, null, 3)).toEqual(3)
+  expect(jsdices.parse('2').statsRange(100, null, 3)).toEqual(1)
 
 
 
