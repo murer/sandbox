@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "create-react-app": "1.5.2",
-    "serve": "6.4.11"
+    "serve": "11.3.2"
   },
   "scripts": {
     "create-react-app": "create-react-app",
