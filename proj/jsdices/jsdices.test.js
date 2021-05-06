@@ -42,3 +42,11 @@ test('round', () => {
 });
 
 
+test('statstrue', () => {
+  expect(jsdices.parse('2>1').statstrue(100)).toEqual(1)
+  expect(jsdices.parse('2<1').statstrue(100)).toEqual(0)
+
+  expect(jsdices.parse("1d2>1").statstrue(100)).toBeGreaterThan(0)
+  expect(jsdices.parse("1d2>1").statstrue(100)).toBeLessThanOrEqual(1)
+});
+

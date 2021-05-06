@@ -48,6 +48,11 @@ class JSDicesRoll {
     return ret
   }
 
+  statstrue(times) {
+    var stats = this.statsObj(times)
+    return stats['true'] || 0
+  }
+
   toString() {
     return this.compiled.map((c) => c.template).join('')
   }
