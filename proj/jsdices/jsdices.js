@@ -36,7 +36,7 @@ class JSDicesRoll {
       obj[r]++
     }
     for(let k in obj) {
-      obj[k] = obj[k]/times
+      obj[k] = parseFloat((obj[k]/times).toFixed(4))
     }
     return obj
   }
