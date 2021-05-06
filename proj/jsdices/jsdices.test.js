@@ -14,10 +14,4 @@ test('basics', () => {
   expect(roll.rnd()).toBeGreaterThan(0)
 });
 
-test('cache', () => {
-  let n1 = jsdices.parse('5')
-  let n2 = jsdices.parse('5')
-  n1.compiled.x = 'x'
-  expect(n2.compilied.x).toBe('x')
-});
 
