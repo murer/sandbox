@@ -33,4 +33,12 @@ test('dataset', () => {
   expect(jsdices.dataset(10, "1", "2", jsdices.parse("1"), "3")).toEqual([[1, 10, 0, 10, 0], [2, 0, 10, 0, 0], [3, 0, 0, 0, 10]])
 });
 
+test('round', () => {
+  expect(jsdices.parse('1.5').avg()).toBe(1.5)
+  expect(jsdices.parse('R(1.5)').avg()).toBe(2)
+  expect(jsdices.parse('R(1.4)').avg()).toBe(1)
+  expect(jsdices.parse('C(1.2)').avg()).toBe(2)
+  expect(jsdices.parse('F(1.9)').avg()).toBe(1)
+});
+
 

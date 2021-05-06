@@ -10,7 +10,7 @@ class JSDicesRoll {
       let v = ((part.f + 1) / 2) * part.n
       return v.toString()
     })
-    return 0 + eval(ret.join(""))
+    return jsdices.exec(ret.join(""))
   }
 
   rnd() {
@@ -19,7 +19,7 @@ class JSDicesRoll {
       return jsdices.rollDice(part.f, part.n).toString()
     })
     let f = a.join("")
-    let ret = 0 + eval(f)
+    let ret = jsdices.exec(f)
     return ret
   }
 
@@ -148,6 +148,13 @@ class JSDices {
     }, {})
     let ret = Object.entries(obj).map(c => [parseFloat(c[0])].concat(c[1])).sort((a, b) => a[0] - b[0])
     return ret
+  }
+
+  exec(code) {
+    const R = n => Math.round(n)
+    const C = n => Math.ceil(n)
+    const F = n => Math.floor(n)
+    return eval(code)
   }
 }
 
