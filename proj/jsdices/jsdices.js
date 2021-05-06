@@ -5,7 +5,12 @@ class JSDicesRoll {
   }
 
   avg() {
-    return 1
+    let ret = this.compiled.map(part => {
+      if (part.type == "literal") return part.template
+      var v = ((part.f + 1) / 2) * part.n
+      return v.toString()
+    })
+    return 0 + eval(ret.join(""))
   }
 
   rnd() {
