@@ -1,0 +1,14 @@
+{
+  "name": "jsdices",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./build.sh test"
+  },
+  "author": "",
+  "license": "MIT"
+}
