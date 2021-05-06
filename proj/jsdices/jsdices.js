@@ -16,7 +16,7 @@ class JSDicesRoll {
   rnd() {
     let a = this.compiled.map(part => {
       if (part.type == "literal") return part.template
-      return me.rollDice(part.f, part.n).toString()
+      return jsdices.rollDice(part.f, part.n).toString()
     })
     let f = a.join("")
     let ret = 0 + eval(f)
@@ -128,8 +128,8 @@ class JSDices {
   }
 }
 
-const me = new JSDices()
+const jsdices = new JSDices()
 
-module.exports = me
+module.exports = jsdices
 
 
