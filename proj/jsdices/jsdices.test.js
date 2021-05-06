@@ -18,6 +18,7 @@ test('stats', () => {
   expect(jsdices.parse('3').stats(100)).toEqual([[3, 100]])
 
   let stats = jsdices.parse('2d4').stats(50)
+  console.log('xxx', stats)
   expect(stats.reduce((total, current) => total + current, 0)).toBe(50)
 });
 
