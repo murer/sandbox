@@ -7,14 +7,20 @@ class JSDicesRoll {
   avg() {
     let ret = this.compiled.map(part => {
       if (part.type == "literal") return part.template
-      var v = ((part.f + 1) / 2) * part.n
+      let v = ((part.f + 1) / 2) * part.n
       return v.toString()
     })
     return 0 + eval(ret.join(""))
   }
 
   rnd() {
-    return 1
+    let a = this.compiled.map(part => {
+      if (part.type == "literal") return part.template
+      return me.rollDice(part.f, part.n).toString()
+    })
+    let f = a.join("")
+    let ret = 0 + eval(f)
+    return ret
   }
 
   toString() {
@@ -36,7 +42,6 @@ const parseNameds = (template, nameds) => {
     let value = nameds[name]
     ret += value
     offset = match.index + match[0].length
-    console.log('aaa: ', template, name, value, match.index, template.substr(match.index, match[0].length), ret)
     match = myregexp.exec(template);
   }
   if (offset < template.length) {
@@ -58,7 +63,6 @@ const parseBinds = (template, binds) => {
     let value = binds[idx++]
     ret += value
     offset = match.index + match[0].length
-    console.log('bbb: ', template, value, match.index, template.substr(match.index, match[0].length), ret)
     match = myregexp.exec(template);
   }
   if (offset < template.length) {
@@ -69,29 +73,20 @@ const parseBinds = (template, binds) => {
 
 const parseDices = (template) => {
   let myregexp = /([0-9]*)[dD]([0-9]+)/g;
-  var match = myregexp.exec(template);
-  var ret = []
-  var offset = 0
+  let match = myregexp.exec(template);
+  let ret = []
+  let offset = 0
   while (match != null) {
     if (match.index > offset) {
       ret.push({ type: "literal", template: template.substring(offset, match.index) })
     }
-    var n = match[1] || "1"
+    let n = match[1] || "1"
     ret.push({ type: "dice", template: match[0], n: parseInt(n), f: parseInt(match[2]) })
     offset = match.index + match[0].length
     match = myregexp.exec(template);
   }
   if (offset < template.length) {
     ret.push({ type: "literal", template: template.substring(offset, template.length) })
-  }
-  return ret
-}
-
-const rollDice = (face, n) => {
-  n = n || 1
-  let ret = 0
-  for (let i = 0; i < n; i++) {
-    ret += Math.floor(Math.random() * face) + 1
   }
   return ret
 }
@@ -106,10 +101,19 @@ class JSDices {
     return new JSDicesRoll(compiled)
   }
 
-  rollDice = rollDice
+  rollDice(face, n) {
+    n = n || 1
+    let ret = 0
+    for (let i = 0; i < n; i++) {
+      let v = Math.floor(Math.random() * face) + 1
+      ret += v
+    }
+    return ret
+  }
 }
 
+const me = new JSDices()
 
-module.exports = new JSDices()
+module.exports = me
 
 
