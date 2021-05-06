@@ -23,8 +23,8 @@ class JSDicesRoll {
     return ret
   }
 
-  stats(times) {
-    let obj = {}
+  statsObj(times, obj) {
+    obj = obj || {}
     let total = 0
     for(let i = 0; i < times; i++) {
       let r = this.rnd().toString()
@@ -35,7 +35,13 @@ class JSDicesRoll {
       }
       obj[r]++
     }
+    return obj
+  }
+
+  stats(times) {
+    let obj = this.statsObj(times)
     let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
+    ret = ret.sort((a, b) => a[0] - b[0])
     return ret
   }
 

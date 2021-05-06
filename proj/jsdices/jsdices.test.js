@@ -27,6 +27,7 @@ test('stats', () => {
     }
     expect(c[1]).toBeGreaterThan(0)
   })
+  console.log('stats', stats)
 });
 
 
