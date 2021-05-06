@@ -26,7 +26,7 @@ class JSDicesRoll {
   statsObj(times, obj) {
     obj = obj || {}
     let total = 0
-    for(let i = 0; i < times; i++) {
+    for (let i = 0; i < times; i++) {
       let r = this.rnd().toString()
       if (!(r in obj)) {
         if (total > 1000) throw 'too many: ' + total
@@ -40,7 +40,9 @@ class JSDicesRoll {
 
   stats(times) {
     let obj = this.statsObj(times)
-    return jsdices.statsObj2Array(obj)
+    let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
+    ret = ret.sort((a, b) => a[0] - b[0])
+    return ret
   }
 
   toString() {
@@ -131,9 +133,20 @@ class JSDices {
     return ret
   }
 
-  statsObj2Array(obj) {
-    let ret = Object.entries(obj).map((c) => [parseFloat(c[0]), c[1]])
-    ret = ret.sort((a, b) => a[0] - b[0])
+  dataset(times, ...templates) {
+    if (templates.length == 0) return []
+    var rolls = templates.map((t) => {
+      if (typeof (t) == 'string') return this.parse(t)
+      return t
+    })
+    let obj = rolls.map(r => r.statsObj(times)).reduce((t, r, i) => {
+      Object.entries(r).forEach(c => {
+        t[c[0]] = t[c[0]] || Array(templates.length).fill(0)
+        t[c[0]][i] = c[1]
+      })
+      return t
+    }, {})
+    let ret = Object.entries(obj).map(c => [parseFloat(c[0])].concat(c[1])).sort((a, b) => a[0] - b[0])
     return ret
   }
 }

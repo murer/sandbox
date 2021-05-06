@@ -27,7 +27,10 @@ test('stats', () => {
     }
     expect(c[1]).toBeGreaterThan(0)
   })
-  console.log('stats', stats)
+});
+
+test('dataset', () => {
+  expect(jsdices.dataset(10, "1", "2", jsdices.parse("1"), "3")).toEqual([[1, 10, 0, 10, 0], [2, 0, 10, 0, 0], [3, 0, 0, 0, 10]])
 });
 
 
