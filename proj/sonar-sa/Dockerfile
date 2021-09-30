@@ -43,13 +43,16 @@ COPY --chown=sonarqube:sonarqube entrypoint /opt/sonarqube/bin/
 
 RUN set -eux && \
     chown -R sonarqube:sonarqube sonarqube && \
-    chmod +x sonarqube/bin/entrypoint.sh && \ 
+    chmod +x \
+        sonarqube/bin/sonar-sa.sh \
+        sonarqube/bin/entrypoint.sh && \ 
     chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp
 
 WORKDIR /opt/sonarqube
 USER sonarqube
 
 ENTRYPOINT ["/opt/sonarqube/bin/entrypoint.sh"]
+# CMD ["/opt/sonarqube/bin/sonar-sa.sh"]
 
 #     apk add --no-cache --virtual build-dependencies gnupg unzip curl; \
 #     apk add --no-cache bash su-exec ttf-dejavu openjdk11-jre; \

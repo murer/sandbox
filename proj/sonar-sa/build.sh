@@ -4,9 +4,9 @@ cmd_build() {
     docker build -t murer/sonar-sa:dev .
 }
 
-cmd_server() {
+cmd_sa() {
     #docker run --name sonar --rm -it sonarqube:lts # -Dsonar.login=admin -Dsonar.password=admin
-    true
+    docker run --name sonar-sa --rm -it murer/sonar-sa:dev ./bin/sonar-sa.sh
 }
 
 cmd_shell() {
