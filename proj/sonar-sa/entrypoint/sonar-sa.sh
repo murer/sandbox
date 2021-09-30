@@ -20,6 +20,20 @@ cmd_wait_for_start() {
 
 }
 
+cmd_create_project() {
+    curl -f -v -u admin:123 'http://localhost:9000/api/projects/create' \
+        --data-urlencode "name=local" \
+        --data-urlencode "project=local" \
+        --data-urlencode "visibility=private"
+}
+
+cmd_genarete_token() {
+    curl -f -v -u admin:123 'http://localhost:9000/api/user_tokens/generate' \
+        --data-urlencode "login=admin" \
+        --data-urlencode "name=token"
+
+}
+
 # cmd_xabsdksda() {
     # rm /tmp/sonar-sa.api.cookies || true
     
@@ -30,7 +44,10 @@ cmd_wait_for_start() {
 
 cmd_main() {
     cmd_server &
-    cmd_wait_for_start 1> logs/sonar-sa-wait-for-start.log 2>&1
+    cmd_wait_for_start 1> logs/sonar-sa-background.log 2>&1
+    cmd_create_project
+    cmd_genarete_token
+
     tail -f /dev/null
 }
 
