@@ -27,7 +27,9 @@ RUN apt-get install -y \
     nmap ncat \
     wget curl \
     zip \
-    net-tools
+    net-tools \
+    python3 \
+    jq
 
 WORKDIR /opt
 
