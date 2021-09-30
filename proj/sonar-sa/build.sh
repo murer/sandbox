@@ -6,7 +6,7 @@ cmd_build() {
 
 cmd_sa() {
     #docker run --name sonar --rm -it sonarqube:lts # -Dsonar.login=admin -Dsonar.password=admin
-    docker run --name sonar-sa --rm -it murer/sonar-sa:dev ./bin/sonar-sa.sh
+    docker run --name sonar-sa --rm -p 9000:9000 -it murer/sonar-sa:dev ./bin/sonar-sa.sh
 }
 
 cmd_shell() {

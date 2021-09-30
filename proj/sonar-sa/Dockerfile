@@ -26,7 +26,8 @@ RUN apt-get install -y \
 RUN apt-get install -y \
     nmap ncat \
     wget curl \
-    zip
+    zip \
+    net-tools
 
 WORKDIR /opt
 
