@@ -6,22 +6,19 @@ ENV LANG='en_US.UTF-8' \
 
 ARG SONARQUBE_VERSION=9.1.0.47736
 ARG SONARQUBE_ZIP_URL=https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONARQUBE_VERSION}.zip
+ARG SONAR_SCANNER_VERSION=4.6.2.2472
+ARG SONAR_SCANNER_URL=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip
 
-ENV JAVA_HOME='/usr/lib/jvm/java-11-openjdk' \
-    PATH="/opt/java/openjdk/bin:$PATH" \
-    SONARQUBE_HOME=/opt/sonarqube \
-    SONAR_VERSION="${SONARQUBE_VERSION}" \
-    SQ_DATA_DIR="/opt/sonarqube/data" \
-    SQ_EXTENSIONS_DIR="/opt/sonarqube/extensions" \
-    SQ_LOGS_DIR="/opt/sonarqube/logs" \
-    SQ_TEMP_DIR="/opt/sonarqube/temp" \
-    DEBIAN_FRONTEND=noninteractive
-
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 RUN apt-get -y update
 
-RUN apt-get install -y \
-        openjdk-11-jdk
+RUN apt-get install -y openjdk-11-jdk
+
+RUN apt-get install -y nodejs
+
+RUN apt-get install -y python3 python3-pip
 
 RUN apt-get install -y \
     nmap ncat \
@@ -29,7 +26,21 @@ RUN apt-get install -y \
     zip \
     net-tools \
     python3 \
-    jq
+    jq \
+    shellcheck
+
+ENV JAVA_HOME='/usr/lib/jvm/java-11-openjdk' \
+    SONARQUBE_HOME=/opt/sonarqube \
+    SONAR_VERSION="${SONARQUBE_VERSION}" \
+    SONAR_SCANNER_HOME=/opt/sonar-scanner
+
+ENV SONAR_USER_HOME="${SONAR_SCANNER_HOME}/.sonar" \
+    DEBIAN_FRONTEND=noninteractive \
+    HOME=/tmp \
+    XDG_CONFIG_HOME=/tmp \
+    PATH="${SONAR_SCANNER_HOME}/bin:/opt/java/openjdk/bin:$PATH" \
+    NODE_PATH=/usr/lib/node_modules \
+    SRC_PATH=/opt/src
 
 WORKDIR /opt
 
@@ -40,7 +51,17 @@ RUN set -eux && \
     rm sonarqube.zip
 
 RUN set -eux && \
-    useradd sonarqube
+    wget --progress=dot -e dotbytes=64K -O sonar-scanner-cli.zip "${SONAR_SCANNER_URL}" && \
+    unzip -q sonar-scanner-cli.zip && \
+    mv "sonar-scanner-${SONAR_SCANNER_VERSION}" sonar-scanner && \
+    rm sonar-scanner-cli.zip
+
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir pylint
+
+RUN set -eux && \
+    useradd sonarqube && \
+    useradd sonarscanner
 
 COPY --chown=sonarqube:sonarqube entrypoint /opt/sonarqube/bin/
 
@@ -49,7 +70,10 @@ RUN set -eux && \
     chmod +x \
         sonarqube/bin/sonar-sa.sh \
         sonarqube/bin/entrypoint.sh && \ 
-    chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp
+    mkdir "${SRC_PATH}" "${SONAR_USER_HOME}" && \
+    chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp && \
+    chown -R sonarscanner:sonarscanner "${SONAR_SCANNER_HOME}" "${SRC_PATH}" && \
+    chmod -R 777 "${SRC_PATH}" "${SONAR_USER_HOME}"
 
 WORKDIR /opt/sonarqube
 USER sonarqube

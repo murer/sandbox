@@ -30,17 +30,8 @@ cmd_server_project_create() {
 cmd_server_token_generate() {
     curl -f -v -u admin:123 'http://localhost:9000/api/user_tokens/generate' \
         --data-urlencode "login=admin" \
-        --data-urlencode "name=token"
-
+        --data-urlencode "name=token" | jq -r .token > /tmp/sonarqa.token
 }
-
-# cmd_xabsdksda() {
-    # rm /tmp/sonar-sa.api.cookies || true
-    
-    # curl -f -v -c /tmp/sonar-sa.api.cookies 'http://localhost:9000/api/authentication/login' \
-    #     --data-urlencode "login=admin" \
-    #     --data-urlencode "password=admin"
-# }
 
 cmd_main() {
     cmd_server_start &
