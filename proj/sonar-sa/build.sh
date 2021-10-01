@@ -13,4 +13,8 @@ cmd_shell() {
     docker run --name sonar_shell --rm -it murer/sonar-sa:dev /bin/bash
 }
 
+cmd_exec() {
+    docker exec -it sonar-sa /bin/bash
+}
+
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"

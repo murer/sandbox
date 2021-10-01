@@ -36,6 +36,14 @@ cmd_server_token_generate() {
         --data-urlencode "name=token" | jq -r .token > /tmp/sonarqa.token
 }
 
+cmd_scan() {
+    /opt/sonar-scanner/bin/sonar-scanner \
+        -Dsonar.projectKey=local \
+        -Dsonar.sources=/opt/sonar-sa/src \
+        -Dsonar.host.url=http://localhost:9000 \
+        "-Dsonar.login=$(cat /tmp/sonarqa.token)"
+}
+
 cmd_main() {
     cmd_server_start
     cmd_server_wait_for_start

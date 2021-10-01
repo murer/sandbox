@@ -57,8 +57,7 @@ RUN set -eux && \
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir pylint
 
-RUN set -eux && \
-    useradd sonarqube
+RUN useradd -m sonarqube
 
 COPY --chown=sonarqube:sonarqube entrypoint /opt/sonar-sa/entrypoint
 
@@ -71,6 +70,8 @@ RUN set -eux && \
         sonar-sa/entrypoint/entrypoint.sh && \ 
     chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp && \
     chmod -R 777 "/opt/sonar-sa/src" "${SONAR_SCANNER_HOME}/.sonar"
+
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 WORKDIR /opt/sonar-sa
 USER sonarqube
