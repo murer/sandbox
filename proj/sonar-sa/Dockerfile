@@ -29,7 +29,7 @@ RUN apt-get install -y \
     jq \
     shellcheck
 
-ENV JAVA_HOME='/usr/lib/jvm/java-11-openjdk' \
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 \
     SONARQUBE_HOME=/opt/sonarqube \
     SONAR_SCANNER_HOME=/opt/sonar-scanner \
     DEBIAN_FRONTEND=noninteractive \
@@ -71,12 +71,11 @@ RUN set -eux && \
     chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp && \
     chmod -R 777 "/opt/sonar-sa/src" "${SONAR_SCANNER_HOME}/.sonar"
 
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-
 WORKDIR /opt/sonar-sa
 USER sonarqube
 
 ENTRYPOINT ["/opt/sonar-sa/entrypoint/entrypoint.sh"]
+CMD [ "entrypoint/sonar-sa.sh", "main" ]
 
 # CMD ["/opt/sonarqube/bin/sonar-sa.sh"]
 
