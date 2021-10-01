@@ -49,7 +49,7 @@ cmd_main() {
     cmd_server_wait_for_start
     cmd_server_project_create
     cmd_server_token_generate
-
+    cmd_scan
     tail -f /dev/null
 }
 
