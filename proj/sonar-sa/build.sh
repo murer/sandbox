@@ -19,6 +19,10 @@ cmd_main() {
         entrypoint/sonar-sa.sh main
 }
 
+cmd_sample() {
+    cmd_main "$(pwd)/sample/python"
+}
+
 cmd_shell() {
     docker run --name sonar_shell --rm -it murer/sonar-sa:dev /bin/bash
 }
