@@ -3,15 +3,18 @@
 set -xeuo pipefail
 
 cmd_server_start() {
-    ./bin/linux-x86-64/sonar.sh console
+    cd /opt/sonarqube
+    ./bin/linux-x86-64/sonar.sh console &
+    cd -
 }
 
 cmd_server_wait_for_start() {
-    while ! curl 'http://localhost:9000/api/system/status' | jq .status | grep '^"UP"$'; do
-        #tail logs/*
+    set +x
+    while ! curl -s 'http://localhost:9000/api/system/status' | jq .status | grep '^"UP"$'; do
         echo "NOT STARTED.... WAITING"
         sleep 1
     done
+    set -x
 
     curl -f -v -u admin:admin 'http://localhost:9000/api/users/change_password' \
         --data-urlencode "login=admin" \
@@ -34,8 +37,8 @@ cmd_server_token_generate() {
 }
 
 cmd_main() {
-    cmd_server_start &
-    cmd_server_wait_for_start 1> logs/sonar-sa-background.log 2>&1
+    cmd_server_start
+    cmd_server_wait_for_start
     cmd_server_project_create
     cmd_server_token_generate
 

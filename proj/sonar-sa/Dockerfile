@@ -31,16 +31,14 @@ RUN apt-get install -y \
 
 ENV JAVA_HOME='/usr/lib/jvm/java-11-openjdk' \
     SONARQUBE_HOME=/opt/sonarqube \
-    SONAR_VERSION="${SONARQUBE_VERSION}" \
-    SONAR_SCANNER_HOME=/opt/sonar-scanner
-
-ENV SONAR_USER_HOME="${SONAR_SCANNER_HOME}/.sonar" \
+    SONAR_SCANNER_HOME=/opt/sonar-scanner \
     DEBIAN_FRONTEND=noninteractive \
     HOME=/tmp \
     XDG_CONFIG_HOME=/tmp \
-    PATH="${SONAR_SCANNER_HOME}/bin:/opt/java/openjdk/bin:$PATH" \
     NODE_PATH=/usr/lib/node_modules \
     SRC_PATH=/opt/src
+
+ENV PATH="/opt/sonar-sa/entrypoint:/opt/java/openjdk/bin:$PATH"
 
 WORKDIR /opt
 
@@ -60,25 +58,25 @@ RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir pylint
 
 RUN set -eux && \
-    useradd sonarqube && \
-    useradd sonarscanner
+    useradd sonarqube
 
-COPY --chown=sonarqube:sonarqube entrypoint /opt/sonarqube/bin/
+COPY --chown=sonarqube:sonarqube entrypoint /opt/sonar-sa/entrypoint
 
 RUN set -eux && \
+    mkdir "/opt/sonar-sa/src" "/opt/sonar-sa/logs" "${SONAR_SCANNER_HOME}/.sonar" && \
     chown -R sonarqube:sonarqube sonarqube && \
+    chown -R sonarqube:sonarqube "${SONAR_SCANNER_HOME}" "/opt/sonar-sa" && \
     chmod +x \
-        sonarqube/bin/sonar-sa.sh \
-        sonarqube/bin/entrypoint.sh && \ 
-    mkdir "${SRC_PATH}" "${SONAR_USER_HOME}" && \
+        sonar-sa/entrypoint/sonar-sa.sh \
+        sonar-sa/entrypoint/entrypoint.sh && \ 
     chmod -R 777 sonarqube/data sonarqube/extensions sonarqube/logs sonarqube/temp && \
-    chown -R sonarscanner:sonarscanner "${SONAR_SCANNER_HOME}" "${SRC_PATH}" && \
-    chmod -R 777 "${SRC_PATH}" "${SONAR_USER_HOME}"
+    chmod -R 777 "/opt/sonar-sa/src" "${SONAR_SCANNER_HOME}/.sonar"
 
-WORKDIR /opt/sonarqube
+WORKDIR /opt/sonar-sa
 USER sonarqube
 
-ENTRYPOINT ["/opt/sonarqube/bin/entrypoint.sh"]
+ENTRYPOINT ["/opt/sonar-sa/entrypoint/entrypoint.sh"]
+
 # CMD ["/opt/sonarqube/bin/sonar-sa.sh"]
 
 #     apk add --no-cache --virtual build-dependencies gnupg unzip curl; \
