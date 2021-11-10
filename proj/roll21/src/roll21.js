@@ -5,7 +5,7 @@
 
     function rndbest(sides, n) {
         for (var i = 0; i < superadv; i++) {
-            r = Math.randomInt(sides)
+            r = Math.randomInt(sides)+1
             if (r > n) {
                 n = r
             }
