@@ -3,6 +3,8 @@
 cmd_prepare() {
     sudo apt install python3-pip
     pip install jupyterlab
+    pip install matplotlib
+    pip install pandas
 
     rm -rf target/install || true
     mkdir -p target/install
