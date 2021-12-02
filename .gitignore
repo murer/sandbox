@@ -8,4 +8,5 @@ target
 .classpath
 *.swp
 .scannerwork
+.ipynb_checkpoints
 
