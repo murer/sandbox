@@ -9,7 +9,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.9</slf4j.version>
-		<log4j.version>2.3</log4j.version>
+		<log4j.version>2.14.1</log4j.version>
 		<camel.version>2.15.3</camel.version>
 	</properties>
 
