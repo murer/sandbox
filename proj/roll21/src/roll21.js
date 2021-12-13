@@ -1,10 +1,9 @@
-
 (function($) {
 
-    var superadv = 1
+    window.superadv = 0
 
     function rndbest(sides, n) {
-        for (var i = 0; i < superadv; i++) {
+        for (var i = 0; i < window.superadv; i++) {
             r = Math.randomInt(sides)+1
             if (r > n) {
                 n = r
@@ -54,7 +53,6 @@
 
     window.roll21filter = roll21filter
 
-    $.ajaxPrefilter(function() { window.roll21filter.apply(window, arguments) })
+    //$.ajaxPrefilter(function() { window.roll21filter.apply(window, arguments) })
 
 })(jQuery)
-
