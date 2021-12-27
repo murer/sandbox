@@ -4,7 +4,7 @@ cmd_backup_step() {
     output="${1?'output file'}"
     cd target
     mkdir -p bak
-    tar cvpzgf data.sngz "bak/$output" sandbox 
+    tar cvpgf data.sng "bak/$output" sandbox 
     cd -
 }
 

@@ -9,16 +9,16 @@ cmd_test() {
     mkdir -p target/steps
     ./data.sh step1
     cp -R target/sandbox target/steps/step1
-    ./tar.sh backup_step step1inc.tgz
+    ./tar.sh backup_step step1inc.tar
     ./data.sh step2
     cp -R target/sandbox target/steps/step2
-    ./tar.sh backup_step step2inc.tgz
+    ./tar.sh backup_step step2inc.tar
     ./data.sh step3
     cp -R target/sandbox target/steps/step3
-    ./tar.sh backup_step step3inc.tgz
+    ./tar.sh backup_step step3inc.tar
     ./data.sh step4
     cp -R target/sandbox target/steps/step4
-    ./tar.sh backup_step step4inc.tgz
+    ./tar.sh backup_step step4inc.tar
 
     
 }
