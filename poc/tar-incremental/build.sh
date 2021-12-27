@@ -20,7 +20,17 @@ cmd_test() {
     cp -R target/sandbox target/steps/step4
     ./tar.sh backup_step step4inc.tar
 
+    rm -rf target/sandbox
+    ./tar.sh restore_step step1inc.tar
+    diff -rq target/sandbox target/steps/step1
+    ./tar.sh restore_step step2inc.tar
+    diff -rq target/sandbox target/steps/step2
+    ./tar.sh restore_step step3inc.tar
+    diff -rq target/sandbox target/steps/step3
+    ./tar.sh restore_step step4inc.tar
+    diff -rq target/sandbox target/steps/step4
     
+    echo SUCCESS
 }
 
 

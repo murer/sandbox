@@ -2,8 +2,7 @@
 
 cmd_step1() {
     rm -rf target/sandbox || true
-    rm -rf target/steps || true
-    mkdir -p target/sandbox target/steps
+    mkdir -p target/sandbox
 }
 
 cmd_step2() {
