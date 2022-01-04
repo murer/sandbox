@@ -2,6 +2,6 @@ Key-Type: 1
 Key-Length: 4096
 Subkey-Type: 1
 Subkey-Length: 4096
-Name-Real: Pyrata
-Name-Email: pyrata@murerz.com
+Name-Real: aaaaaa
+Name-Email: aaaaaa@sample.com
 Expire-Date: 0

@@ -14,8 +14,14 @@ cmd_data() {
 
 cmd_gpg_create_key() {
     mkdir -p target/gpgkeys
-    gpg --homedir target/gpgkeys --batch --generate-key keydata.txt
-    #gpg --homedir target/gpgkeys --batch --generate-key --passphrase '' pyrata rsa
+    gpg --homedir target/gpgkeys --batch --generate-key keydata-a.txt
+    gpg --homedir target/gpgkeys --batch --generate-key keydata-b.txt
+}
+
+cmd_gpg_create_quick_key() {
+    mkdir -p target/gpgkeys
+    gpg --homedir target/gpgkeys --batch --passphrase '' --quick-gen-key aaaaaa rsa4096
+    gpg --homedir target/gpgkeys --batch --passphrase '' --quick-gen-key bbbbbb rsa4096
 }
 
 cmd_gpg_list_key() {
@@ -43,12 +49,16 @@ cmd_gpg_reimport_private_key() {
     gpg --home target/gpgkeys --import target/keys/pyrata.private.key
 }
 
+cmd_gpg_key_encrypt() {
+    true
+}
+
 cmd_test() {
-    # cmd_clean
-    # cmd_data
-    # cmd_gpg_create_key
-    # cmd_gpg_list_key
-    # cmd_gpg_export_key
+    cmd_clean
+    cmd_data
+    cmd_gpg_create_quick_key
+    cmd_gpg_list_key
+    cmd_gpg_export_key
 
     # cmd_gpg_reimport_public_key
     # cmd_gpg_list_key
