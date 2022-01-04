@@ -22,6 +22,26 @@ cmd_gpg_create_quick_key() {
     mkdir -p target/gpgkeys
     gpg --homedir target/gpgkeys --batch --passphrase '' --quick-gen-key aaaaaa rsa4096
     gpg --homedir target/gpgkeys --batch --passphrase '' --quick-gen-key bbbbbb rsa4096
+
+    echo "
+    addkey
+    4
+    4096
+    0
+    y
+    y
+    save
+    " | GPG_TTY=$(tty) gpg --homedir target/gpgkeys --command-fd=0 --status-fd=1 --edit-key aaaaaa
+
+    echo "
+    addkey
+    4
+    4096
+    0
+    y
+    y
+    save
+    " | gpg --homedir target/gpgkeys --command-fd=0 --status-fd=1 --edit-key bbbbbb
 }
 
 cmd_gpg_list_key() {
