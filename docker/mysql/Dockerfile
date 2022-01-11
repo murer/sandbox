@@ -19,6 +19,8 @@ RUN service mysql start && \
     mysql -u root -proot --execute "CREATE DATABASE it DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" && \
     mysql -u root -proot --execute "GRANT ALL ON it.* TO 'it'@'%' IDENTIFIED BY 'it';" && \
     mysql -u root -proot --execute "FLUSH PRIVILEGES;" && \
+    mysql -u root -proot --execute "SET global general_log = 1;" && \
+    mysql -u root -proot --execute "SET global log_output = 'table';" && \
     service mysql stop && sleep 3
 
 ADD config /opt/config

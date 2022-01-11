@@ -2,6 +2,10 @@
 
 workdir="$( cd "$(dirname "$0")" ; pwd -P )"
 
+cmd_clean() {
+  docker rm -f murer-sandbox-mysql-server || true 
+}
+
 cmd_image() {
   docker build -t murer/sandbox-mysql .
 }
@@ -13,6 +17,10 @@ cmd_run() {
 
 cmd_exec() {
   docker exec -it murer-sandbox-mysql-server "$@"
+}
+
+cmd_logs() {
+  cmd_exec mysql -u root -proot --execute "select * from mysql.general_log $1;" 
 }
 
 cmd_client() {
