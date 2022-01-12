@@ -1,19 +1,14 @@
 (function ($) {
 
-    $.ajax({
-        method: 'POST',
-        url: 'Consulta/LoadOperacoes', 
-        dataType: 'text', 
-        contentType: 'application/json', 
-        data: JSON.stringify({
-            Operacao: "1", 
-            InstituicaoFinanceira: "selecione", 
-            dataInicial: "", 
-            dataFinal: ""
-        }), 
-        success: function(result) {
-            console.log('result', result)
-        }
-    })
+    function loadProtocolo(protocolo) {
+        $.ajax({
+            method: 'GET',
+            url: '/Protocolo/34575289/1', 
+            dataType: 'html', 
+            success: function(result) {
+                console.log('result', result)
+            }
+        })
+    }
 
 })(jQuery)
