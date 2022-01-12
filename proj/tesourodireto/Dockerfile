@@ -19,10 +19,12 @@ RUN wget -O chromedriver.zip --progress=dot -e dotbytes=64K "https://chromedrive
 
 #RUN chown -R hexblade:hexblade /home/hexblade
 
-RUN echo "python3 /home/hexblade/tesourodireto/sample_test.py" > /etc/xdg/openbox/autostart.d/99-test.sh
-
 WORKDIR /home/hexblade
 USER hexblade
 ENV HOME /home/hexblade
 
 RUN pip install selenium
+RUN pip install jupyterlab
+
+#RUN echo "python3 /home/hexblade/tesourodireto/sample_test.py" | sudo tee /etc/xdg/openbox/autostart.d/91-test.sh
+RUN echo "/home/hexblade/.local/bin/jupyter notebook --ip=0.0.0.0 &" | sudo tee /etc/xdg/openbox/autostart.d/90-jupter.sh
