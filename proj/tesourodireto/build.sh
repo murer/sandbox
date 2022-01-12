@@ -22,8 +22,12 @@ cmd_run_own() {
     -v "$(pwd)/src:/home/hexblade/tesourodireto" \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -e "DISPLAY=:0" \
-    --p 127.0.0.1:8888:8888 \
-    tesourodireto/tesourodireto:dev # python3 tesourodireto/sample_test.py
+    -p 127.0.0.1:8888:8888 \
+    tesourodireto/tesourodireto:dev "$@" # python3 tesourodireto/sample_test.py
+}
+
+cmd_run_jupyter() {
+  cmd_run_own /home/hexblade/.local/bin/jupyter notebook --ip=0.0.0.0
 }
 
 cd "$(dirname "$0")"; _cmd="${1?"cmd is required"}"; shift; "cmd_${_cmd}" "$@"
