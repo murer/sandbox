@@ -19,6 +19,8 @@ RUN wget -O chromedriver.zip --progress=dot -e dotbytes=64K "https://chromedrive
 
 #RUN chown -R hexblade:hexblade /home/hexblade
 
+RUN echo "python3 /home/hexblade/tesourodireto/sample_test.py" > /etc/xdg/openbox/autostart.d/99-test.sh
+
 WORKDIR /home/hexblade
 USER hexblade
 ENV HOME /home/hexblade
