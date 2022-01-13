@@ -23,13 +23,19 @@
         })
     }
 
+    function showResults(prots) {
+        x = window.open()
+        x.document.write('<html><body><table><thead><tr><th>aa</th><th>bbb</th></tr></thread></tbody></tbody></table></body></html>')
+    }
+
     var protocolos = $('a[href^="/Protocolo/"]').map((a, b) => $(b).attr('href').split('/')[2]).toArray();
     // protocolos.forEach(p => {
     //     console.log('protocolo', p)
     // })
     
-    //loadProtocolo('20905065', function(protocolo) {
-    //    console.log(protocolo)
-    //})
+    loadProtocolo('20905065', function(protocolo) {
+        console.log(protocolo)
+        showResults([protocolo])
+    })
 
 })(jQuery)
