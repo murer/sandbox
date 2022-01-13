@@ -1,6 +1,6 @@
 (function ($) {
 
-    function loadProtocolo(protocolo) {
+    function loadProtocolo(protocolo, cb) {
         $.ajax({
             method: 'GET',
             url: '/Protocolo/' + protocolo + '/1', 
@@ -18,7 +18,7 @@
                 ret.taxaInst = r.find('.td-protocolo-info:contains("Taxa da inst") .td-protocolo-info--valor').text().trim()
                 ret.dia = r.find('.td-protocolo-info-base:contains("Data da op") .td-protocolo-info-base--blue').text().trim()
                 ret.inst = r.find('.td-protocolo-info-base:contains("Institui") .td-protocolo-info-base--blue').text().trim()
-                console.log(ret)
+                cb(ret)
             }
         })
     }
@@ -28,6 +28,8 @@
     //     console.log('protocolo', p)
     // })
     
-    loadProtocolo('20905065')
+    loadProtocolo('20905065', function(protocolo) {
+        console.log(protocolo)
+    })
 
 })(jQuery)
