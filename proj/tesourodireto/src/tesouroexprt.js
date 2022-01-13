@@ -28,8 +28,8 @@
     //     console.log('protocolo', p)
     // })
     
-    loadProtocolo('20905065', function(protocolo) {
-        console.log(protocolo)
-    })
+    //loadProtocolo('20905065', function(protocolo) {
+    //    console.log(protocolo)
+    //})
 
 })(jQuery)
