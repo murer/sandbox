@@ -24,8 +24,31 @@
     }
 
     function showResults(prots) {
-        x = window.open()
-        x.document.write('<html><body><table><thead><tr><th>aa</th><th>bbb</th></tr></thread></tbody></tbody></table></body></html>')
+        var x = window.open()
+        window.sandboxPopup = x
+        x.document.write('<html><head><style>table, th, td {border: 1px solid black;}</style></head><body><table><thead><tr>' +
+            '<th>dia</th>' + 
+            '<th>titulo</th>' + 
+            '<th>qtd</th>' + 
+            '<th>valorUnitario</th>' + 
+            '<th>inst</th>' + 
+            '<th>taxaInst</th>' + 
+            '<th>taxaB3</th>' + 
+            '</tr></thread></table></body></html>')
+        $('table tbody', window.sandboxPopup.document).remove()
+        $('table', window.sandboxPopup.document).append('<tbody/>')
+        var tbody = $('table tbody', window.sandboxPopup.document)
+        prots.forEach(element => {
+            var tr = tbody.append('<tr/>').children('tr:last')
+            console.log('aaaa', element, tr.length)
+            tr.append('<td/>').find('td:last').text(element.dia)
+            tr.append('<td/>').find('td:last').text(element.titulo.toLowerCase().replaceAll(' ', '-'))
+            tr.append('<td/>').find('td:last').text(element.qtd)
+            tr.append('<td/>').find('td:last').text(element.valorUnitario.replaceAll('R$', '').replaceAll('.', ''))
+            tr.append('<td/>').find('td:last').text(element.inst)
+            tr.append('<td/>').find('td:last').text(element.taxaInst.replaceAll('R$', '').replaceAll('.', ''))
+            tr.append('<td/>').find('td:last').text(element.taxaB3.replaceAll('R$', '').replaceAll('.', ''))
+        });
     }
 
     var protocolos = $('a[href^="/Protocolo/"]').map((a, b) => $(b).attr('href').split('/')[2]).toArray();
