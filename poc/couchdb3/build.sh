@@ -8,8 +8,9 @@ function cmd_clean() {
 
 function cmd_run() {
   docker volume create --label couchdb-poc couchdb-poc
-	docker --rm -it --label couchdb-poc --name couchdb-poc \
-    --mount 'src=couchdb-poc,dst=/opt/couchdb/data'
+	docker run --rm -it --label couchdb-poc --name couchdb-poc \
+    --mount 'src=couchdb-poc,dst=/opt/couchdb/data' \
+    -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=123 \
 	  apache/couchdb:3	
 }
 
