@@ -11,6 +11,7 @@ function cmd_run() {
 	docker run --rm -it --label couchdb-poc --name couchdb-poc \
     --mount 'src=couchdb-poc,dst=/opt/couchdb/data' \
     -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=123 \
+    -p 5984:5984 \
 	  apache/couchdb:3	
 }
 
