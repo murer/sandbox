@@ -61,9 +61,8 @@ func main() {
 	}
 	pfd := []unix.PollFd{
 		{
-			Fd:      int32(serverFD),
-			Events:  unix.POLLIN,
-			Revents: 0,
+			Fd:     int32(serverFD),
+			Events: unix.POLLIN,
 		},
 	}
 	_, err = unix.Poll(pfd, -1)
