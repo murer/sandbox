@@ -59,6 +59,17 @@ func main() {
 	if err != nil {
 		fmt.Println("Sendmsg: ", err)
 	}
+	pfd := []unix.PollFd{
+		{
+			Fd:      int32(serverFD),
+			Events:  unix.POLLIN,
+			Revents: 0,
+		},
+	}
+	_, err = unix.Poll(pfd, -1)
+	if err != nil {
+		panic(err)
+	}
 	_, _, err = unix.Recvfrom(serverFD, response, 0)
 	if err != nil {
 		if err == syscall.EWOULDBLOCK {
