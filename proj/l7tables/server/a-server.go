@@ -89,10 +89,11 @@ func main() {
 		// 	Sec:  0,
 		// 	Usec: 0,
 		// }
-		err := unix.Select(fdMax+1, &tmpFdSet, nil, nil, nil)
+		n, err := unix.Select(fdMax+1, &tmpFdSet, nil, nil, nil)
 		if err != nil {
 			log.Fatal("Select: ", err)
 		}
+		log.Printf("Select return: %d", n)
 
 		// Iterate over the fdSet and handle only the active file descriptors
 		for fd := 0; fd < fdMax+1; fd++ {
@@ -167,7 +168,7 @@ func main() {
 
 // FDZero set to zero the fdSet
 func FDZero(p *unix.FdSet) {
-	p.Bits = [32]int32{}
+	p.Bits = [16]int64{}
 }
 
 // FDSet set a fd of fdSet
