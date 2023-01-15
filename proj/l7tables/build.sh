@@ -31,6 +31,7 @@ cmd_build() {
       -installsuffix cgo -tags netgo -mod mod \
       -o "build/out/$l7tables_goos-$l7tables_goarch/l7tables/$l7tables_excname" .
   du -hs "build/out/$l7tables_goos-$l7tables_goarch/l7tables/$l7tables_excname"
+  file "build/out/$l7tables_goos-$l7tables_goarch/l7tables/$l7tables_excname"
   cd "build/out/$l7tables_goos-$l7tables_goarch"
   tar cvzf "../../pack/l7tables-$l7tables_goos-$l7tables_goarch-$l7tables_version.tar.gz" "l7tables"
   cd -
