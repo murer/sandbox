@@ -5,9 +5,12 @@ import (
 	"log"
 	"net"
 	"time"
+
+	"github.com/murer/l7tables/util"
 )
 
 func main() {
+	util.Ok()
 	listen()
 	dial()
 	log.Printf("Wait")

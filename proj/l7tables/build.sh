@@ -17,7 +17,7 @@ cmd_fmt() {
 }
 
 cmd_list() {
-  go list -m all
+  go list -deps
 }
 
 cmd_build() {

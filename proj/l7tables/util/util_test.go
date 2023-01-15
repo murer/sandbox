@@ -1,12 +1,13 @@
 package util
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestOk(t *testing.T) {
-	ret := Ok()
-	if ret != "OK" {
-		t.Errorf("Abs(-1) = %s; want 1", ret)
-	}
+	assert.Equal(t, "OK", Ok())
 }
 
 func BenchmarkOk(b *testing.B) {
