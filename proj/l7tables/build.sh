@@ -5,7 +5,7 @@ cmd_clean() {
 }
 
 cmd_test() {
-  go test "$@"
+  go test ./...
 }
 
 cmd_vendor() {
