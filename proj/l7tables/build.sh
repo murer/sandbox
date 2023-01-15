@@ -16,6 +16,10 @@ cmd_fmt() {
   go fmt "$@"
 }
 
+cmd_list() {
+  go list -m all
+}
+
 cmd_build() {
   l7tables_goos="${1?'use: linux, darwin or windows'}"
   l7tables_goarch="${2:-"amd64"}"
