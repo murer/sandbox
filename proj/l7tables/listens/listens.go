@@ -44,6 +44,6 @@ func (me *LTListens) Close() {
 
 func Create() *LTListens {
 	return &LTListens{
-		accepts: make(chan *net.Conn),
+		accepts: make(chan net.Conn),
 	}
 }
