@@ -1,6 +1,7 @@
 package listens
 
 import (
+	"io"
 	"log"
 	"net"
 
@@ -28,6 +29,8 @@ func (me *LTListens) Accepts() {
 	log.Printf("Waiting for connections")
 	for conn := range me.accepts {
 		log.Printf("Accepted: %v", conn)
+		io.ReadAll(*conn)
+		(*conn).Close()
 	}
 	log.Printf("Waiting for connections done")
 }
