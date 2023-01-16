@@ -25,6 +25,7 @@ func (me *LTListener) Accepts(ch chan *net.Conn) {
 		util.Check(err)
 		log.Printf("Connection accepted: %s, %s", me.String(), conn.RemoteAddr().String())
 		ch <- &conn
+		log.Printf("bbbb")
 	}
 }
 
