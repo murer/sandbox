@@ -10,7 +10,7 @@ import (
 
 type LTListens struct {
 	listeners []*LTListener
-	accepts   chan *net.Conn
+	accepts   chan net.Conn
 }
 
 func (me *LTListens) Listen(proto string, address string) {
@@ -29,8 +29,8 @@ func (me *LTListens) Accepts() {
 	log.Printf("Waiting for connections")
 	for conn := range me.accepts {
 		log.Printf("Accepted: %v", conn)
-		io.ReadAll(*conn)
-		(*conn).Close()
+		io.ReadAll(conn)
+		conn.Close()
 	}
 	log.Printf("Waiting for connections done")
 }

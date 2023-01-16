@@ -18,13 +18,13 @@ func createListener(listener *net.Listener) *LTListener {
 	}
 }
 
-func (me *LTListener) Accepts(ch chan *net.Conn) {
+func (me *LTListener) Accepts(ch chan net.Conn) {
 	for {
 		log.Printf("Waiting for connection: %s", me.String())
 		conn, err := me.listener.Accept()
 		util.Check(err)
 		log.Printf("Connection accepted: %s, %s", me.String(), conn.RemoteAddr().String())
-		ch <- &conn
+		ch <- conn
 		log.Printf("bbbb")
 	}
 }
