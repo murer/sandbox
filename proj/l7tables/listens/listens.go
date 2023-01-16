@@ -19,6 +19,12 @@ func (me *LTListens) Listen(proto string, address string) {
 	me.listeners = append(me.listeners, listener)
 }
 
+func (me *LTListens) Accepts() {
+	for _, listener := range me.listeners {
+		go listener.Accepts()
+	}
+}
+
 func (me *LTListens) Close() {
 	for _, listener := range me.listeners {
 		log.Printf("Closing listener %s", listener)

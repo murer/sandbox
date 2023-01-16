@@ -17,6 +17,14 @@ func createListener(listener *net.Listener) *LTListener {
 	}
 }
 
+func (me *LTListener) Accepts() {
+	for {
+		conn, err := me.listener.Accept()
+		util.Check(err)
+		conn.Close()
+	}
+}
+
 func (me *LTListener) Close() {
 	util.Check(me.listener.Close())
 }
