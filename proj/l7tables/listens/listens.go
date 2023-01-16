@@ -24,6 +24,12 @@ func (me *LTListens) Accepts() {
 	for _, listener := range me.listeners {
 		go listener.Accepts(me.accepts)
 	}
+
+	log.Printf("Waiting for connections")
+	for conn := range me.accepts {
+		log.Printf("Accepted: %v", conn)
+	}
+	log.Printf("Waiting for connections done")
 }
 
 func (me *LTListens) Close() {
