@@ -9,6 +9,7 @@ import (
 
 type LTListens struct {
 	listeners []*LTListener
+	accepts   chan *net.Conn
 }
 
 func (me *LTListens) Listen(proto string, address string) {
@@ -21,7 +22,7 @@ func (me *LTListens) Listen(proto string, address string) {
 
 func (me *LTListens) Accepts() {
 	for _, listener := range me.listeners {
-		go listener.Accepts()
+		go listener.Accepts(me.accepts)
 	}
 }
 

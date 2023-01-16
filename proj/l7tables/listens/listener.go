@@ -17,11 +17,11 @@ func createListener(listener *net.Listener) *LTListener {
 	}
 }
 
-func (me *LTListener) Accepts() {
+func (me *LTListener) Accepts(ch chan *net.Conn) {
 	for {
 		conn, err := me.listener.Accept()
 		util.Check(err)
-		conn.Close()
+		ch <- &conn
 	}
 }
 
