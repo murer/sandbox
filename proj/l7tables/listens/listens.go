@@ -1,6 +1,7 @@
 package listens
 
 import (
+	"log"
 	"net"
 
 	"github.com/murer/l7tables/util"
@@ -11,6 +12,7 @@ type LTListens struct {
 }
 
 func (me *LTListens) Listen(proto string, address string) {
+	log.Printf("Listening %s:%s", proto, address)
 	server, err := net.Listen(proto, address)
 	util.Check(err)
 	listener := createListener(&server)
@@ -19,6 +21,7 @@ func (me *LTListens) Listen(proto string, address string) {
 
 func (me *LTListens) Close() {
 	for _, listener := range me.listeners {
+		log.Printf("Closing listener %s", listener)
 		listener.Close()
 	}
 }
