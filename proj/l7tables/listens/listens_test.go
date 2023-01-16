@@ -8,7 +8,6 @@ import (
 )
 
 func TestListen(t *testing.T) {
-
 	server, err := net.Listen("tcp4", "127.0.0.1:5000")
 	util.Check(err)
 	defer server.Close()

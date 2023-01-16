@@ -7,14 +7,14 @@ import (
 )
 
 type LTListens struct {
-	listeners []LTListener
+	listeners []*LTListener
 }
 
 func (me *LTListens) Listen(proto string, address string) {
 	server, err := net.Listen(proto, address)
 	util.Check(err)
 	listener := createListener(&server)
-	me.listeners = append(me.listeners, *listener)
+	me.listeners = append(me.listeners, listener)
 }
 
 func (me *LTListens) Close() {
