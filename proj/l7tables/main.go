@@ -13,7 +13,9 @@ func main() {
 
 	// kernel.addModule(ForwardTCPModule())
 	// 		.rule(func(conn Conn) {
-	//          if .... return "a.a.a.a:5010"
+	//          if .... {
+	//             forward("x.x.x.x:nnnn")
+	//          }
 	//		 })
 
 	// defer kernel.Close()
