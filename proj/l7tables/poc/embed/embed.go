@@ -7,25 +7,29 @@
 package main
 
 import (
-	"fmt"
 	"go/ast"
 	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
 	"log"
-	"os"
+	"runtime"
 
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
+	"golang.org/x/tools/go/ssa/interp"
 	"golang.org/x/tools/go/ssa/ssautil"
 )
 
 const hello = `
 package main
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+)
 const message = "Hello, World!"
 func main() {
+	runtime.Version()
 	fmt.Println(message)
 }
 `
@@ -47,7 +51,7 @@ func main() {
 // Build and run the ssadump.go program if you want a standalone tool
 // with similar functionality. It is located at
 // golang.org/x/tools/cmd/ssadump.
-func Example_buildPackage() {
+func Example_buildPackage() *ssa.Package {
 	// Replace interface{} with any for this test.
 	// ssa.SetNormalizeAnyForTesting(true)
 	// defer ssa.SetNormalizeAnyForTesting(false)
@@ -55,8 +59,7 @@ func Example_buildPackage() {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "hello.go", hello, parser.ParseComments)
 	if err != nil {
-		fmt.Print(err) // parse error
-		return
+		panic(err)
 	}
 	files := []*ast.File{f}
 	// Create the type-checker's package.
@@ -66,14 +69,13 @@ func Example_buildPackage() {
 	hello, _, err := ssautil.BuildPackage(
 		&types.Config{Importer: importer.Default()}, fset, pkg, files, ssa.SanityCheckFunctions)
 	if err != nil {
-		fmt.Print(err) // type error in some package
-		return
+		panic(err)
 	}
 	// Print out the package.
-	hello.WriteTo(os.Stdout)
+	// hello.WriteTo(os.Stdout)
 	// Print out the package-level functions.
-	hello.Func("init").WriteTo(os.Stdout)
-	hello.Func("main").WriteTo(os.Stdout)
+	// hello.Func("init").WriteTo(os.Stdout)
+	// hello.Func("main").WriteTo(os.Stdout)
 	// Output:
 	//
 	// package hello:
@@ -108,6 +110,11 @@ func Example_buildPackage() {
 	// 	t3 = slice t0[:]                                                  []any
 	// 	t4 = fmt.Println(t3...)                              (n int, err error)
 	// 	return
+
+	log.Printf("internal start %s", runtime.GOARCH)
+	exitcode := interp.Interpret(hello, interp.EnableTracing, types.SizesFor("gc", runtime.GOARCH), "hello.go", []string{})
+	log.Printf("internal exitcode: %d", exitcode)
+	return hello
 }
 
 // This example builds SSA code for a set of packages using the
@@ -155,7 +162,7 @@ func Example_loadWholeProgram() {
 }
 
 func main() {
-	// Example_buildPackage()
+	Example_buildPackage()
 	// Example_loadPackages()
 	// Example_loadWholeProgram()
 }
