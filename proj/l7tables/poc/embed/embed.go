@@ -63,7 +63,7 @@ func Example_buildPackage() *ssa.Package {
 	}
 	files := []*ast.File{f}
 	// Create the type-checker's package.
-	pkg := types.NewPackage("hello", "")
+	pkg := types.NewPackage("hello", "main")
 	// Type-check the package, load dependencies.
 	// Create and build the SSA program.
 	hello, _, err := ssautil.BuildPackage(
