@@ -33,7 +33,12 @@
         }
     }
 
+    function removeRollTable(id) {
+        $d.find('#' + id).remove()
+    }
+
     roll21.addRow = addRow
+    roll21.removeRollTable = removeRollTable
 
 //     addRow('aa', 'bb', {
 //     "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA",

@@ -16,6 +16,7 @@
                         roll21.addRow(options.roll21id, roll21try, req, resp, {
                             'use': function() {
                                 options.success(resp, status, jqXHR)
+                                roll21.removeRollTable(options.roll21id)
                             }
                         })
                     }
