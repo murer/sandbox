@@ -1,8 +1,6 @@
 (function($, $d) {
 
-    console.clear()
-    $d.find('#wrapper').html('')
-
+    
     function addRow(id, rid, req, resp, rollcallbacks) {
         var rt = $d.find('#' + id)
         if(!rt.length) {
@@ -39,6 +37,9 @@
 
     roll21.addRow = addRow
     roll21.removeRollTable = removeRollTable
+
+    // console.clear()
+    // $d.find('#wrapper').html('')
 
 //     addRow('aa', 'bb', {
 //     "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA",
