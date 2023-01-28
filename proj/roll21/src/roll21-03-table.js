@@ -1,9 +1,9 @@
 (function($, $d) {
 
-    // console.clear()
-    // $d.find('#wrapper').html('')
+    console.clear()
+    $d.find('#wrapper').html('')
 
-    function addRow(id, rid, req, resp) {
+    function addRow(id, rid, req, resp, rollcallbacks) {
         var rt = $d.find('#' + id)
         if(!rt.length) {
             console.log('aa', $d.find('#wrapper'))
@@ -25,7 +25,15 @@
             console.log('k', k, rolldata)
             tr.find('td.roll21' + k).text('' + rolldata.total)
         }
+        for (var k in rollcallbacks) {
+            console.log('bbb', tr.find('td.action')[0])
+            tr.find('td.action').append('<button type="button"/>').find('button:last').text(k).click(function() {
+                rollcallbacks[k](k)
+            })
+        }
     }
+
+    roll21.addRow = addRow
 
 //     addRow('aa', 'bb', {
 //     "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA",
