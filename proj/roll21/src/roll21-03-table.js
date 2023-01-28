@@ -25,9 +25,7 @@
             })
             rt.find('.rolltableaction').text('')
             Object.keys(tablecallbacks).forEach(function(k) {
-                console.log('k', k)
                 rt.find('.rolltableaction').append('<button type="button"/>').find('button:last').text(k).click(function() {
-                    console.log(tablecallbacks, k)
                     tablecallbacks[k]()
                 })
             })
@@ -45,8 +43,8 @@
         roll21.addRow = addRow
         roll21.removeRollTable = removeRollTable
 
-    //     console.clear()
-    //     $d.find('#wrapper').html('')
+        console.clear()
+        $d.find('#wrapper').html('')
     //     addRow('aa', 'bb', {
     //     "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA",
     //     "fbnum": "https://roll20-99960.firebaseio.com/",
