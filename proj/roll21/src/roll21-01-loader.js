@@ -7,4 +7,4 @@
         window.roll21.filter.apply(window, arguments) 
     })
 
-})(jQuery)
+})(jQuery);

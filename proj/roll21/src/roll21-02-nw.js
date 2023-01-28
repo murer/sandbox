@@ -22,4 +22,4 @@
         prepare(roll21.window, roll21.window.document)
     }
 
-})(jQuery)
+})(jQuery);
