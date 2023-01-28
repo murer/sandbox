@@ -40,7 +40,16 @@
             })
             Object.keys(resp).forEach(function(k) {
                 var rolldata = JSON.parse(resp[k].json)
-                tr.find('td.roll21' + k).text('' + rolldata.total)
+                var col = tr.find('td.roll21' + k)
+                col.html('<div/>').find('div:last').text('' + rolldata.total)
+                var desc = rolldata.rolls.map(function(roll) {
+                    console.log('roll', roll)
+                    ret = ''
+                    // if(roll.type == 'M') ret += roll.expr
+                    if(roll.type == 'R') ret += roll.sides + ': ' + roll.results.map(v => v.v).join(', ')
+                    return ret
+                }).join(' ')
+                col.append('<div/>').find('div:last').text(desc)
             })
             rt.find('.rolltableaction').text('')
             Object.keys(tablecallbacks).forEach(function(k) {
