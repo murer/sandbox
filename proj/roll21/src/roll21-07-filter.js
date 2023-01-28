@@ -15,7 +15,7 @@
                         var req = JSON.parse(options.data)
                         roll21.addRow(options.roll21id, roll21try, req, resp, {
                             'M5': function() {
-                                console.log('m5')
+                                for(var i = 0; i < 5; i++) hack(options)
                             }
                         }, {
                             'use': function() {
