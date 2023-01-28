@@ -55,6 +55,9 @@
 
     window.roll21filter = roll21filter
 
-    $.ajaxPrefilter(function() { window.roll21filter.apply(window, arguments) })
+    $.ajaxPrefilter(function() {
+        if (!window.roll21filter) return 
+        window.roll21filter.apply(window, arguments) 
+    })
 
 })(jQuery)
