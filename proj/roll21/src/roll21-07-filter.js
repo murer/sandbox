@@ -33,8 +33,8 @@
                 if (!options.type == 'POST') return
                 if (options.complete) return
                 if (options.roll21) return
-                console.log('data', JSON.parse(options.data))
-                console.log('original', options)
+                // console.log('data', JSON.parse(options.data))
+                // console.log('original', options)
                 jqXHR.abort()
                 options.roll21id = 'r21id' + Math.random().toString().replace('.', '')
                 hack(options)
