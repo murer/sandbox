@@ -2,39 +2,17 @@
     
     console.clear()
 
-    window.superadv = 2
-
-    function rndbest(sides, n) {
-        for (var i = 0; i < window.superadv; i++) {
-            r = Math.randomInt(sides)+1
-            if (r > n) {
-                n = r
-            }
-        }
-        return n
-    }
-
-    function hackRoll(original) {
-        var ojson = JSON.parse(original.json)
-        console.log('resultType', ojson.resultType)
-        if (ojson.resultType != 'sum') {
-            return original
-        }
-        var ototal = ojson.total
-        console.log('roll', ototal)
-        ojson.rolls.forEach(function(element, idx) {
-            if (!element.sides) return
-            element.results.forEach(function(result, ridx) {
-                var ov = result.v
-                var v = rndbest(element.sides, ov)
-                element.results[ridx].v = v
-                ototal = ototal + v - ov
-                console.log('hack from', ov, 'to', v, 'total', ototal, ojson)
-            })
-        })
-        ojson.total = ototal
-        original.json = JSON.stringify(ojson)
-        return original
+    function hack(resp) {
+        var keys = Object.keys(resp)
+        if(keys.length != 1) return resp
+        var key = keys[0]
+        console.log(key)
+        var aa = resp[key]
+        console.log(aa)
+        var nkey = window.prompt('h',key)
+        var ret = {}
+        ret[nkey] = aa
+        return ret
     }
 
     function roll21filter(options, originalOptions, jqXHR) {
@@ -44,12 +22,9 @@
         if (options.complete) return
         var originalSuccess = options.success
         options.success = function(resp, status, jqXHR) {
-            for (var k in resp) {
-                var v = resp[k]
-                hv = hackRoll(v)
-                resp[k] = hv
-            }
-            originalSuccess(resp, status, jqXHR)
+            var nr = hack(resp)
+            console.log(nr)
+            originalSuccess(nr, status, jqXHR)
         }
     }
 
