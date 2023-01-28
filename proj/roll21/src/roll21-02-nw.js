@@ -10,7 +10,7 @@
         d.head.innerHTML = '<html><head><title>R21</title>' + 
             '</head>'
         d.body.innerHTML = '<body>' +
-            '<div id="wrapper"><h1>Loading</h1></div>' +
+            '<div id="wrapper"><h1>Roll21</h1></div>' +
             '</body></html>'
 
         loadScript(d, "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
