@@ -1,0 +1,1 @@
+&{template:atkdmg} {{rname=rname}} {{attack=1}} {{r1=[[1d20+7]]}} @{test|rtype}+7]]}} {{damage=1}} {{dmg1flag=1}} {{dmg1=[[1d6+5]]}} {{dmg1type=dmg1type}} 

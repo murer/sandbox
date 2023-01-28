@@ -1,6 +1,8 @@
 (function($) {
+    
+    console.clear()
 
-    window.superadv = 0
+    window.superadv = 2
 
     function rndbest(sides, n) {
         for (var i = 0; i < window.superadv; i++) {
@@ -27,7 +29,7 @@
                 var v = rndbest(element.sides, ov)
                 element.results[ridx].v = v
                 ototal = ototal + v - ov
-                console.log('hack from', ov, 'to', v, 'total', ototal)
+                console.log('hack from', ov, 'to', v, 'total', ototal, ojson)
             })
         })
         ojson.total = ototal
@@ -53,6 +55,6 @@
 
     window.roll21filter = roll21filter
 
-    //$.ajaxPrefilter(function() { window.roll21filter.apply(window, arguments) })
+    $.ajaxPrefilter(function() { window.roll21filter.apply(window, arguments) })
 
 })(jQuery)
