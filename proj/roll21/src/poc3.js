@@ -34,6 +34,7 @@
         if (!options.type == 'POST') return
         if (options.complete) return
         if (options.roll21) return
+        console.log('data', JSON.parse(options.data))
         console.log('original', options)
         jqXHR.abort()
         hack(options, function(r1, status, jqXHR) {
