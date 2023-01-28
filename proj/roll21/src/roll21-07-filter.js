@@ -14,6 +14,10 @@
                     success: function(resp, status, jqXHR) {
                         var req = JSON.parse(options.data)
                         roll21.addRow(options.roll21id, roll21try, req, resp, {
+                            'M5': function() {
+                                console.log('m5')
+                            }
+                        }, {
                             'use': function() {
                                 options.success(resp, status, jqXHR)
                                 roll21.removeRollTable(options.roll21id)
