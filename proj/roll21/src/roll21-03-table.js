@@ -4,12 +4,10 @@
     function addRow(id, rid, req, resp, rollcallbacks) {
         var rt = $d.find('#' + id)
         if(!rt.length) {
-            console.log('aa', $d.find('#wrapper'))
             $d.find('#wrapper').append('<div id="' + id + '"><h3>' + id + '</h3><table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table></div>')
             $d.find('table').attr('border', '1').attr('cellpadding', '10')
             rt = $d.find('#' + id)
             req.rolls.forEach(v => {
-                console.log('v', v)
                 rt.find('thead tr').append('<th/>').find('th:last').append(v.rollid) 
             })           
         }
@@ -20,11 +18,9 @@
         })
         for (var k in resp) {
             var rolldata = JSON.parse(resp[k].json)
-            console.log('k', k, rolldata)
             tr.find('td.roll21' + k).text('' + rolldata.total)
         }
         for (var k in rollcallbacks) {
-            console.log('bbb', tr.find('td.action')[0])
             tr.find('td.action').append('<button type="button"/>').find('button:last').text(k).click(function() {
                 rollcallbacks[k](k)
             })
