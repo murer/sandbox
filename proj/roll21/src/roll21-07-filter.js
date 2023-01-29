@@ -14,10 +14,16 @@
                 roll21.removeRollTable(options.roll21id)
             },
             'dec': function() {
-                findResult(options, resp, 'lower')
+                findResult(options, resp, function(options, newresult, oldresult) {
+                    var nt = extractTotals(resp)
+                    return compareTotals(nt, totals) == 'lower'
+                })
             },
             'inc': function() {
-                findResult(options, resp, 'higher')
+                findResult(options, resp, function(options, newresult, oldresult) {
+                    var nt = extractTotals(resp)
+                    return compareTotals(nt, totals) == 'higher'
+                })
             }
         })
     }
@@ -50,7 +56,7 @@
         return ret
     }
 
-    function findResult(options, oresp, direction) {
+    function findResult(options, oresp, strategy) {
         console.log('inc', oresp)
         var totals = extractTotals(oresp)
         console.log('rrrr', totals)
@@ -62,13 +68,18 @@
                 return
             }
             retry--
-            var nt = extractTotals(resp)
-            var comp = compareTotals(nt, totals)
-            console.log('comp', comp, nt)
-            if (comp != direction) {
+            var valid = strategy(options, nt, totals)
+            if (!valid) {
                 hack(options, callback)
                 return
             }
+            // var nt = extractTotals(resp)
+            // var comp = compareTotals(nt, totals)
+            // console.log('comp', comp, nt)
+            // if (comp != direction) {
+            //     hack(options, callback)
+            //     return
+            // }
             console.log('found')
             addRow(options, roll21try, resp, status, jqXHR)
         }
