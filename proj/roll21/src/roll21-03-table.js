@@ -11,7 +11,7 @@
             rt.append('<div/>').find('div:last').addClass('rolltableaction')
             rt.append('<div/>').find('div:last').addClass('rolldefault')
             rt.append('<div/>').find('div:last').addClass('rollmsg')
-            rt.append('<div class="rollmsgaction"><button type="button">clean messages</button></div>').find('div:last button').click(function() {
+            rt.append('<div class="rollmsgaction"><button style="margin:2px;padding:5px" type="button">clean messages</button></div>').find('div:last button').click(function() {
                 $d.find('#' + id).find('.rollmsg').text('')
             })
             rt.append('<table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table>')
@@ -57,13 +57,13 @@
         })
         rt.find('.rolltableaction').text('')
         Object.keys(tablecallbacks).forEach(function(k) {
-            rt.find('.rolltableaction').append('<button type="button"/>').find('button:last').text(k).click(function() {
+            rt.find('.rolltableaction').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').text(k).click(function() {
                 timeoutRunning = false
                 tablecallbacks[k]()
             })
         })
         Object.keys(rollcallbacks).forEach(function(k) {
-            tr.find('td.action').append('<button type="button"/>').find('button:last').addClass('rowaction_' + k).text(k).click(function() {
+            tr.find('td.action').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').addClass('rowaction_' + k).text(k).click(function() {
                 timeoutRunning = false
                 rollcallbacks[k]()
             })
