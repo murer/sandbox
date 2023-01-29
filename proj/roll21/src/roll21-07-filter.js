@@ -14,15 +14,17 @@
                 roll21.removeRollTable(options.roll21id)
             },
             'dec': function() {
-                findResult(options, resp, function(options, newresult, oldresult) {
-                    var nt = extractTotals(resp)
-                    return compareTotals(nt, totals) == 'lower'
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var nt = extractTotals(newresp)
+                    var ot = extractTotals(oldresp)
+                    return compareTotals(nt, ot) == 'lower'
                 })
             },
             'inc': function() {
-                findResult(options, resp, function(options, newresult, oldresult) {
-                    var nt = extractTotals(resp)
-                    return compareTotals(nt, totals) == 'higher'
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var nt = extractTotals(newresp)
+                    var ot = extractTotals(oldresp)
+                    return compareTotals(nt, ot) == 'higher'
                 })
             }
         })
@@ -58,8 +60,8 @@
 
     function findResult(options, oresp, strategy) {
         console.log('inc', oresp)
-        var totals = extractTotals(oresp)
-        console.log('rrrr', totals)
+        // var totals = extractTotals(oresp)
+        // console.log('rrrr', totals)
 
         var retry = 10
         function callback(roll21try, resp, status, jqXHR) {
@@ -68,7 +70,7 @@
                 return
             }
             retry--
-            var valid = strategy(options, nt, totals)
+            var valid = strategy(options, resp, oresp)
             if (!valid) {
                 hack(options, callback)
                 return
