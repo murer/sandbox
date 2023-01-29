@@ -243,7 +243,7 @@
                 })
             }
         }
-        for (var i = 0; i <= req.rolls.length; i++) {
+        for (var i = 0; i < req.rolls.length; i++) {
             function createFind(index, compare) {
                 return function() {
                     findResult(options, resp, function(options, newresp, oldresp) {
@@ -256,8 +256,8 @@
                     })
                 }
             }
-            rollcallbacks['inc' + i] = createFind(i-1, (a, b) => a - b)
-            rollcallbacks['dec' + i] = createFind(i-1, (a, b) => b - a)
+            rollcallbacks['inc' + i] = createFind(i, (a, b) => a - b)
+            rollcallbacks['dec' + i] = createFind(i, (a, b) => b - a)
         }
         roll21.addRow(options.roll21id, roll21try, req, resp, {
             'more5': function() {
