@@ -2,13 +2,7 @@
 
     function addRow(options, roll21try, resp, status, jqXHR) {
         var req = JSON.parse(options.data)
-        roll21.addRow(options.roll21id, roll21try, req, resp, {
-            'more5': function() {
-                for(var i = 0; i < 5; i++) hack(options, function(roll21try, resp, status, jqXHR) {
-                    addRow(options, roll21try, resp, status, jqXHR)
-                })
-            }
-        }, {
+        var rollcallbacks = {
             'use': function() {
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
@@ -27,7 +21,33 @@
                     return compareTotals(nt, ot) == 'higher'
                 })
             }
-        })
+        }
+        for (var i = 0; i <= req.rolls.length; i++) {
+            function createFind(index, compare) {
+                return function() {
+                    findResult(options, resp, function(options, newresp, oldresp) {
+                        console.log('bbbb', index)
+                        var nt = extractTotals(newresp)
+                        var ot = extractTotals(oldresp)
+                        console.log('t', nt, ot)
+                        var nv = nt[index]
+                        var ov = ot[index]
+                        console.log('o', nv, ov)
+                        if(nv.id != ov.id) throw 'wrong: ' + nv.id + ', ' + nv.id
+                        return compare(nv.total, ov.total) > 0
+                    })
+                }
+            }
+            rollcallbacks['inc' + i] = createFind(i-1, (a, b) => a - b)
+            rollcallbacks['dec' + i] = createFind(i-1, (a, b) => b - a)
+        }
+        roll21.addRow(options.roll21id, roll21try, req, resp, {
+            'more5': function() {
+                for(var i = 0; i < 5; i++) hack(options, function(roll21try, resp, status, jqXHR) {
+                    addRow(options, roll21try, resp, status, jqXHR)
+                })
+            }
+        }, rollcallbacks)
     }
 
     function compareTotals(t1, t2) {
