@@ -3,7 +3,7 @@
     function addRow(options, roll21try, resp, status, jqXHR) {
         var req = JSON.parse(options.data)
         roll21.addRow(options.roll21id, roll21try, req, resp, {
-            'M5': function() {
+            'more5': function() {
                 for(var i = 0; i < 5; i++) hack(options, function(roll21try, resp, status, jqXHR) {
                     addRow(options, roll21try, resp, status, jqXHR)
                 })
