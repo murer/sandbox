@@ -247,13 +247,10 @@
             function createFind(index, compare) {
                 return function() {
                     findResult(options, resp, function(options, newresp, oldresp) {
-                        console.log('bbbb', index)
                         var nt = extractTotals(newresp)
                         var ot = extractTotals(oldresp)
-                        console.log('t', nt, ot)
                         var nv = nt[index]
                         var ov = ot[index]
-                        console.log('o', nv, ov)
                         if(nv.id != ov.id) throw 'wrong: ' + nv.id + ', ' + nv.id
                         return compare(nv.total, ov.total) > 0
                     })
