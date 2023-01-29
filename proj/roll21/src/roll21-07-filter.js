@@ -32,27 +32,46 @@
 
     function compareTotals(t1, t2) {
         var ret = 'empty'
-        for (var k in t1) {
-            if(t1[k] < t2[k]) {
+        t1.forEach(function(r1, index) {
+            var r2 = t2[index]
+            if(r1.id != r2.id) {
+                throw 'wrong: ' + r1.id + ', ' + r2.id
+            }
+            if(r1.total < r2.total) {
                 if (ret == 'empty') ret = 'lower'
                 if (ret != 'lower') return 'both'
             }
-            if(t1[k] > t2[k]) {
+            if(r1.total > r2.total) {
                 if (ret == 'empty') ret = 'higher'
                 if (ret != 'higher') return 'both'
             }
-            if(t1[k] == t2[k]) {
+            if(r1.total == r1.total) {
                 if (ret == 'empty') ret = 'same'
                 if (ret != 'same') return 'both'
             }
-        }
+        })
+        // for (var k in t1) {
+        //     if(t1[k] < t2[k]) {
+        //         if (ret == 'empty') ret = 'lower'
+        //         if (ret != 'lower') return 'both'
+        //     }
+        //     if(t1[k] > t2[k]) {
+        //         if (ret == 'empty') ret = 'higher'
+        //         if (ret != 'higher') return 'both'
+        //     }
+        //     if(t1[k] == t2[k]) {
+        //         if (ret == 'empty') ret = 'same'
+        //         if (ret != 'same') return 'both'
+        //     }
+        // }
         return ret
     }
 
     function extractTotals(resp) {
-        var ret = {}
+        var ret = []
         Object.keys(resp).forEach(k => {
-            ret[k] = JSON.parse(resp[k].json).total
+            //ret[k] = JSON.parse(resp[k].json).total
+            ret.push({ id: k, total: JSON.parse(resp[k].json).total})
         })
         return ret
     }
