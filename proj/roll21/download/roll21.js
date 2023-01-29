@@ -47,7 +47,7 @@
             rt.append('<div/>').find('div:last').addClass('rolltableaction')
             rt.append('<div/>').find('div:last').addClass('rolldefault')
             rt.append('<div/>').find('div:last').addClass('rollmsg')
-            rt.append('<div class="rollmsgaction"><button type="button">clean messages</button></div>').find('div:last button').click(function() {
+            rt.append('<div class="rollmsgaction"><button style="margin:2px;padding:5px" type="button">clean messages</button></div>').find('div:last button').click(function() {
                 $d.find('#' + id).find('.rollmsg').text('')
             })
             rt.append('<table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table>')
@@ -93,13 +93,13 @@
         })
         rt.find('.rolltableaction').text('')
         Object.keys(tablecallbacks).forEach(function(k) {
-            rt.find('.rolltableaction').append('<button type="button"/>').find('button:last').text(k).click(function() {
+            rt.find('.rolltableaction').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').text(k).click(function() {
                 timeoutRunning = false
                 tablecallbacks[k]()
             })
         })
         Object.keys(rollcallbacks).forEach(function(k) {
-            tr.find('td.action').append('<button type="button"/>').find('button:last').addClass('rowaction_' + k).text(k).click(function() {
+            tr.find('td.action').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').addClass('rowaction_' + k).text(k).click(function() {
                 timeoutRunning = false
                 rollcallbacks[k]()
             })
@@ -223,59 +223,86 @@
 
     function addRow(options, roll21try, resp, status, jqXHR) {
         var req = JSON.parse(options.data)
-        roll21.addRow(options.roll21id, roll21try, req, resp, {
-            'M5': function() {
-                for(var i = 0; i < 5; i++) hack(options, function(roll21try, resp, status, jqXHR) {
-                    addRow(options, roll21try, resp, status, jqXHR)
-                })
-            }
-        }, {
+        var rollcallbacks = {
             'use': function() {
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
-            'dec': function() {
-                findResult(options, resp, 'lower')
+            'decAll': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var nt = extractTotals(newresp)
+                    var ot = extractTotals(oldresp)
+                    return compareTotals(nt, ot) == 'lower'
+                })
             },
-            'inc': function() {
-                findResult(options, resp, 'higher')
+            'incAll': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var nt = extractTotals(newresp)
+                    var ot = extractTotals(oldresp)
+                    return compareTotals(nt, ot) == 'higher'
+                })
             }
-        })
+        }
+        for (var i = 0; i <= req.rolls.length; i++) {
+            function createFind(index, compare) {
+                return function() {
+                    findResult(options, resp, function(options, newresp, oldresp) {
+                        console.log('bbbb', index)
+                        var nt = extractTotals(newresp)
+                        var ot = extractTotals(oldresp)
+                        console.log('t', nt, ot)
+                        var nv = nt[index]
+                        var ov = ot[index]
+                        console.log('o', nv, ov)
+                        if(nv.id != ov.id) throw 'wrong: ' + nv.id + ', ' + nv.id
+                        return compare(nv.total, ov.total) > 0
+                    })
+                }
+            }
+            rollcallbacks['inc' + i] = createFind(i-1, (a, b) => a - b)
+            rollcallbacks['dec' + i] = createFind(i-1, (a, b) => b - a)
+        }
+        roll21.addRow(options.roll21id, roll21try, req, resp, {
+            'more5': function() {
+                for(var i = 0; i < 5; i++) hack(options, function(roll21try, resp, status, jqXHR) {
+                    addRow(options, roll21try, resp, status, jqXHR)
+                })
+            }
+        }, rollcallbacks)
     }
 
     function compareTotals(t1, t2) {
         var ret = 'empty'
-        for (var k in t1) {
-            console.log('inner', t1[k], t2[k])
-            if(t1[k] < t2[k]) {
+        t1.forEach(function(r1, index) {
+            var r2 = t2[index]
+            if(r1.id != r2.id) {
+                throw 'wrong: ' + r1.id + ', ' + r2.id
+            }
+            if(r1.total < r2.total) {
                 if (ret == 'empty') ret = 'lower'
                 if (ret != 'lower') return 'both'
             }
-            if(t1[k] > t2[k]) {
+            if(r1.total > r2.total) {
                 if (ret == 'empty') ret = 'higher'
                 if (ret != 'higher') return 'both'
             }
-            if(t1[k] == t2[k]) {
+            if(r1.total == r1.total) {
                 if (ret == 'empty') ret = 'same'
                 if (ret != 'same') return 'both'
             }
-        }
-        return ret
-    }
-
-    function extractTotals(resp) {
-        var ret = {}
-        Object.keys(resp).forEach(k => {
-            ret[k] = JSON.parse(resp[k].json).total
         })
         return ret
     }
 
-    function findResult(options, oresp, direction) {
-        console.log('inc', oresp)
-        var totals = extractTotals(oresp)
-        console.log('rrrr', totals)
+    function extractTotals(resp) {
+        var ret = []
+        Object.keys(resp).forEach(k => {
+            ret.push({ id: k, total: JSON.parse(resp[k].json).total})
+        })
+        return ret
+    }
 
+    function findResult(options, oresp, strategy) {
         var retry = 10
         function callback(roll21try, resp, status, jqXHR) {
             if(retry <= 0) {
@@ -283,14 +310,11 @@
                 return
             }
             retry--
-            var nt = extractTotals(resp)
-            var comp = compareTotals(nt, totals)
-            console.log('comp', comp, nt)
-            if (comp != direction) {
+            var valid = strategy(options, resp, oresp)
+            if (!valid) {
                 hack(options, callback)
                 return
             }
-            console.log('found')
             addRow(options, roll21try, resp, status, jqXHR)
         }
 
