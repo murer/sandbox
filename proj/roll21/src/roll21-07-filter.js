@@ -53,7 +53,7 @@
         var totals = extractTotals(oresp)
         console.log('rrrr', totals)
 
-        var retry = 5
+        var retry = 10
         function callback(roll21try, resp, status, jqXHR) {
             if(retry <= 0) {
                 roll21.msgRollTable(options.roll21id, 'I cannot find better results :(')
