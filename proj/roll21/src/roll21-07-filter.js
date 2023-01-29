@@ -13,14 +13,14 @@
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
-            'dec': function() {
+            'decall': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var nt = extractTotals(newresp)
                     var ot = extractTotals(oldresp)
                     return compareTotals(nt, ot) == 'lower'
                 })
             },
-            'inc': function() {
+            'incall': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var nt = extractTotals(newresp)
                     var ot = extractTotals(oldresp)
