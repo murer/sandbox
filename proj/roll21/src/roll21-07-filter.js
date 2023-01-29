@@ -49,14 +49,14 @@
     }
 
     function findResult(options, oresp, direction) {
-        console.log('inc', oresp, t)
+        console.log('inc', oresp)
         var totals = extractTotals(oresp)
         console.log('rrrr', totals)
 
         var retry = 5
         function callback(roll21try, resp, status, jqXHR) {
             if(retry <= 0) {
-                alert('I cannot find better results :(')
+                roll21.msgRollTable(options.roll21id, 'I cannot find better results :(')
                 return
             }
             retry--

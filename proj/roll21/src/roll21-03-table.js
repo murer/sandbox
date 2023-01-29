@@ -10,6 +10,10 @@
             rt.append('<h3/>').find('h3:last').text(id)
             rt.append('<div/>').find('div:last').addClass('rolltableaction')
             rt.append('<div/>').find('div:last').addClass('rolldefault')
+            rt.append('<div/>').find('div:last').addClass('rollmsg')
+            rt.append('<div class="rollmsgaction"><button type="button">clean messages</button></div>').find('div:last button').click(function() {
+                $d.find('#' + id).find('.rollmsg').text('')
+            })
             rt.append('<table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table>')
             rt.find('table').attr('border', '1').attr('cellpadding', '10')
             req.rolls.forEach(v => {
@@ -70,8 +74,13 @@
         $d.find('#' + id).remove()
     }
 
+    function msgRollTable(id, msg) {
+        $d.find('#' + id).find('.rollmsg').append('<div/>').find('div:last').text(msg)
+    }
+
     roll21.addRow = addRow
     roll21.removeRollTable = removeRollTable
+    roll21.msgRollTable = msgRollTable
 
     // console.clear()
     // $d.find('#wrapper').html('')
