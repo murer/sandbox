@@ -11,8 +11,11 @@
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
+            'dec': function() {
+                findResult(options, resp, 'lower')
+            },
             'inc': function() {
-                inc(options, resp, 5)
+                findResult(options, resp, 'higher')
             }
         })
     }
@@ -45,21 +48,23 @@
         return ret
     }
 
-    function inc(options, oresp, t) {
-        if(t <= 0) {
-            console.log('not found')
-            return
-        }
-        console.log('inc', oresp)
+    function findResult(options, oresp, direction) {
+        console.log('inc', oresp, t)
         var totals = extractTotals(oresp)
         console.log('rrrr', totals)
 
+        var retry = 5
         function callback(roll21try, resp, status, jqXHR) {
+            if(retry <= 0) {
+                alert('I cannot find better results :(')
+                return
+            }
+            retry--
             var nt = extractTotals(resp)
             var comp = compareTotals(nt, totals)
             console.log('comp', comp, nt)
-            if (comp != 'higher') {
-                hack(options, callback, t-1)
+            if (comp != direction) {
+                hack(options, callback)
                 return
             }
             console.log('found')
