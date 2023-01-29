@@ -1,6 +1,7 @@
 (function($) {
 
-    function addRow(options, roll21try, req, resp, status, jqXHR) {
+    function addRow(options, roll21try, resp, status, jqXHR) {
+        var req = JSON.parse(options.data)
         roll21.addRow(options.roll21id, roll21try, req, resp, {
             'M5': function() {
                 for(var i = 0; i < 5; i++) hack(options)
@@ -11,18 +12,29 @@
                 roll21.removeRollTable(options.roll21id)
             },
             'inc': function() {
-                inc(options, resp)
+                inc(options, resp, 5)
             }
         })
     }
 
     function compareTotals(t1, t2) {
+        var ret = 'empty'
         for (var k in t1) {
             console.log('inner', t1[k], t2[k])
-            if(t1[k] < t2[k]) return -1
-            if(t1[k] > t2[k]) return 1
+            if(t1[k] < t2[k]) {
+                if (ret == 'empty') ret = 'lower'
+                if (ret != 'lower') return 'both'
+            }
+            if(t1[k] > t2[k]) {
+                if (ret == 'empty') ret = 'higher'
+                if (ret != 'higher') return 'both'
+            }
+            if(t1[k] == t2[k]) {
+                if (ret == 'empty') ret = 'same'
+                if (ret != 'same') return 'both'
+            }
         }
-        return 0
+        return ret
     }
 
     function extractTotals(resp) {
@@ -33,20 +45,25 @@
         return ret
     }
 
-    function inc(options, oresp) {
+    function inc(options, oresp, t) {
+        if(t <= 0) {
+            console.log('not found')
+            return
+        }
         console.log('inc', oresp)
         var totals = extractTotals(oresp)
         console.log('rrrr', totals)
 
         function callback(roll21try, resp, status, jqXHR) {
             var nt = extractTotals(resp)
-            var comp = compareTotals(totals, nt)
+            var comp = compareTotals(nt, totals)
             console.log('comp', comp, nt)
-            if (comp <= 0) {
-                hack(options, callback)
+            if (comp != 'higher') {
+                hack(options, callback, t-1)
                 return
             }
             console.log('found')
+            addRow(options, roll21try, resp, status, jqXHR)
         }
 
         hack(options, callback)
@@ -80,8 +97,7 @@
         jqXHR.abort()
         options.roll21id = 'r21id' + Math.random().toString().replace('.', '')
         hack(options, function(roll21try, resp, status, jqXHR) {
-            var req = JSON.parse(options.data)
-            addRow(options, roll21try, req, resp, status, jqXHR)
+            addRow(options, roll21try, resp, status, jqXHR)
         })
     }
 
