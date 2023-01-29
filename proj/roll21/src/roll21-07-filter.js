@@ -50,27 +50,12 @@
                 if (ret != 'same') return 'both'
             }
         })
-        // for (var k in t1) {
-        //     if(t1[k] < t2[k]) {
-        //         if (ret == 'empty') ret = 'lower'
-        //         if (ret != 'lower') return 'both'
-        //     }
-        //     if(t1[k] > t2[k]) {
-        //         if (ret == 'empty') ret = 'higher'
-        //         if (ret != 'higher') return 'both'
-        //     }
-        //     if(t1[k] == t2[k]) {
-        //         if (ret == 'empty') ret = 'same'
-        //         if (ret != 'same') return 'both'
-        //     }
-        // }
         return ret
     }
 
     function extractTotals(resp) {
         var ret = []
         Object.keys(resp).forEach(k => {
-            //ret[k] = JSON.parse(resp[k].json).total
             ret.push({ id: k, total: JSON.parse(resp[k].json).total})
         })
         return ret
