@@ -33,7 +33,6 @@
     function compareTotals(t1, t2) {
         var ret = 'empty'
         for (var k in t1) {
-            console.log('inner', t1[k], t2[k])
             if(t1[k] < t2[k]) {
                 if (ret == 'empty') ret = 'lower'
                 if (ret != 'lower') return 'both'
@@ -59,10 +58,6 @@
     }
 
     function findResult(options, oresp, strategy) {
-        console.log('inc', oresp)
-        // var totals = extractTotals(oresp)
-        // console.log('rrrr', totals)
-
         var retry = 10
         function callback(roll21try, resp, status, jqXHR) {
             if(retry <= 0) {
@@ -75,14 +70,6 @@
                 hack(options, callback)
                 return
             }
-            // var nt = extractTotals(resp)
-            // var comp = compareTotals(nt, totals)
-            // console.log('comp', comp, nt)
-            // if (comp != direction) {
-            //     hack(options, callback)
-            //     return
-            // }
-            console.log('found')
             addRow(options, roll21try, resp, status, jqXHR)
         }
 
