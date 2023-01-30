@@ -11,8 +11,14 @@
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var ns = extractTotals(newresp).sum
                     var os = extractTotals(oldresp).sum
-                    console.log('sum', ns, os)
-                    return ns - os
+                    return ns - os > 0
+                })
+            },
+            'decTotal': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var ns = extractTotals(newresp).sum
+                    var os = extractTotals(oldresp).sum
+                    return ns - os < 0
                 })
             },
             'decAll': function() {
