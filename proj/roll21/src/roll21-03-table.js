@@ -14,7 +14,7 @@
             rt.append('<div class="rollmsgaction"><button style="margin:2px;padding:5px" type="button">clean messages</button></div>').find('div:last button').click(function() {
                 $d.find('#' + id).find('.rollmsg').text('')
             })
-            rt.append('<table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table>')
+            rt.append('<table><thead><tr><th>roll</th><th>action</th><th>total</th></tr></thead><tbody></tbody></table>')
             rt.find('table').attr('border', '1').attr('cellpadding', '10')
             req.rolls.forEach(v => {
                 rt.find('thead tr').append('<th/>').find('th:last').append(v.rollid) 
@@ -37,13 +37,15 @@
             }
             setTimeout(countdown, 1000)
         }
-        var tr = rt.find('tbody').append('<tr><td class="rollid"/><td class="action"/></tr>').find('tr:last')
+        var tr = rt.find('tbody').append('<tr><td class="rollid"/><td class="action"/><td class="rolltotal"/></tr>').find('tr:last')
         tr.find('td.rollid').text(rid)
         req.rolls.forEach(v => {
             tr.append('<td/>').find('td:last').addClass('roll21' + v.rollid).text(v.rollid)
         })
+        var rowtotal = 0
         Object.keys(resp).forEach(function(k) {
             var rolldata = JSON.parse(resp[k].json)
+            rowtotal += rolldata.total 
             var col = tr.find('td.roll21' + k)
             col.html('<div/>').find('div:last').text('' + rolldata.total)
             var desc = rolldata.rolls.map(function(roll) {
@@ -55,6 +57,7 @@
             }).join(' ')
             col.append('<div/>').find('div:last').text(desc)
         })
+        tr.find('td.rolltotal').text(rowtotal)
         rt.find('.rolltableaction').text('')
         Object.keys(tablecallbacks).forEach(function(k) {
             rt.find('.rolltableaction').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').text(k).click(function() {
