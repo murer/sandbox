@@ -7,17 +7,25 @@
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
+            'incTotal': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var ns = extractTotals(newresp).sum
+                    var os = extractTotals(oldresp).sum
+                    console.log('sum', ns, os)
+                    return ns - os
+                })
+            },
             'decAll': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
-                    var nt = extractTotals(newresp)
-                    var ot = extractTotals(oldresp)
+                    var nt = extractTotals(newresp).rolls
+                    var ot = extractTotals(oldresp).rolls
                     return compareTotals(nt, ot) == 'lower'
                 })
             },
             'incAll': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
-                    var nt = extractTotals(newresp)
-                    var ot = extractTotals(oldresp)
+                    var nt = extractTotals(newresp).rolls
+                    var ot = extractTotals(oldresp).rolls
                     return compareTotals(nt, ot) == 'higher'
                 })
             }
@@ -26,8 +34,8 @@
             function createFind(index, compare) {
                 return function() {
                     findResult(options, resp, function(options, newresp, oldresp) {
-                        var nt = extractTotals(newresp)
-                        var ot = extractTotals(oldresp)
+                        var nt = extractTotals(newresp).rolls
+                        var ot = extractTotals(oldresp).rolls
                         var nv = nt[index]
                         var ov = ot[index]
                         if(nv.id != ov.id) throw 'wrong: ' + nv.id + ', ' + nv.id
@@ -71,9 +79,11 @@
     }
 
     function extractTotals(resp) {
-        var ret = []
+        var ret = { rolls: [], sum: 0 }
         Object.keys(resp).forEach(k => {
-            ret.push({ id: k, total: JSON.parse(resp[k].json).total})
+            var total = JSON.parse(resp[k].json).total
+            ret.rolls.push({ id: k, total: total})
+            ret.sum = ret.sum + total
         })
         return ret
     }
