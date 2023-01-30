@@ -1,2 +1,2 @@
-/w Murer &{template:atk} {{rname=Eldritch Blast}} {{?{Type|normal|advantage|disadvantage}=1}} {{mod=[[@{Allister|PB}[PB] + @{Allister|charisma_mod}[CHA] + 1[STAFF]]]}} {{r1=[[d20cs>?{Hexblade Curse|False,20|True,19} + @{Allister|PB}[PB] + @{Allister|charisma_mod}[CHA] + 1[STAFF]]]}} {{r2=[[d20cs>?{Hexblade Curse|False,20|True,19} + @{Allister|PB}[PB] + @{Allister|charisma_mod}[CHA] + 1[STAFF]]]}} {{range=120 feets}} {{charname=Allister}}
-/w Murer [EB Damage](~Allister|EBDamage)
+/w Murer &{template:atk} {{rname=Eldritch Blast}} {{?{Type|normal|advantage|disadvantage}=1}} @{Allister|charisma_mod}[CHA] + 1[STAFF]}} {{r1=[[d20cs>?{Hexblade Curse|False,20|True,19} + @{Allister|PB}[PB] + @{Allister|charisma_mod}[CHA] + 1[STAFF]]]}} {{r2=[[d20cs>?{Hexblade Curse|False,20|True,19} + @{Allister|PB}[PB] + @{Allister|charisma_mod}[CHA] + 1[STAFF]]]}} {{range=120 feets}} {{charname=Allister}}
+/w Murer [EBAttack](~Allister|EBAttack) [EB Damage](~Allister|EBDamage)
