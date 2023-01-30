@@ -50,7 +50,7 @@
             rt.append('<div class="rollmsgaction"><button style="margin:2px;padding:5px" type="button">clean messages</button></div>').find('div:last button').click(function() {
                 $d.find('#' + id).find('.rollmsg').text('')
             })
-            rt.append('<table><thead><tr><th>roll</th><th>action</th></tr></thead><tbody></tbody></table>')
+            rt.append('<table><thead><tr><th>roll</th><th>action</th><th>sum</th></tr></thead><tbody></tbody></table>')
             rt.find('table').attr('border', '1').attr('cellpadding', '10')
             req.rolls.forEach(v => {
                 rt.find('thead tr').append('<th/>').find('th:last').append(v.rollid) 
@@ -73,13 +73,15 @@
             }
             setTimeout(countdown, 1000)
         }
-        var tr = rt.find('tbody').append('<tr><td class="rollid"/><td class="action"/></tr>').find('tr:last')
+        var tr = rt.find('tbody').append('<tr><td class="rollid"/><td class="action"/><td class="rollsum"/></tr>').find('tr:last')
         tr.find('td.rollid').text(rid)
         req.rolls.forEach(v => {
             tr.append('<td/>').find('td:last').addClass('roll21' + v.rollid).text(v.rollid)
         })
+        var rowsum = 0
         Object.keys(resp).forEach(function(k) {
             var rolldata = JSON.parse(resp[k].json)
+            rowsum += rolldata.total
             var col = tr.find('td.roll21' + k)
             col.html('<div/>').find('div:last').text('' + rolldata.total)
             var desc = rolldata.rolls.map(function(roll) {
@@ -91,6 +93,7 @@
             }).join(' ')
             col.append('<div/>').find('div:last').text(desc)
         })
+        tr.find('td.rollsum').text('' + rowsum)
         rt.find('.rolltableaction').text('')
         Object.keys(tablecallbacks).forEach(function(k) {
             rt.find('.rolltableaction').append('<button style="margin:2px;padding:5px" type="button"/>').find('button:last').text(k).click(function() {
@@ -208,12 +211,12 @@
 //     "use3d": false
 // }, {
 //         "-NMuDCWZ5zw47KEH-AVs": {
-//             "json": "{\"type\":\"V\",\"rolls\":[{\"type\":\"R\",\"dice\":1,\"sides\":20,\"mods\":{\"customCrit\":[{\"comp\":\">=\",\"point\":20}]},\"results\":[{\"v\":6}]},{\"type\":\"M\",\"expr\":\"+4\"},{\"type\":\"L\",\"text\":\"STR\"},{\"type\":\"M\",\"expr\":\"+2\"},{\"type\":\"L\",\"text\":\"PROF\"}],\"resultType\":\"sum\",\"total\":12}",
+//             "json": "{\"type\":\"V\",\"rolls\":[{\"type\":\"R\",\"dice\":1,\"sides\":20,\"mods\":{\"customCrit\":[{\"comp\":\">=\",\"point\":20}]},\"results\":[{\"v\":6}]},{\"type\":\"M\",\"expr\":\"+4\"},{\"type\":\"L\",\"text\":\"STR\"},{\"type\":\"M\",\"expr\":\"+2\"},{\"type\":\"L\",\"text\":\"PROF\"}],\"resultType\":\"sum\",\"rowsum\":12}",
 //             "signature": "3b3d9631da5e43b1ec42ca0157251b420c6d6791851ea7870798f24d236c19017faeba8100edef75ce59cc7f8a3208c05e9976704126acf1da78710b08e2cc08",
 //             "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA"
 //         },
 //         "-NMuDCWZ5zw47KEH-AVt": {
-//             "json": "{\"type\":\"V\",\"rolls\":[{\"type\":\"R\",\"dice\":1,\"sides\":20,\"mods\":{\"customCrit\":[{\"comp\":\">=\",\"point\":20}]},\"results\":[{\"v\":17}]},{\"type\":\"M\",\"expr\":\"+4\"},{\"type\":\"L\",\"text\":\"STR\"},{\"type\":\"M\",\"expr\":\"+2\"},{\"type\":\"L\",\"text\":\"PROF\"}],\"resultType\":\"sum\",\"total\":23}",
+//             "json": "{\"type\":\"V\",\"rolls\":[{\"type\":\"R\",\"dice\":1,\"sides\":20,\"mods\":{\"customCrit\":[{\"comp\":\">=\",\"point\":20}]},\"results\":[{\"v\":17}]},{\"type\":\"M\",\"expr\":\"+4\"},{\"type\":\"L\",\"text\":\"STR\"},{\"type\":\"M\",\"expr\":\"+2\"},{\"type\":\"L\",\"text\":\"PROF\"}],\"resultType\":\"sum\",\"rowsum\":23}",
 //             "signature": "79e7c07946c5c72427c707b1e59cc9440038ff5108a1301a8067c0a8c09ef79915c8ad5016282484b74b223004b446f9e959ecfdd34feb66c01af2db5033836c",
 //             "cid": "campaign-11896033-axRZK6G08g4r9r-Czt5xHA"
 //         }
@@ -228,17 +231,31 @@
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
+            'incTotal': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var ns = extractTotals(newresp).sum
+                    var os = extractTotals(oldresp).sum
+                    return ns - os > 0
+                })
+            },
+            'decTotal': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var ns = extractTotals(newresp).sum
+                    var os = extractTotals(oldresp).sum
+                    return ns - os < 0
+                })
+            },
             'decAll': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
-                    var nt = extractTotals(newresp)
-                    var ot = extractTotals(oldresp)
+                    var nt = extractTotals(newresp).rolls
+                    var ot = extractTotals(oldresp).rolls
                     return compareTotals(nt, ot) == 'lower'
                 })
             },
             'incAll': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
-                    var nt = extractTotals(newresp)
-                    var ot = extractTotals(oldresp)
+                    var nt = extractTotals(newresp).rolls
+                    var ot = extractTotals(oldresp).rolls
                     return compareTotals(nt, ot) == 'higher'
                 })
             }
@@ -247,8 +264,8 @@
             function createFind(index, compare) {
                 return function() {
                     findResult(options, resp, function(options, newresp, oldresp) {
-                        var nt = extractTotals(newresp)
-                        var ot = extractTotals(oldresp)
+                        var nt = extractTotals(newresp).rolls
+                        var ot = extractTotals(oldresp).rolls
                         var nv = nt[index]
                         var ov = ot[index]
                         if(nv.id != ov.id) throw 'wrong: ' + nv.id + ', ' + nv.id
@@ -292,9 +309,11 @@
     }
 
     function extractTotals(resp) {
-        var ret = []
+        var ret = { rolls: [], sum: 0 }
         Object.keys(resp).forEach(k => {
-            ret.push({ id: k, total: JSON.parse(resp[k].json).total})
+            var total = JSON.parse(resp[k].json).total
+            ret.rolls.push({ id: k, total: total})
+            ret.sum = ret.sum + total
         })
         return ret
     }
