@@ -3,36 +3,36 @@
     function addRow(options, roll21try, resp, status, jqXHR) {
         var req = JSON.parse(options.data)
         var rollcallbacks = {
-            'use': function() {
+            'USE': function() {
                 options.success(resp, status, jqXHR)
                 roll21.removeRollTable(options.roll21id)
             },
-            'incTotal': function() {
+            'IncTotal': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var ns = extractTotals(newresp).sum
                     var os = extractTotals(oldresp).sum
                     return ns - os > 0
                 })
             },
-            'decTotal': function() {
+            'DecTotal': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var ns = extractTotals(newresp).sum
                     var os = extractTotals(oldresp).sum
                     return ns - os < 0
                 })
             },
-            'decAll': function() {
-                findResult(options, resp, function(options, newresp, oldresp) {
-                    var nt = extractTotals(newresp).rolls
-                    var ot = extractTotals(oldresp).rolls
-                    return compareTotals(nt, ot) == 'lower'
-                })
-            },
-            'incAll': function() {
+            'IncAll': function() {
                 findResult(options, resp, function(options, newresp, oldresp) {
                     var nt = extractTotals(newresp).rolls
                     var ot = extractTotals(oldresp).rolls
                     return compareTotals(nt, ot) == 'higher'
+                })
+            },
+            'DecAll': function() {
+                findResult(options, resp, function(options, newresp, oldresp) {
+                    var nt = extractTotals(newresp).rolls
+                    var ot = extractTotals(oldresp).rolls
+                    return compareTotals(nt, ot) == 'lower'
                 })
             }
         }
@@ -49,8 +49,8 @@
                     })
                 }
             }
-            rollcallbacks['inc' + i] = createFind(i, (a, b) => a - b)
-            rollcallbacks['dec' + i] = createFind(i, (a, b) => b - a)
+            rollcallbacks['I' + i] = createFind(i, (a, b) => a - b)
+            rollcallbacks['D' + i] = createFind(i, (a, b) => b - a)
         }
         roll21.addRow(options.roll21id, roll21try, req, resp, {
             'more5': function() {
