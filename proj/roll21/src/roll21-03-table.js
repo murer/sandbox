@@ -46,7 +46,6 @@
         Object.keys(resp).forEach(function(k) {
             var rolldata = JSON.parse(resp[k].json)
             rowsum += rolldata.total
-            console.log('ssss', rowsum, rolldata.total) 
             var col = tr.find('td.roll21' + k)
             col.html('<div/>').find('div:last').text('' + rolldata.total)
             var desc = rolldata.rolls.map(function(roll) {
