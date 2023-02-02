@@ -1,0 +1,5 @@
+@{Loki|repeating_attack_$0_atkname}
+@{Loki|repeating_attack_$0_atkdmg}
+@{Loki|repeating_attack_$0_rollbase_dmg}
+%{Loki|repeating_attack_$0_attack}
+%{Loki|repeating_attack_$0_dmg}
