@@ -1,0 +1,2 @@
+&{template:desc} {{desc=Allister Initiative}}
+%{Allister|npc_init}
