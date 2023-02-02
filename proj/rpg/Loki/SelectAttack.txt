@@ -1,0 +1,1 @@
+/w Murer [@{Loki|repeating_attack_$0_atkname}](~Loki|repeating_attack_$0_attack) [@{Loki|repeating_attack_$1_atkname}](~Loki|repeating_attack_$1_attack) [@{Loki|repeating_attack_$2_atkname}](~Loki|repeating_attack_$2_attack) [@{Loki|repeating_attack_$3_atkname}](~Loki|repeating_attack_$3_attack)

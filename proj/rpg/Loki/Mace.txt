@@ -1,0 +1,1 @@
+/w Murer &{template:atk} {{rname=Mace +1}} {{mod=}} {{?{Type|normal|advantage|disadvantage}=1}} {{r1=[[d20 + @{Loki|PB}[PB] + @{Loki|strength_mod}[STR] + 1[MAGIC]]]}} {{r2=[[d20 + @{Loki|PB}[PB] + @{Loki|strength_mod}[STR] + 1[MAGIC]]]}} {{range=@{Loki|repeating_attack_$0_atkrange}}} {{charname=Loki}}
