@@ -1,0 +1,1 @@
+%{Loki|repeating_attack_$0_attack}
