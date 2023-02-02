@@ -1,0 +1,2 @@
+/w Murer &{template:simple} {{rname=Athletics}} {{mod=@{Loki|athletics_bonus}}} {{?{Type|normal|advantage|disadvantage}=1}} {{query=0}} {{r1=[[d20 + @{Loki|athletics_bonus}]]}} {{always=1}} {{r2=[[d20 + @{Loki|athletics_bonus}]]}} {{charname=Loki}}
+
