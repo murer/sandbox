@@ -1,0 +1,2 @@
+&{template:desc} {{desc=Loki Initiative}}
+%{Loki|npc_init}
