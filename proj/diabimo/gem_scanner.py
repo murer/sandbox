@@ -1,344 +1,393 @@
 #!/usr/bin/env python3
 """
 Diablo Immortal Legendary Gem Inventory Scanner CLI.
-Extracts gem name, rank, and quantity from inventory screenshots into JSONL format.
+
+Scans inventory screenshots, identifies gem icons via template matching against
+a configurable directory, extracts Rank (bottom-left) and Quantity (bottom-right)
+via OCR, and outputs the result in JSON-per-line (JSONL) format.
+Automatically saves unrecognized gems as 'unknown-<id>.png' into the gems directory.
 """
 
-import os
-import sys
-import uuid
-import json
 import argparse
+import json
+import os
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional, Any
+import secrets
+import sys
+from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
 import pytesseract
 
 
-def detect_cells(img: np.ndarray, min_pitch_ratio: float = 0.85) -> List[Tuple[np.ndarray, Tuple[int, int, int, int]]]:
+def detect_grid_cells(
+    img: np.ndarray,
+    min_cell_size: int = 60,
+    max_cell_size: int = 350,
+    min_fill_ratio: float = 0.85,
+) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]], float]:
     """
-    Detects regular grid cells from a cropped screenshot.
-    Automatically filters out cut-off partial cells at the borders.
-    Returns a list of (cell_image, (x1, y1, x2, y2)).
+    Detects full grid cell intervals (rows and cols) in an inventory screenshot.
+    Uses Hough line transform and separator band clustering to locate the exact
+    grid boundaries, automatically interpolating missing lines and filtering out
+    partial cells cut off at the screenshot edges.
     """
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    H, W = gray.shape
+    height, width = gray.shape
 
-    # Profile the 90th percentile brightness along rows and columns
-    # In Diablo Immortal inventory, separator grooves between cells are consistently dark.
-    row_p90 = np.array([np.percentile(gray[y, :], 90) for y in range(H)])
-    col_p90 = np.array([np.percentile(gray[:, x], 90) for x in range(W)])
+    edges = cv2.Canny(gray, 30, 100)
+    min_line_len = int(min(height, width) * 0.35)
+    lines = cv2.HoughLinesP(
+        edges, 1, np.pi / 180, threshold=80, minLineLength=min_line_len, maxLineGap=20
+    )
 
-    def get_grooves(profile: np.ndarray, min_cell_size: int = 50) -> List[int]:
-        p_min, p_max = float(np.min(profile)), float(np.max(profile))
-        thresh = min(max(p_min + (p_max - p_min) * 0.15, 25.0), 50.0)
-        is_groove = profile <= thresh
-        grooves = []
-        in_groove = False
-        start = 0
-        for i, val in enumerate(is_groove):
-            if val and not in_groove:
-                in_groove = True
-                start = i
-            elif not val and in_groove:
-                in_groove = False
-                grooves.append((start + i) // 2)
-        if in_groove:
-            grooves.append((start + len(is_groove)) // 2)
+    h_lines: List[Tuple[int, float]] = []
+    v_lines: List[Tuple[int, float]] = []
 
-        merged: List[int] = []
-        for g in grooves:
-            if not merged:
-                merged.append(g)
-            elif g - merged[-1] < min_cell_size:
-                if profile[g] < profile[merged[-1]]:
-                    merged[-1] = g
+    if lines is not None:
+        for x1, y1, x2, y2 in lines.reshape(-1, 4):
+            length = float(np.hypot(x2 - x1, y2 - y1))
+            if abs(y2 - y1) <= 2:
+                h_lines.append(((y1 + y2) // 2, length))
+            elif abs(x2 - x1) <= 2:
+                v_lines.append(((x1 + x2) // 2, length))
+
+    def extract_separators(
+        lines_with_len: List[Tuple[int, float]], total_dim: int
+    ) -> Tuple[List[Tuple[int, int]], float]:
+        if not lines_with_len:
+            return [], float(min_cell_size)
+
+        lines_with_len.sort(key=lambda x: x[0])
+        clusters: List[List[Tuple[int, float]]] = [[lines_with_len[0]]]
+        for item in lines_with_len[1:]:
+            if item[0] - clusters[-1][-1][0] <= 12:
+                clusters[-1].append(item)
             else:
-                merged.append(g)
-        return merged
+                clusters.append([item])
 
-    y_gaps = get_grooves(row_p90)
-    x_gaps = get_grooves(col_p90)
+        bands: List[Tuple[float, float]] = []
+        for cl in clusters:
+            tot_len = sum(item[1] for item in cl)
+            weights = [item[1] for item in cl]
+            coords = [item[0] for item in cl]
+            mean_coord = float(np.average(coords, weights=weights))
+            bands.append((mean_coord, tot_len))
 
-    # Estimate expected cell pitch
-    y_pitch = float(np.median(np.diff(y_gaps))) if len(y_gaps) > 1 else 115.0
-    x_pitch = float(np.median(np.diff(x_gaps))) if len(x_gaps) > 1 else 118.0
+        max_support = max(b[1] for b in bands) if bands else 0.0
+        strong_bands = [b[0] for b in bands if b[1] >= max_support * 0.25]
 
-    # Determine row intervals
-    row_bounds: List[Tuple[int, int]] = []
-    if y_gaps and y_gaps[0] >= min_pitch_ratio * y_pitch:
-        row_bounds.append((0, y_gaps[0]))
-    for i in range(len(y_gaps) - 1):
-        if (y_gaps[i + 1] - y_gaps[i]) >= min_pitch_ratio * y_pitch:
-            row_bounds.append((y_gaps[i], y_gaps[i + 1]))
-    if y_gaps and (H - y_gaps[-1]) >= min_pitch_ratio * y_pitch:
-        row_bounds.append((y_gaps[-1], H))
+        diffs = [
+            strong_bands[i + 1] - strong_bands[i] for i in range(len(strong_bands) - 1)
+        ]
+        valid_diffs = [d for d in diffs if min_cell_size <= d <= max_cell_size]
+        if not valid_diffs:
+            valid_diffs = [d / 2 for d in diffs if min_cell_size * 2 <= d <= max_cell_size * 2]
+        step = float(np.median(valid_diffs)) if valid_diffs else float(min_cell_size)
 
-    # Determine col intervals
-    col_bounds: List[Tuple[int, int]] = []
-    if x_gaps and x_gaps[0] >= min_pitch_ratio * x_pitch:
-        col_bounds.append((0, x_gaps[0]))
-    for j in range(len(x_gaps) - 1):
-        if (x_gaps[j + 1] - x_gaps[j]) >= min_pitch_ratio * x_pitch:
-            col_bounds.append((x_gaps[j], x_gaps[j + 1]))
-    if x_gaps and (W - x_gaps[-1]) >= min_pitch_ratio * x_pitch:
-        col_bounds.append((x_gaps[-1], W))
+        filtered: List[float] = [strong_bands[0]]
+        for coord in strong_bands[1:]:
+            d = coord - filtered[-1]
+            k = int(round(d / step))
+            if k >= 1 and abs(d - k * step) <= 15:
+                for _ in range(1, k):
+                    filtered.append(filtered[-1] + step)
+                filtered.append(coord)
 
-    cells = []
-    for y1, y2 in row_bounds:
-        for x1, x2 in col_bounds:
-            # Crop cell with a small margin to exclude groove edges
-            pad = 2
-            cy1, cy2 = min(H, y1 + pad), max(0, y2 - pad)
-            cx1, cx2 = min(W, x1 + pad), max(0, x2 - pad)
-            if cy2 > cy1 and cx2 > cx1:
-                cell_img = img[cy1:cy2, cx1:cx2].copy()
-                cells.append((cell_img, (cx1, cy1, cx2, cy2)))
+        if filtered[0] >= min_fill_ratio * step:
+            filtered.insert(0, 0.0)
 
-    return cells
+        if (total_dim - filtered[-1]) >= min_fill_ratio * step:
+            filtered.append(float(total_dim))
+
+        intervals: List[Tuple[int, int]] = []
+        for i in range(len(filtered) - 1):
+            p1 = max(0, int(round(filtered[i])))
+            p2 = min(total_dim, int(round(filtered[i + 1])))
+            if (p2 - p1) >= min_fill_ratio * step:
+                intervals.append((p1, p2))
+
+        return intervals, step
+
+    rows, h_step = extract_separators(h_lines, height)
+    cols, v_step = extract_separators(v_lines, width)
+    return rows, cols, (h_step + v_step) / 2
 
 
-def extract_gem_core(cell_img: np.ndarray, target_size: Tuple[int, int] = (64, 64)) -> np.ndarray:
+def extract_rank(cell: np.ndarray) -> str:
     """
-    Extracts the central core of the gem icon.
-    This avoids the tradeable scale icon at top-left, the rank at bottom-left,
-    and quantity at bottom-right.
+    Extracts the rank string (e.g. 'R1', 'R5', 'R10') from the bottom-left of the cell.
+    Uses color masking to isolate the characteristic gold/tan font color.
     """
-    h, w = cell_img.shape[:2]
-    core = cell_img[int(h * 0.12):int(h * 0.75), int(w * 0.15):int(w * 0.85)]
-    return cv2.resize(core, target_size, interpolation=cv2.INTER_AREA)
+    h, w, _ = cell.shape
+    crop = cell[int(h * 0.68) : int(h * 0.96), int(w * 0.05) : int(w * 0.50)]
+    b, g, r = cv2.split(crop)
 
+    # Gold/tan rank text: warm color with low blue
+    mask = (
+        (r.astype(int) - b.astype(int) > 20)
+        & (r.astype(int) > 80)
+        & (g.astype(int) > 65)
+        & (r.astype(int) >= g.astype(int) - 10)
+    ).astype(np.uint8) * 255
 
-def extract_rank(cell_img: np.ndarray) -> str:
-    """
-    Extracts the gem rank (e.g. 'R1', 'R5') from the bottom-left of the cell.
-    Uses localized template correlation with Tesseract OCR fallback.
-    """
-    h, w = cell_img.shape[:2]
-    # Rank area is in bottom-left region
-    search_region = cell_img[-35:-5, 0:min(50, w)]
-    gray = cv2.cvtColor(search_region, cv2.COLOR_BGR2GRAY)
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask)
+    clean_mask = np.zeros_like(mask)
+    valid_comps = []
+    for i in range(1, num_labels):
+        cx, cy, cw, ch, area = stats[i]
+        if ch >= 10 and area >= 25:
+            clean_mask[labels == i] = 255
+            valid_comps.append((cx, cy, cw, ch, area))
 
-    # Threshold for the golden rank text
-    _, thresh = cv2.threshold(gray, 75, 255, cv2.THRESH_BINARY)
-    inv = cv2.bitwise_not(thresh)
-    scaled = cv2.resize(inv, (0, 0), fx=6, fy=6, interpolation=cv2.INTER_NEAREST)
-    padded = cv2.copyMakeBorder(scaled, 30, 30, 30, 30, cv2.BORDER_CONSTANT, value=255)
+    if np.sum(clean_mask) == 0 or not valid_comps:
+        return "R1"
 
-    # First try full OCR on the rank area
-    for psm in [7, 8, 6]:
+    big = cv2.resize(clean_mask, (0, 0), fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
+    inv = 255 - big
+    pad = cv2.copyMakeBorder(inv, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
+
+    txt = pytesseract.image_to_string(
+        pad, config="--psm 8 -c tessedit_char_whitelist=R0123456789"
+    ).strip()
+    if not txt:
         txt = pytesseract.image_to_string(
-            padded,
-            config=f'--psm {psm} -c tessedit_char_whitelist=R0123456789'
-        ).strip().replace(' ', '')
-        if txt.startswith('R') and len(txt) >= 2 and txt[1:].isdigit():
-            return txt
-
-    # If full OCR did not return R+number, check if '5' or other digit is present on the right
-    # Digit area is right half of the rank search region
-    d_gray = gray[:, int(gray.shape[1] * 0.45):]
-    _, d_thresh = cv2.threshold(d_gray, 75, 255, cv2.THRESH_BINARY)
-    d_inv = cv2.bitwise_not(d_thresh)
-    d_scaled = cv2.resize(d_inv, (0, 0), fx=8, fy=8, interpolation=cv2.INTER_NEAREST)
-    d_padded = cv2.copyMakeBorder(d_scaled, 30, 30, 30, 30, cv2.BORDER_CONSTANT, value=255)
-
-    for psm in [10, 8, 7]:
-        d_txt = pytesseract.image_to_string(
-            d_padded,
-            config=f'--psm {psm} -c tessedit_char_whitelist=0123456789'
+            pad, config="--psm 7 -c tessedit_char_whitelist=R0123456789"
         ).strip()
-        if d_txt and d_txt.isdigit():
-            return f"R{d_txt}"
 
-    # Default baseline rank for Diablo Immortal legendary gems
-    return "R1"
+    txt = txt.replace(" ", "")
+    # Parse rank number
+    digits = "".join([c for c in txt if c.isdigit()])
+    if not digits:
+        digits = "1"
+    return f"R{digits}"
 
 
-def extract_quantity(cell_img: np.ndarray) -> int:
+def extract_quantity(cell: np.ndarray) -> int:
     """
-    Extracts the quantity count from the bottom-right of the cell.
-    If no quantity number is displayed, quantity is 1.
+    Extracts the quantity integer from the bottom-right of the cell.
+    In Diablo Immortal, if quantity is 1, no number is displayed.
+    Uses brightness and low-saturation filtering to isolate the bright white/cream digits.
     """
-    h, w = cell_img.shape[:2]
-    # Quantity area is in bottom-right corner
-    q_strip = cell_img[-28:-8, -32:-6]
-    gray = cv2.cvtColor(q_strip, cv2.COLOR_BGR2GRAY)
+    h, w, _ = cell.shape
+    crop = cell[int(h * 0.68) : int(h * 0.96), int(w * 0.55) : int(w * 0.95)]
+    b, g, r = cv2.split(crop)
 
-    # If the region lacks bright pixels (max < 135 or sparse bright pixels), it's empty -> quantity 1
-    if np.max(gray) < 135:
+    # Quantity digits are bright white/cream
+    mask = (
+        (r.astype(int) > 175) & (g.astype(int) > 170) & (b.astype(int) > 160)
+    ).astype(np.uint8) * 255
+
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask)
+    clean_mask = np.zeros_like(mask)
+    for i in range(1, num_labels):
+        _, _, _, ch, area = stats[i]
+        if ch >= 8 and area >= 20:
+            clean_mask[labels == i] = 255
+
+    if np.sum(clean_mask) == 0:
         return 1
 
-    _, thresh = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY)
-    if np.count_nonzero(thresh) < 15:
-        return 1
+    big = cv2.resize(clean_mask, (0, 0), fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
+    inv = 255 - big
+    pad = cv2.copyMakeBorder(inv, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
 
-    # Invert and upscale for OCR
-    inv = cv2.bitwise_not(thresh)
-    scaled = cv2.resize(inv, (0, 0), fx=8, fy=8, interpolation=cv2.INTER_NEAREST)
-    padded = cv2.copyMakeBorder(scaled, 40, 40, 40, 40, cv2.BORDER_CONSTANT, value=255)
-
-    for psm in [8, 10, 7, 6]:
+    txt = pytesseract.image_to_string(
+        pad, config="--psm 10 -c tessedit_char_whitelist=0123456789"
+    ).strip()
+    if not txt.isdigit():
         txt = pytesseract.image_to_string(
-            padded,
-            config=f'--psm {psm} -c tessedit_char_whitelist=0123456789'
+            pad, config="--psm 8 -c tessedit_char_whitelist=0123456789"
         ).strip()
-        if txt and txt.isdigit():
-            return int(txt)
+    if not txt.isdigit():
+        txt = pytesseract.image_to_string(
+            pad, config="--psm 7 -c tessedit_char_whitelist=0123456789"
+        ).strip()
 
+    if txt.isdigit():
+        return int(txt)
     return 1
 
 
-class GemDatabase:
-    """Manages known gem icon templates and handles matching or saving unknowns."""
+def get_gem_core(cell: np.ndarray, target_size: Tuple[int, int] = (64, 64)) -> np.ndarray:
+    """
+    Extracts the central gem region of a cell, avoiding text and tradeable icons.
+    Resizes to a standardized target size for template correlation.
+    """
+    h, w, _ = cell.shape
+    core = cell[int(h * 0.12) : int(h * 0.72), int(w * 0.15) : int(w * 0.85)]
+    return cv2.resize(core, target_size, interpolation=cv2.INTER_AREA)
 
-    def __init__(self, gems_dir: Path, threshold: float = 0.85):
+
+class GemDatabase:
+    """
+    Manages known gem templates in a directory and registers unknown gems.
+    """
+
+    def __init__(self, gems_dir: Path, threshold: float = 0.80):
         self.gems_dir = gems_dir
         self.threshold = threshold
-        self.known_gems: Dict[str, np.ndarray] = {}
         self.gems_dir.mkdir(parents=True, exist_ok=True)
-        self.load_templates()
+        self.known_gems: List[Dict[str, Any]] = []
+        self._load_existing_gems()
 
-    def load_templates(self) -> None:
-        """Loads all existing templates from the gems directory."""
-        valid_exts = {'.png', '.jpg', '.jpeg', '.webp'}
-        for file in sorted(self.gems_dir.iterdir()):
-            if file.suffix.lower() in valid_exts:
-                tmpl_img = cv2.imread(str(file))
-                if tmpl_img is not None:
-                    # If full cell was saved, extract core; otherwise use resized template
-                    core = extract_gem_core(tmpl_img) if tmpl_img.shape[0] > 70 else cv2.resize(tmpl_img, (64, 64))
-                    self.known_gems[file.stem] = core
+    def _load_existing_gems(self) -> None:
+        valid_exts = {".png", ".jpg", ".jpeg", ".webp"}
+        for file_path in sorted(self.gems_dir.iterdir()):
+            if file_path.suffix.lower() in valid_exts:
+                img = cv2.imread(str(file_path))
+                if img is not None:
+                    core = get_gem_core(img)
+                    self.known_gems.append(
+                        {
+                            "name": file_path.stem,
+                            "path": file_path,
+                            "core": core,
+                        }
+                    )
 
-    def match_gem(self, core: np.ndarray) -> Tuple[Optional[str], float]:
-        """Finds the best matching known gem for the given gem core."""
-        best_name = None
+    def identify_or_register(self, cell: np.ndarray) -> str:
+        """
+        Matches cell against known gems.
+        If matched, returns gem name.
+        If unrecognized, saves the cell image as 'unknown-<random_hex>.png' into
+        gems_dir, adds it to known gems, and returns the generated name.
+        """
+        cell_core = get_gem_core(cell)
+
         best_score = -1.0
+        best_name: Optional[str] = None
 
-        for name, tmpl in self.known_gems.items():
-            res = cv2.matchTemplate(core, tmpl, cv2.TM_CCOEFF_NORMED)[0][0]
-            if res > best_score:
-                best_score = float(res)
-                best_name = name
+        for item in self.known_gems:
+            score = float(
+                cv2.matchTemplate(cell_core, item["core"], cv2.TM_CCOEFF_NORMED)[0][0]
+            )
+            if score > best_score:
+                best_score = score
+                best_name = item["name"]
 
         if best_score >= self.threshold and best_name is not None:
-            return best_name, best_score
+            return best_name
 
-        return None, best_score
+        # Unrecognized gem: generate unique random name and save
+        random_id = secrets.token_hex(4)
+        new_name = f"unknown-{random_id}"
+        save_path = self.gems_dir / f"{new_name}.png"
+        cv2.imwrite(str(save_path), cell)
 
-    def register_unknown(self, cell_img: np.ndarray, core: np.ndarray) -> str:
-        """Saves an unknown gem image to the gems directory and registers it in-memory."""
-        rand_id = uuid.uuid4().hex[:8]
-        gem_name = f"unknown-{rand_id}"
-        save_path = self.gems_dir / f"{gem_name}.png"
-        cv2.imwrite(str(save_path), cell_img)
-        # Add to known templates so subsequent identical gems in the same scan match it
-        self.known_gems[gem_name] = core
-        return gem_name
+        # Register in memory so duplicates in the same scan reuse the same unknown ID
+        self.known_gems.append(
+            {
+                "name": new_name,
+                "path": save_path,
+                "core": cell_core,
+            }
+        )
+        return new_name
 
 
 def scan_inventory(
-    image_path: str,
-    gems_dir: str,
-    threshold: float = 0.85,
-    save_unknowns: bool = True,
-    debug_path: Optional[str] = None
+    image_path: Path,
+    gems_dir: Path,
+    threshold: float = 0.80,
+    verbose: bool = False,
 ) -> List[Dict[str, Any]]:
     """
-    Scans a Diablo Immortal screenshot and returns list of gem records.
+    Processes the inventory screenshot and returns detected gems with rank and quantity.
     """
-    img = cv2.imread(image_path)
+    img = cv2.imread(str(image_path))
     if img is None:
-        raise FileNotFoundError(f"Failed to load image from {image_path}")
+        raise FileNotFoundError(f"Could not open or read image file: {image_path}")
 
-    db = GemDatabase(Path(gems_dir), threshold=threshold)
-    cells = detect_cells(img)
+    row_intervals, col_intervals, step = detect_grid_cells(img)
+    if verbose:
+        sys.stderr.write(
+            f"Detected grid step: {step:.1f}px, "
+            f"{len(row_intervals)} rows x {len(col_intervals)} cols "
+            f"({len(row_intervals) * len(col_intervals)} total cells)\n"
+        )
 
-    results = []
-    debug_img = img.copy() if debug_path else None
+    db = GemDatabase(gems_dir=gems_dir, threshold=threshold)
 
-    for idx, (cell, bbox) in enumerate(cells):
-        core = extract_gem_core(cell)
-        matched_name, score = db.match_gem(core)
+    results: List[Dict[str, Any]] = []
+    for r_idx, (y1, y2) in enumerate(row_intervals):
+        for c_idx, (x1, x2) in enumerate(col_intervals):
+            cell = img[y1:y2, x1:x2]
+            gem_name = db.identify_or_register(cell)
+            rank = extract_rank(cell)
+            quantity = extract_quantity(cell)
 
-        if matched_name:
-            gem_name = matched_name
-        elif save_unknowns:
-            gem_name = db.register_unknown(cell, core)
-        else:
-            gem_name = "unknown"
-
-        rank = extract_rank(cell)
-        quantity = extract_quantity(cell)
-
-        item = {
-            "gem": gem_name,
-            "rank": rank,
-            "quantity": quantity
-        }
-        results.append(item)
-
-        if debug_img is not None:
-            x1, y1, x2, y2 = bbox
-            cv2.rectangle(debug_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            label = f"{gem_name} {rank}x{quantity}"
-            cv2.putText(debug_img, label, (x1 + 4, y1 + 18), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 255), 1)
-
-    if debug_img is not None and debug_path:
-        cv2.imwrite(debug_path, debug_img)
+            results.append(
+                {
+                    "gem": gem_name,
+                    "rank": rank,
+                    "quantity": quantity,
+                }
+            )
 
     return results
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Scan Diablo Immortal inventory screenshot and output gem items in JSONL format."
-    )
-    parser.add_argument("image", help="Path to inventory screenshot (e.g. sample/a.jpeg)")
-    parser.add_argument(
-        "-d", "--gems-dir",
-        default="known_gems",
-        help="Directory containing known gem icon templates (default: known_gems)"
+        description="Scan Diablo Immortal inventory screenshots for legendary gems."
     )
     parser.add_argument(
-        "-t", "--threshold",
+        "image",
+        type=Path,
+        help="Path to the inventory screenshot image.",
+    )
+    parser.add_argument(
+        "-d",
+        "--gems-dir",
+        type=Path,
+        default=Path("gems"),
+        help="Directory containing known gem icon images (default: ./gems).",
+    )
+    parser.add_argument(
+        "-t",
+        "--threshold",
         type=float,
-        default=0.85,
-        help="Similarity threshold for gem matching [0.0 - 1.0] (default: 0.85)"
+        default=0.80,
+        help="Similarity threshold for gem matching (0.0 to 1.0, default: 0.80).",
     )
     parser.add_argument(
-        "--no-save-unknowns",
+        "-f",
+        "--format",
+        choices=["jsonl", "json"],
+        default="jsonl",
+        help="Output format: 'jsonl' (default, JSON per line) or 'json' (JSON array).",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
         action="store_true",
-        help="Do not save newly detected unknown gems into gems-dir"
-    )
-    parser.add_argument(
-        "-o", "--output",
-        help="Write output JSONL to specified file instead of stdout"
-    )
-    parser.add_argument(
-        "--debug-img",
-        help="Path to save annotated debug image with detected boxes and labels"
+        help="Print diagnostic progress to stderr.",
     )
 
     args = parser.parse_args()
 
-    results = scan_inventory(
-        image_path=args.image,
-        gems_dir=args.gems_dir,
-        threshold=args.threshold,
-        save_unknowns=not args.no_save_unknowns,
-        debug_path=args.debug_img
-    )
+    if not args.image.exists():
+        sys.stderr.write(f"Error: Image file '{args.image}' not found.\n")
+        sys.exit(1)
 
-    out_lines = [json.dumps(item) for item in results]
-    output_text = "\n".join(out_lines)
+    try:
+        results = scan_inventory(
+            image_path=args.image,
+            gems_dir=args.gems_dir,
+            threshold=args.threshold,
+            verbose=args.verbose,
+        )
+    except Exception as e:
+        sys.stderr.write(f"Error processing inventory: {e}\n")
+        sys.exit(1)
 
-    if args.output:
-        Path(args.output).write_text(output_text + "\n", encoding="utf-8")
+    if args.format == "jsonl":
+        for item in results:
+            sys.stdout.write(json.dumps(item) + "\n")
     else:
-        for line in out_lines:
-            print(line)
+        sys.stdout.write(json.dumps(results, indent=2) + "\n")
 
 
 if __name__ == "__main__":
