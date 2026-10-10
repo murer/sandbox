@@ -256,14 +256,26 @@ def extract_quantity(cell: np.ndarray) -> int:
     return 1
 
 
-def get_gem_core(cell: np.ndarray, target_size: Tuple[int, int] = (64, 64)) -> np.ndarray:
+def get_gem_core(cell: np.ndarray, is_template: bool = True) -> np.ndarray:
     """
     Extracts the central gem region of a cell, avoiding text and tradeable icons.
-    Resizes to a standardized target size for template correlation.
+    Resizes the cell to a standard size to ensure scale invariance, then crops.
+    If is_template is False, it returns a slightly larger crop to allow for 
+    translation during template matching.
     """
-    h, w, _ = cell.shape
-    core = cell[int(h * 0.12) : int(h * 0.72), int(w * 0.15) : int(w * 0.85)]
-    return cv2.resize(core, target_size, interpolation=cv2.INTER_AREA)
+    standard_cell = cv2.resize(cell, (116, 116), interpolation=cv2.INTER_AREA)
+    
+    y1, y2 = int(116 * 0.12), int(116 * 0.72)
+    x1, x2 = int(116 * 0.15), int(116 * 0.85)
+    
+    if not is_template:
+        padding = 8
+        y1 = max(0, y1 - padding)
+        y2 = min(116, y2 + padding)
+        x1 = max(0, x1 - padding)
+        x2 = min(116, x2 + padding)
+        
+    return standard_cell[y1:y2, x1:x2]
 
 
 class GemDatabase:
@@ -296,7 +308,7 @@ class GemDatabase:
             if file_path.suffix.lower() in valid_exts:
                 img = cv2.imread(str(file_path))
                 if img is not None:
-                    core = get_gem_core(img)
+                    core = get_gem_core(img, is_template=True)
                     self.known_gems.append(
                         {
                             "name": file_path.stem,
@@ -319,15 +331,17 @@ class GemDatabase:
           - Caches in-memory so identical gems in the same scan reuse the same ID.
           - Logs unknown icon and its position (row, col) via standard logging.
         """
-        cell_core = get_gem_core(cell)
+        query_core = get_gem_core(cell, is_template=False)
+        template_core = get_gem_core(cell, is_template=True)
 
         best_score = -1.0
         best_name: Optional[str] = None
 
         for item in self.known_gems:
-            score = float(
-                cv2.matchTemplate(cell_core, item["core"], cv2.TM_CCOEFF_NORMED)[0][0]
-            )
+            # Match the smaller template inside the larger query core
+            res = cv2.matchTemplate(query_core, item["core"], cv2.TM_CCOEFF_NORMED)
+            score = float(res.max())
+            
             if score > best_score:
                 best_score = score
                 best_name = item["name"]
@@ -363,7 +377,7 @@ class GemDatabase:
             {
                 "name": new_name,
                 "path": save_path,
-                "core": cell_core,
+                "core": template_core,
             }
         )
         return new_name
