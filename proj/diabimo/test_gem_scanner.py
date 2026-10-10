@@ -136,7 +136,7 @@ class TestGemScanner(unittest.TestCase):
         cell_0_0 = self.img[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
         name1 = db_with.identify_or_register(cell_0_0, position=(0, 0))
 
-        self.assertTrue(re.match(r"^unknown-01x01-[0-9a-f]{8}$", name1), f"Expected unknown-01x01-<hex>, got {name1}")
+        self.assertTrue(re.match(r"^unknown-[0-9a-f]{8}-01x01$", name1), f"Expected unknown-<hex>-01x01, got {name1}")
         self.assertTrue((out_dir / f"{name1}.png").exists(), "Expected unknown image to be saved")
 
         # Run WITHOUT generate_unknown
@@ -150,7 +150,7 @@ class TestGemScanner(unittest.TestCase):
             generate_unknown_dir=None,
         )
         name2 = db_without.identify_or_register(cell_0_0, position=(2, 4))
-        self.assertTrue(re.match(r"^unknown-03x05-[0-9a-f]{8}$", name2), f"Expected unknown-03x05-<hex>, got {name2}")
+        self.assertTrue(re.match(r"^unknown-[0-9a-f]{8}-03x05$", name2), f"Expected unknown-<hex>-03x05, got {name2}")
         self.assertFalse(no_save_dir.exists(), "No directory should be created when generate_unknown is None")
 
         # Run with explicit random_id
@@ -160,7 +160,7 @@ class TestGemScanner(unittest.TestCase):
             generate_unknown_dir=None,
         )
         name_custom = db_custom.identify_or_register(cell_0_0, position=(1, 2), random_id="aabbccdd")
-        self.assertEqual(name_custom, "unknown-02x03-aabbccdd")
+        self.assertEqual(name_custom, "unknown-aabbccdd-02x03")
 
         # Run without position (fallback) on fresh database
         db_fallback = GemDatabase(
@@ -300,15 +300,15 @@ class TestGemScanner(unittest.TestCase):
         self.assertGreater(len(saved_files), 0, "Expected unknown files to be saved")
         for f in saved_files:
             self.assertTrue(
-                re.match(r"^unknown-\d{2}x\d{2}-[0-9a-f]{8}\.png$", f.name),
-                f"File {f.name} does not match expected unknown-<row>x<col>-<hex>.png pattern",
+                re.match(r"^unknown-[0-9a-f]{8}-\d{2}x\d{2}\.png$", f.name),
+                f"File {f.name} does not match expected unknown-<hex>-<row>x<col>.png pattern",
             )
         # Ensure row 1, col 1 is generated
-        row1_col1_matches = [f for f in saved_files if f.name.startswith("unknown-01x01-")]
-        self.assertEqual(len(row1_col1_matches), 1, "Expected exactly one unknown-01x01-* file")
+        row1_col1_matches = [f for f in saved_files if f.name.endswith("-01x01.png")]
+        self.assertEqual(len(row1_col1_matches), 1, "Expected exactly one unknown-*-01x01.png file")
 
         # Ensure all unknown icons from the same input image share the same random ID
-        random_ids = {re.search(r"([0-9a-f]{8})\.png$", f.name).group(1) for f in saved_files}
+        random_ids = {re.match(r"^unknown-([0-9a-f]{8})-\d{2}x\d{2}\.png$", f.name).group(1) for f in saved_files}
         self.assertEqual(len(random_ids), 1, f"Expected all files to share 1 random ID, got: {random_ids}")
 
 

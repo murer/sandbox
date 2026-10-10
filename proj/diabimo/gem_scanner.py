@@ -5,7 +5,7 @@ Diablo Immortal Legendary Gem Inventory Scanner CLI.
 Scans inventory screenshots, identifies gem icons via template matching against
 a configurable directory, extracts Rank (bottom-left) and Quantity (bottom-right)
 via OCR, and outputs the result in JSON-per-line (JSONL) format.
-Automatically saves unrecognized gems as 'unknown-<row>x<col>-<id>.png' into the gems directory.
+Automatically saves unrecognized gems as 'unknown-<id>-<row>x<col>.png' into the gems directory.
 """
 
 import argparse
@@ -315,7 +315,7 @@ class GemDatabase:
         Matches cell against known gems.
         If matched, returns gem name (e.g. 'blood-soaked-jade' or 'ignored-tourmaline').
         If unrecognized:
-          - If generate_unknown_dir is provided, saves 'unknown-<row>x<col>-<random_hex>.png' (or 'unknown-<random_hex>.png' if position is unset).
+          - If generate_unknown_dir is provided, saves 'unknown-<random_hex>-<row>x<col>.png' (or 'unknown-<random_hex>.png' if position is unset).
           - Caches in-memory so identical gems in the same scan reuse the same ID.
           - Logs unknown icon and its position (row, col) via standard logging.
         """
@@ -335,7 +335,7 @@ class GemDatabase:
         if best_score >= self.threshold and best_name is not None:
             return best_name
 
-        # Unrecognized gem: generate unique name with padded coordinates (e.g. 02x03) and random ID
+        # Unrecognized gem: generate unique name with random ID and padded coordinates (e.g. unknown-a1b2c3d4-02x03)
         if random_id is None:
             random_id = secrets.token_hex(4)
 
@@ -343,7 +343,7 @@ class GemDatabase:
             row = position[0] + 1
             col = position[1] + 1
             coord_str = f"{row:02d}x{col:02d}"
-            new_name = f"unknown-{coord_str}-{random_id}"
+            new_name = f"unknown-{random_id}-{coord_str}"
             pos_str = f" at row {row}, col {col}"
         else:
             new_name = f"unknown-{random_id}"
