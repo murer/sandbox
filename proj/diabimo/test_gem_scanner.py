@@ -196,7 +196,7 @@ class TestGemScanner(unittest.TestCase):
         self.assertEqual(results[0]["gem"], "frozen-heart")
 
     def test_cli_execution_with_stderr_warning_when_not_saving(self):
-        """Verify CLI outputs JSONL on stdout and warns on stderr when unknown icons are found."""
+        """Verify CLI outputs JSONL on stdout and warns on stderr with position when unknown icons are found."""
         proc = subprocess.run(
             [
                 "python3",
@@ -215,8 +215,9 @@ class TestGemScanner(unittest.TestCase):
         lines = proc.stdout.strip().split("\n")
         self.assertEqual(len(lines), 12)
 
-        # stderr should report finding unknown icons
+        # stderr should report finding unknown icons with exact row and col position
         self.assertIn("Found unknown icon", proc.stderr)
+        self.assertIn("row 1, col 1", proc.stderr)
 
 
 if __name__ == "__main__":

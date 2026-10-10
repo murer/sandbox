@@ -10,6 +10,7 @@ Automatically saves unrecognized gems as 'unknown-<id>.png' into the gems direct
 
 import argparse
 import json
+import logging
 import os
 from pathlib import Path
 import secrets
@@ -19,6 +20,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import cv2
 import numpy as np
 import pytesseract
+
+logger = logging.getLogger("gem_scanner")
 
 
 def detect_grid_cells(
@@ -302,13 +305,16 @@ class GemDatabase:
                         }
                     )
 
-    def identify_or_register(self, cell: np.ndarray) -> str:
+    def identify_or_register(
+        self, cell: np.ndarray, position: Optional[Tuple[int, int]] = None
+    ) -> str:
         """
         Matches cell against known gems.
         If matched, returns gem name (e.g. 'blood-soaked-jade' or 'ignored-tourmaline').
         If unrecognized:
           - If generate_unknown_dir is provided, saves 'unknown-<random_hex>.png'.
           - Caches in-memory so identical gems in the same scan reuse the same ID.
+          - Logs unknown icon and its position (row, col) via standard logging.
         """
         cell_core = get_gem_core(cell)
 
@@ -330,13 +336,20 @@ class GemDatabase:
         random_id = secrets.token_hex(4)
         new_name = f"unknown-{random_id}"
 
-        # Save to disk if generate_unknown_dir is configured, otherwise inform the user
+        pos_str = (
+            f" at row {position[0] + 1}, col {position[1] + 1}"
+            if position is not None
+            else ""
+        )
+
+        # Save to disk if generate_unknown_dir is configured, otherwise log a warning
         save_path = None
         if self.generate_unknown_dir is not None:
             save_path = self.generate_unknown_dir / f"{new_name}.png"
             cv2.imwrite(str(save_path), cell)
+            logger.info("Saved unknown icon %s%s -> %s", new_name, pos_str, save_path)
         else:
-            sys.stderr.write(f"Found unknown icon: {new_name}\n")
+            logger.warning("Found unknown icon %s%s", new_name, pos_str)
 
         # Register in memory so duplicates in the same scan reuse the same unknown ID
         self.known_gems.append(
@@ -365,12 +378,13 @@ def scan_inventory(
         raise FileNotFoundError(f"Could not open or read image file: {image_path}")
 
     row_intervals, col_intervals, step = detect_grid_cells(img)
-    if verbose:
-        sys.stderr.write(
-            f"Detected grid step: {step:.1f}px, "
-            f"{len(row_intervals)} rows x {len(col_intervals)} cols "
-            f"({len(row_intervals) * len(col_intervals)} total cells)\n"
-        )
+    logger.info(
+        "Detected grid step: %.1fpx, %d rows x %d cols (%d total cells)",
+        step,
+        len(row_intervals),
+        len(col_intervals),
+        len(row_intervals) * len(col_intervals),
+    )
 
     db = GemDatabase(
         baseimage_dir=baseimage_dir,
@@ -382,12 +396,16 @@ def scan_inventory(
     for r_idx, (y1, y2) in enumerate(row_intervals):
         for c_idx, (x1, x2) in enumerate(col_intervals):
             cell = img[y1:y2, x1:x2]
-            gem_name = db.identify_or_register(cell)
+            gem_name = db.identify_or_register(cell, position=(r_idx, c_idx))
 
             # Icons with prefix 'ignored-' are not legendary gems and must be ignored
             if gem_name.startswith("ignored-"):
-                if verbose:
-                    sys.stderr.write(f"Ignoring non-legendary icon: {gem_name} at ({r_idx}, {c_idx})\n")
+                logger.debug(
+                    "Ignoring non-legendary icon: %s at row %d, col %d",
+                    gem_name,
+                    r_idx + 1,
+                    c_idx + 1,
+                )
                 continue
 
             rank = extract_rank(cell)
@@ -448,13 +466,20 @@ def main() -> None:
         "-v",
         "--verbose",
         action="store_true",
-        help="Print diagnostic progress to stderr.",
+        help="Enable verbose diagnostic logging (DEBUG level).",
     )
 
     args = parser.parse_args()
 
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format="%(levelname)s: %(message)s",
+        stream=sys.stderr,
+    )
+
     if not args.image.exists():
-        sys.stderr.write(f"Error: Image file '{args.image}' not found.\n")
+        logger.error("Image file '%s' not found.", args.image)
         sys.exit(1)
 
     try:
@@ -466,7 +491,7 @@ def main() -> None:
             verbose=args.verbose,
         )
     except Exception as e:
-        sys.stderr.write(f"Error processing inventory: {e}\n")
+        logger.error("Error processing inventory: %s", e)
         sys.exit(1)
 
     if args.format == "jsonl":
