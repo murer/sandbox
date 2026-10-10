@@ -1,0 +1,4 @@
+# Directory for configured legendary gem icons and ignored non-legendary gem icons.
+# Filenames:
+#   <gem-name-kebab>.png        -> Recognized legendary gem (e.g. blood-soaked-jade.png)
+#   ignored-<anything>.png      -> Non-legendary gem or unwanted icon to ignore/exclude from output

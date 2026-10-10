@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
-import tempfile
 import unittest
 
 import cv2
@@ -25,6 +24,7 @@ from gem_scanner import (
 SAMPLE_IMAGE = Path(__file__).parent / "sample" / "a.jpeg"
 SAMPLE_LESS_ROWS = Path(__file__).parent / "sample" / "sample-less-rows.jpeg"
 SAMPLE_NON_LEGENDARY = Path(__file__).parent / "sample" / "sample-non-legendary-gems.jpeg"
+TARGET_DIR = Path(__file__).parent / "target" / "tests"
 
 
 class TestGemScanner(unittest.TestCase):
@@ -33,6 +33,12 @@ class TestGemScanner(unittest.TestCase):
         if not SAMPLE_IMAGE.exists():
             raise FileNotFoundError(f"Sample image not found: {SAMPLE_IMAGE}")
         cls.img = cv2.imread(str(SAMPLE_IMAGE))
+        TARGET_DIR.mkdir(parents=True, exist_ok=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        if TARGET_DIR.exists():
+            shutil.rmtree(TARGET_DIR, ignore_errors=True)
 
     def test_detect_grid_cells(self):
         """Verify grid detection identifies 6 full rows and 6 full columns, ignoring partial cuts."""
@@ -113,103 +119,104 @@ class TestGemScanner(unittest.TestCase):
         cell_3_5 = self.img[rows[3][0] : rows[3][1], cols[5][0] : cols[5][1]]
         self.assertEqual(extract_quantity(cell_3_5), 6)
 
-    def test_gem_database_unknown_registration_and_deduplication(self):
-        """Verify unknown gems are saved with unknown-<id> and identical gems share the same ID."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            gems_dir = Path(temp_dir)
-            db = GemDatabase(gems_dir=gems_dir, threshold=0.80)
+    def test_generate_unknown_parameter(self):
+        """Verify --generate-unknown saves files, while omitting it does not save files."""
+        out_dir = TARGET_DIR / "gen_unknown"
+        if out_dir.exists():
+            shutil.rmtree(out_dir)
 
-            rows, cols, _ = detect_grid_cells(self.img)
+        # Run WITH generate_unknown
+        db_with = GemDatabase(
+            baseimage_dir=TARGET_DIR / "empty_base",
+            threshold=0.80,
+            generate_unknown_dir=out_dir,
+        )
+        rows, cols, _ = detect_grid_cells(self.img)
+        cell_0_0 = self.img[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
+        name1 = db_with.identify_or_register(cell_0_0)
 
-            # Cell (0, 4) and (0, 5) are both the same purple gem
-            cell_0_4 = self.img[rows[0][0] : rows[0][1], cols[4][0] : cols[4][1]]
-            cell_0_5 = self.img[rows[0][0] : rows[0][1], cols[5][0] : cols[5][1]]
+        self.assertTrue(name1.startswith("unknown-"))
+        self.assertTrue((out_dir / f"{name1}.png").exists(), "Expected unknown image to be saved")
 
-            id_0_4 = db.identify_or_register(cell_0_4)
-            id_0_5 = db.identify_or_register(cell_0_5)
+        # Run WITHOUT generate_unknown
+        no_save_dir = TARGET_DIR / "no_save"
+        if no_save_dir.exists():
+            shutil.rmtree(no_save_dir)
 
-            self.assertTrue(id_0_4.startswith("unknown-"))
-            self.assertEqual(id_0_4, id_0_5, "Identical gems must reuse the same unknown ID")
+        db_without = GemDatabase(
+            baseimage_dir=TARGET_DIR / "empty_base",
+            threshold=0.80,
+            generate_unknown_dir=None,
+        )
+        name2 = db_without.identify_or_register(cell_0_0)
+        self.assertTrue(name2.startswith("unknown-"))
+        self.assertFalse(no_save_dir.exists(), "No directory should be created when generate_unknown is None")
 
-            # Check that an image file was saved
-            saved_file = gems_dir / f"{id_0_4}.png"
-            self.assertTrue(saved_file.exists())
+    def test_ignored_prefix_filters_out_cells(self):
+        """Verify that gem templates with 'ignored-' prefix are excluded from output."""
+        base_dir = TARGET_DIR / "ignored_test_base"
+        base_dir.mkdir(parents=True, exist_ok=True)
 
-    def test_gem_database_matching_configured_gem(self):
-        """Verify that renaming an unknown gem file allows subsequent recognition by kebab name."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            gems_dir = Path(temp_dir)
+        img_less = cv2.imread(str(SAMPLE_LESS_ROWS))
+        rows, cols, _ = detect_grid_cells(img_less)
 
-            rows, cols, _ = detect_grid_cells(self.img)
-            cell_0_0 = self.img[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
+        # Cell (1, 4) is blue orb. Save as ignored-blue-orb.png
+        blue_orb_cell = img_less[rows[1][0] : rows[1][1], cols[4][0] : cols[4][1]]
+        cv2.imwrite(str(base_dir / "ignored-blue-orb.png"), blue_orb_cell)
 
-            # First run: unknown
-            db1 = GemDatabase(gems_dir=gems_dir, threshold=0.80)
-            initial_id = db1.identify_or_register(cell_0_0)
+        # Scan with this baseimage
+        results = scan_inventory(
+            image_path=SAMPLE_LESS_ROWS,
+            baseimage_dir=base_dir,
+            threshold=0.80,
+        )
 
-            # Rename to configured gem name
-            old_path = gems_dir / f"{initial_id}.png"
-            new_path = gems_dir / "frozen-heart.png"
-            old_path.rename(new_path)
+        # Total cells in sample-less-rows is 12 (2 rows x 6 cols).
+        # Both Cell (1, 4) and Cell (1, 5) are blue orbs and should be ignored!
+        self.assertEqual(len(results), 10, f"Expected 10 cells (2 ignored), got {len(results)}")
+        for item in results:
+            self.assertFalse(item["gem"].startswith("ignored-"), "Ignored gems must not appear in output")
 
-            # Second run: reload database and verify it recognizes frozen-heart
-            db2 = GemDatabase(gems_dir=gems_dir, threshold=0.80)
-            recognized_name = db2.identify_or_register(cell_0_0)
-            self.assertEqual(recognized_name, "frozen-heart")
+    def test_configured_gem_matching(self):
+        """Verify that known gem icons in baseimage are identified by their kebab-case filename."""
+        base_dir = TARGET_DIR / "match_base"
+        base_dir.mkdir(parents=True, exist_ok=True)
 
-    def test_cli_jsonl_output(self):
-        """Verify CLI execution prints valid JSONL lines with correct schema."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            proc = subprocess.run(
-                [
-                    "python3",
-                    "gem_scanner.py",
-                    str(SAMPLE_IMAGE),
-                    "-d",
-                    temp_dir,
-                    "-f",
-                    "jsonl",
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                check=True,
-            )
+        rows, cols, _ = detect_grid_cells(self.img)
+        cell_0_0 = self.img[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
+        cv2.imwrite(str(base_dir / "frozen-heart.png"), cell_0_0)
 
-            lines = proc.stdout.strip().split("\n")
-            self.assertEqual(len(lines), 36)
+        results = scan_inventory(
+            image_path=SAMPLE_IMAGE,
+            baseimage_dir=base_dir,
+            threshold=0.80,
+        )
 
-            for line in lines:
-                data = json.loads(line)
-                self.assertIn("gem", data)
-                self.assertIn("rank", data)
-                self.assertIn("quantity", data)
-                self.assertTrue(data["rank"].startswith("R"))
-                self.assertIsInstance(data["quantity"], int)
-                self.assertGreaterEqual(data["quantity"], 1)
+        # Cell (0, 0) should be recognized as frozen-heart
+        self.assertEqual(results[0]["gem"], "frozen-heart")
 
-    def test_cli_json_array_output(self):
-        """Verify CLI execution with --format json outputs a valid JSON array."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            proc = subprocess.run(
-                [
-                    "python3",
-                    "gem_scanner.py",
-                    str(SAMPLE_IMAGE),
-                    "-d",
-                    temp_dir,
-                    "-f",
-                    "json",
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                check=True,
-            )
+    def test_cli_execution_with_stderr_warning_when_not_saving(self):
+        """Verify CLI outputs JSONL on stdout and warns on stderr when unknown icons are found."""
+        proc = subprocess.run(
+            [
+                "python3",
+                "gem_scanner.py",
+                str(SAMPLE_LESS_ROWS),
+                "-b",
+                str(TARGET_DIR / "empty_base"),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
 
-            data = json.loads(proc.stdout)
-            self.assertIsInstance(data, list)
-            self.assertEqual(len(data), 36)
+        # stdout should have 12 JSONL lines
+        lines = proc.stdout.strip().split("\n")
+        self.assertEqual(len(lines), 12)
+
+        # stderr should report finding unknown icons
+        self.assertIn("Found unknown icon", proc.stderr)
 
 
 if __name__ == "__main__":

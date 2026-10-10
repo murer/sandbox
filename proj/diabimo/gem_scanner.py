@@ -265,19 +265,31 @@ def get_gem_core(cell: np.ndarray, target_size: Tuple[int, int] = (64, 64)) -> n
 
 class GemDatabase:
     """
-    Manages known gem templates in a directory and registers unknown gems.
+    Manages known gem templates in baseimage/ directory and registers unknown gems.
     """
 
-    def __init__(self, gems_dir: Path, threshold: float = 0.80):
-        self.gems_dir = gems_dir
+    def __init__(
+        self,
+        baseimage_dir: Path,
+        threshold: float = 0.80,
+        generate_unknown_dir: Optional[Path] = None,
+    ):
+        self.baseimage_dir = baseimage_dir
         self.threshold = threshold
-        self.gems_dir.mkdir(parents=True, exist_ok=True)
+        self.generate_unknown_dir = generate_unknown_dir
+
+        if self.generate_unknown_dir is not None:
+            self.generate_unknown_dir.mkdir(parents=True, exist_ok=True)
+
         self.known_gems: List[Dict[str, Any]] = []
         self._load_existing_gems()
 
     def _load_existing_gems(self) -> None:
         valid_exts = {".png", ".jpg", ".jpeg", ".webp"}
-        for file_path in sorted(self.gems_dir.iterdir()):
+        if not self.baseimage_dir.exists():
+            return
+
+        for file_path in sorted(self.baseimage_dir.iterdir()):
             if file_path.suffix.lower() in valid_exts:
                 img = cv2.imread(str(file_path))
                 if img is not None:
@@ -293,9 +305,10 @@ class GemDatabase:
     def identify_or_register(self, cell: np.ndarray) -> str:
         """
         Matches cell against known gems.
-        If matched, returns gem name.
-        If unrecognized, saves the cell image as 'unknown-<random_hex>.png' into
-        gems_dir, adds it to known gems, and returns the generated name.
+        If matched, returns gem name (e.g. 'blood-soaked-jade' or 'ignored-tourmaline').
+        If unrecognized:
+          - If generate_unknown_dir is provided, saves 'unknown-<random_hex>.png'.
+          - Caches in-memory so identical gems in the same scan reuse the same ID.
         """
         cell_core = get_gem_core(cell)
 
@@ -313,11 +326,17 @@ class GemDatabase:
         if best_score >= self.threshold and best_name is not None:
             return best_name
 
-        # Unrecognized gem: generate unique random name and save
+        # Unrecognized gem: generate unique random name
         random_id = secrets.token_hex(4)
         new_name = f"unknown-{random_id}"
-        save_path = self.gems_dir / f"{new_name}.png"
-        cv2.imwrite(str(save_path), cell)
+
+        # Save to disk if generate_unknown_dir is configured, otherwise inform the user
+        save_path = None
+        if self.generate_unknown_dir is not None:
+            save_path = self.generate_unknown_dir / f"{new_name}.png"
+            cv2.imwrite(str(save_path), cell)
+        else:
+            sys.stderr.write(f"Found unknown icon: {new_name}\n")
 
         # Register in memory so duplicates in the same scan reuse the same unknown ID
         self.known_gems.append(
@@ -332,12 +351,14 @@ class GemDatabase:
 
 def scan_inventory(
     image_path: Path,
-    gems_dir: Path,
+    baseimage_dir: Path,
     threshold: float = 0.80,
+    generate_unknown_dir: Optional[Path] = None,
     verbose: bool = False,
 ) -> List[Dict[str, Any]]:
     """
-    Processes the inventory screenshot and returns detected gems with rank and quantity.
+    Processes the inventory screenshot and returns detected legendary gems.
+    Any icon matching an 'ignored-*' template is filtered out.
     """
     img = cv2.imread(str(image_path))
     if img is None:
@@ -351,13 +372,24 @@ def scan_inventory(
             f"({len(row_intervals) * len(col_intervals)} total cells)\n"
         )
 
-    db = GemDatabase(gems_dir=gems_dir, threshold=threshold)
+    db = GemDatabase(
+        baseimage_dir=baseimage_dir,
+        threshold=threshold,
+        generate_unknown_dir=generate_unknown_dir,
+    )
 
     results: List[Dict[str, Any]] = []
     for r_idx, (y1, y2) in enumerate(row_intervals):
         for c_idx, (x1, x2) in enumerate(col_intervals):
             cell = img[y1:y2, x1:x2]
             gem_name = db.identify_or_register(cell)
+
+            # Icons with prefix 'ignored-' are not legendary gems and must be ignored
+            if gem_name.startswith("ignored-"):
+                if verbose:
+                    sys.stderr.write(f"Ignoring non-legendary icon: {gem_name} at ({r_idx}, {c_idx})\n")
+                continue
+
             rank = extract_rank(cell)
             quantity = extract_quantity(cell)
 
@@ -382,11 +414,21 @@ def main() -> None:
         help="Path to the inventory screenshot image.",
     )
     parser.add_argument(
-        "-d",
-        "--gems-dir",
+        "-b",
+        "--baseimage",
+        "--baseimage-dir",
+        dest="baseimage_dir",
         type=Path,
-        default=Path("gems"),
-        help="Directory containing known gem icon images (default: ./gems).",
+        default=Path("baseimage"),
+        help="Directory containing configured gem icon images (default: ./baseimage).",
+    )
+    parser.add_argument(
+        "--generate-unknown",
+        dest="generate_unknown_dir",
+        type=Path,
+        default=None,
+        metavar="DIRECTORY",
+        help="Directory where newly discovered unknown gem images should be saved.",
     )
     parser.add_argument(
         "-t",
@@ -418,8 +460,9 @@ def main() -> None:
     try:
         results = scan_inventory(
             image_path=args.image,
-            gems_dir=args.gems_dir,
+            baseimage_dir=args.baseimage_dir,
             threshold=args.threshold,
+            generate_unknown_dir=args.generate_unknown_dir,
             verbose=args.verbose,
         )
     except Exception as e:
