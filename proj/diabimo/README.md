@@ -10,7 +10,7 @@ A command-line tool to scan inventory screenshots of Diablo Immortal legendary g
   - **Quantity**: Detects bright white digits in the bottom-right. Defaults to `1` when quantity text is absent.
 - **Baseimage Configuration**: Matches gem centers against the committed `baseimage/` directory using normalized cross-correlation.
 - **Ignored Icon Filtering**: Any template in `baseimage/` starting with the `ignored-` prefix (e.g. `ignored-tourmaline.png`, `ignored-citrine.png`) is identified as a non-legendary gem and automatically excluded from the output list.
-- **Exporting Unknowns**: Use `--generate-unknown <directory>` to export unrecognized gems as `unknown-<row>-<col>-<random_hex>.png` (where row and col are 1-indexed grid positions).
+- **Exporting Unknowns**: Use `--generate-unknown <directory>` to export unrecognized gems as `unknown-<row>x<col>-<random_hex>.png` (where row and col are 2-digit zero-padded, e.g. `unknown-02x03-a1b2c3d4.png`, and all unknown icons from the same input image share the same random hex identifier).
 - **Alerts for Unknowns**: If `--generate-unknown` is not specified, no files are written to disk; instead, unknown icons are reported on `stderr` while keeping `stdout` clean for JSONL consumption.
 
 ## Prerequisites
@@ -79,15 +79,15 @@ options:
 2. **Configure Legendary Gems**:
    Move and rename unknown images to `baseimage/` using their kebab-case names:
    ```bash
-   cp target/unknowns/unknown-1-1-de5bcce2.png baseimage/frozen-heart.png
-   cp target/unknowns/unknown-1-2-b7bfcc71.png baseimage/gloom-cask.png
+   cp target/unknowns/unknown-01x01-de5bcce2.png baseimage/frozen-heart.png
+   cp target/unknowns/unknown-01x02-de5bcce2.png baseimage/gloom-cask.png
    ```
 
 3. **Ignore Non-Legendary Gems**:
    Prefix normal gem icons with `ignored-` so they are automatically excluded from the output:
    ```bash
-   cp target/unknowns/unknown-2-5-d4cdd0df.png baseimage/ignored-tourmaline.png
-   cp target/unknowns/unknown-2-6-09a7fe69.png baseimage/ignored-citrine.png
+   cp target/unknowns/unknown-02x05-de5bcce2.png baseimage/ignored-tourmaline.png
+   cp target/unknowns/unknown-02x06-de5bcce2.png baseimage/ignored-citrine.png
    ```
 
 4. **Run the Scanner**:

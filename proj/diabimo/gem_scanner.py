@@ -5,7 +5,7 @@ Diablo Immortal Legendary Gem Inventory Scanner CLI.
 Scans inventory screenshots, identifies gem icons via template matching against
 a configurable directory, extracts Rank (bottom-left) and Quantity (bottom-right)
 via OCR, and outputs the result in JSON-per-line (JSONL) format.
-Automatically saves unrecognized gems as 'unknown-<row>-<col>-<id>.png' into the gems directory.
+Automatically saves unrecognized gems as 'unknown-<row>x<col>-<id>.png' into the gems directory.
 """
 
 import argparse
@@ -306,13 +306,16 @@ class GemDatabase:
                     )
 
     def identify_or_register(
-        self, cell: np.ndarray, position: Optional[Tuple[int, int]] = None
+        self,
+        cell: np.ndarray,
+        position: Optional[Tuple[int, int]] = None,
+        random_id: Optional[str] = None,
     ) -> str:
         """
         Matches cell against known gems.
         If matched, returns gem name (e.g. 'blood-soaked-jade' or 'ignored-tourmaline').
         If unrecognized:
-          - If generate_unknown_dir is provided, saves 'unknown-<row>-<col>-<random_hex>.png' (or 'unknown-<random_hex>.png' if position is unset).
+          - If generate_unknown_dir is provided, saves 'unknown-<row>x<col>-<random_hex>.png' (or 'unknown-<random_hex>.png' if position is unset).
           - Caches in-memory so identical gems in the same scan reuse the same ID.
           - Logs unknown icon and its position (row, col) via standard logging.
         """
@@ -332,12 +335,15 @@ class GemDatabase:
         if best_score >= self.threshold and best_name is not None:
             return best_name
 
-        # Unrecognized gem: generate unique random name with row and col if position is known
-        random_id = secrets.token_hex(4)
+        # Unrecognized gem: generate unique name with padded coordinates (e.g. 02x03) and random ID
+        if random_id is None:
+            random_id = secrets.token_hex(4)
+
         if position is not None:
             row = position[0] + 1
             col = position[1] + 1
-            new_name = f"unknown-{row}-{col}-{random_id}"
+            coord_str = f"{row:02d}x{col:02d}"
+            new_name = f"unknown-{coord_str}-{random_id}"
             pos_str = f" at row {row}, col {col}"
         else:
             new_name = f"unknown-{random_id}"
@@ -370,6 +376,7 @@ def scan_inventory(
     generate_unknown_dir: Optional[Path] = None,
     verbose: bool = False,
     db: Optional[GemDatabase] = None,
+    image_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """
     Processes the inventory screenshot and returns detected legendary gems.
@@ -395,11 +402,16 @@ def scan_inventory(
             generate_unknown_dir=generate_unknown_dir,
         )
 
+    if image_id is None:
+        image_id = secrets.token_hex(4)
+
     results: List[Dict[str, Any]] = []
     for r_idx, (y1, y2) in enumerate(row_intervals):
         for c_idx, (x1, x2) in enumerate(col_intervals):
             cell = img[y1:y2, x1:x2]
-            gem_name = db.identify_or_register(cell, position=(r_idx, c_idx))
+            gem_name = db.identify_or_register(
+                cell, position=(r_idx, c_idx), random_id=image_id
+            )
 
             # Icons with prefix 'ignored-' are not legendary gems and must be ignored
             if gem_name.startswith("ignored-"):
