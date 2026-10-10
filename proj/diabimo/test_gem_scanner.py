@@ -5,6 +5,7 @@ Unit and integration tests for Diablo Immortal Gem Scanner CLI.
 
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import unittest
@@ -125,7 +126,7 @@ class TestGemScanner(unittest.TestCase):
         if out_dir.exists():
             shutil.rmtree(out_dir)
 
-        # Run WITH generate_unknown
+        # Run WITH generate_unknown and position
         db_with = GemDatabase(
             baseimage_dir=TARGET_DIR / "empty_base",
             threshold=0.80,
@@ -133,9 +134,9 @@ class TestGemScanner(unittest.TestCase):
         )
         rows, cols, _ = detect_grid_cells(self.img)
         cell_0_0 = self.img[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
-        name1 = db_with.identify_or_register(cell_0_0)
+        name1 = db_with.identify_or_register(cell_0_0, position=(0, 0))
 
-        self.assertTrue(name1.startswith("unknown-"))
+        self.assertTrue(re.match(r"^unknown-1-1-[0-9a-f]{8}$", name1), f"Expected unknown-1-1-<hex>, got {name1}")
         self.assertTrue((out_dir / f"{name1}.png").exists(), "Expected unknown image to be saved")
 
         # Run WITHOUT generate_unknown
@@ -148,9 +149,18 @@ class TestGemScanner(unittest.TestCase):
             threshold=0.80,
             generate_unknown_dir=None,
         )
-        name2 = db_without.identify_or_register(cell_0_0)
-        self.assertTrue(name2.startswith("unknown-"))
+        name2 = db_without.identify_or_register(cell_0_0, position=(2, 4))
+        self.assertTrue(re.match(r"^unknown-3-5-[0-9a-f]{8}$", name2), f"Expected unknown-3-5-<hex>, got {name2}")
         self.assertFalse(no_save_dir.exists(), "No directory should be created when generate_unknown is None")
+
+        # Run without position (fallback) on fresh database
+        db_fallback = GemDatabase(
+            baseimage_dir=TARGET_DIR / "empty_base",
+            threshold=0.80,
+            generate_unknown_dir=None,
+        )
+        name3 = db_fallback.identify_or_register(cell_0_0, position=None)
+        self.assertTrue(re.match(r"^unknown-[0-9a-f]{8}$", name3), f"Expected unknown-<hex>, got {name3}")
 
     def test_ignored_prefix_filters_out_cells(self):
         """Verify that gem templates with 'ignored-' prefix are excluded from output and logged."""
@@ -254,6 +264,39 @@ class TestGemScanner(unittest.TestCase):
         # 12 cells from sample-less-rows + 36 cells from sample/a.jpeg = 48 total lines
         self.assertEqual(len(lines), 48)
         self.assertIn("Scanning image: ", proc.stderr)
+
+    def test_cli_generate_unknown_creates_row_col_files(self):
+        """Verify CLI --generate-unknown creates files formatted as unknown-<row>-<col>-<hex>.png."""
+        gen_dir = TARGET_DIR / "cli_gen_unknown"
+        if gen_dir.exists():
+            shutil.rmtree(gen_dir)
+
+        proc = subprocess.run(
+            [
+                "python3",
+                "gem_scanner.py",
+                str(SAMPLE_LESS_ROWS),
+                "--generate-unknown",
+                str(gen_dir),
+                "-b",
+                str(TARGET_DIR / "empty_base"),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+
+        saved_files = list(gen_dir.glob("*.png"))
+        self.assertGreater(len(saved_files), 0, "Expected unknown files to be saved")
+        for f in saved_files:
+            self.assertTrue(
+                re.match(r"^unknown-\d+-\d+-[0-9a-f]{8}\.png$", f.name),
+                f"File {f.name} does not match expected unknown-<row>-<col>-<hex>.png pattern",
+            )
+        # Ensure row 1, col 1 is generated
+        row1_col1_matches = [f for f in saved_files if f.name.startswith("unknown-1-1-")]
+        self.assertEqual(len(row1_col1_matches), 1, "Expected exactly one unknown-1-1-* file")
 
 
 if __name__ == "__main__":

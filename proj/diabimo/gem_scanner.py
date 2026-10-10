@@ -5,7 +5,7 @@ Diablo Immortal Legendary Gem Inventory Scanner CLI.
 Scans inventory screenshots, identifies gem icons via template matching against
 a configurable directory, extracts Rank (bottom-left) and Quantity (bottom-right)
 via OCR, and outputs the result in JSON-per-line (JSONL) format.
-Automatically saves unrecognized gems as 'unknown-<id>.png' into the gems directory.
+Automatically saves unrecognized gems as 'unknown-<row>-<col>-<id>.png' into the gems directory.
 """
 
 import argparse
@@ -312,7 +312,7 @@ class GemDatabase:
         Matches cell against known gems.
         If matched, returns gem name (e.g. 'blood-soaked-jade' or 'ignored-tourmaline').
         If unrecognized:
-          - If generate_unknown_dir is provided, saves 'unknown-<random_hex>.png'.
+          - If generate_unknown_dir is provided, saves 'unknown-<row>-<col>-<random_hex>.png' (or 'unknown-<random_hex>.png' if position is unset).
           - Caches in-memory so identical gems in the same scan reuse the same ID.
           - Logs unknown icon and its position (row, col) via standard logging.
         """
@@ -332,15 +332,16 @@ class GemDatabase:
         if best_score >= self.threshold and best_name is not None:
             return best_name
 
-        # Unrecognized gem: generate unique random name
+        # Unrecognized gem: generate unique random name with row and col if position is known
         random_id = secrets.token_hex(4)
-        new_name = f"unknown-{random_id}"
-
-        pos_str = (
-            f" at row {position[0] + 1}, col {position[1] + 1}"
-            if position is not None
-            else ""
-        )
+        if position is not None:
+            row = position[0] + 1
+            col = position[1] + 1
+            new_name = f"unknown-{row}-{col}-{random_id}"
+            pos_str = f" at row {row}, col {col}"
+        else:
+            new_name = f"unknown-{random_id}"
+            pos_str = ""
 
         # Save to disk if generate_unknown_dir is configured, otherwise log a warning
         save_path = None
