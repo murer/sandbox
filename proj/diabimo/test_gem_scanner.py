@@ -23,6 +23,8 @@ from gem_scanner import (
 )
 
 SAMPLE_IMAGE = Path(__file__).parent / "sample" / "a.jpeg"
+SAMPLE_LESS_ROWS = Path(__file__).parent / "sample" / "sample-less-rows.jpeg"
+SAMPLE_NON_LEGENDARY = Path(__file__).parent / "sample" / "sample-non-legendary-gems.jpeg"
 
 
 class TestGemScanner(unittest.TestCase):
@@ -43,6 +45,33 @@ class TestGemScanner(unittest.TestCase):
         # Verify partial row 7 (> 706px) is excluded
         last_row_bottom = rows[-1][1]
         self.assertLessEqual(last_row_bottom, 715)
+
+    def test_detect_grid_cells_less_rows(self):
+        """Verify grid detection on cropped sample with only 2 full rows and 6 columns."""
+        if not SAMPLE_LESS_ROWS.exists():
+            return
+        img_less = cv2.imread(str(SAMPLE_LESS_ROWS))
+        rows, cols, step = detect_grid_cells(img_less)
+        self.assertEqual(len(rows), 2, f"Expected 2 full rows, got {len(rows)}")
+        self.assertEqual(len(cols), 6, f"Expected 6 full cols, got {len(cols)}")
+
+        # Verify R3 is extracted from top-left cell
+        cell_0_0 = img_less[rows[0][0] : rows[0][1], cols[0][0] : cols[0][1]]
+        self.assertEqual(extract_rank(cell_0_0), "R3")
+
+    def test_detect_grid_cells_non_legendary(self):
+        """Verify grid detection on sample with 5 full rows x 6 columns including normal gems."""
+        if not SAMPLE_NON_LEGENDARY.exists():
+            return
+        img_nonleg = cv2.imread(str(SAMPLE_NON_LEGENDARY))
+        rows, cols, step = detect_grid_cells(img_nonleg)
+        self.assertEqual(len(rows), 5, f"Expected 5 full rows, got {len(rows)}")
+        self.assertEqual(len(cols), 6, f"Expected 6 full cols, got {len(cols)}")
+
+        # Verify Row 2 Col 5 extracts R1 (not R4)
+        cell_2_5 = img_nonleg[rows[2][0] : rows[2][1], cols[5][0] : cols[5][1]]
+        self.assertEqual(extract_rank(cell_2_5), "R1")
+        self.assertEqual(extract_quantity(cell_2_5), 1)
 
     def test_extract_rank(self):
         """Verify rank extraction for R1 and R5."""

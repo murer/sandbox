@@ -29,36 +29,39 @@ def detect_grid_cells(
 ) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]], float]:
     """
     Detects full grid cell intervals (rows and cols) in an inventory screenshot.
-    Uses Hough line transform and separator band clustering to locate the exact
-    grid boundaries, automatically interpolating missing lines and filtering out
-    partial cells cut off at the screenshot edges.
+    Uses dimension-aware Hough line transform and circular lattice phase consensus
+    to accurately locate grid boundaries, interpolating missing lines and filtering
+    out partial cells cut off at screenshot margins.
     """
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     height, width = gray.shape
 
     edges = cv2.Canny(gray, 30, 100)
-    min_line_len = int(min(height, width) * 0.35)
-    lines = cv2.HoughLinesP(
-        edges, 1, np.pi / 180, threshold=80, minLineLength=min_line_len, maxLineGap=20
+    min_h_len = int(width * 0.35)
+    min_v_len = int(height * 0.35)
+
+    lines_h = cv2.HoughLinesP(
+        edges, 1, np.pi / 180, threshold=80, minLineLength=min_h_len, maxLineGap=20
+    )
+    lines_v = cv2.HoughLinesP(
+        edges, 1, np.pi / 180, threshold=80, minLineLength=min_v_len, maxLineGap=20
     )
 
     h_lines: List[Tuple[int, float]] = []
-    v_lines: List[Tuple[int, float]] = []
-
-    if lines is not None:
-        for x1, y1, x2, y2 in lines.reshape(-1, 4):
-            length = float(np.hypot(x2 - x1, y2 - y1))
+    if lines_h is not None:
+        for x1, y1, x2, y2 in lines_h.reshape(-1, 4):
             if abs(y2 - y1) <= 2:
-                h_lines.append(((y1 + y2) // 2, length))
-            elif abs(x2 - x1) <= 2:
-                v_lines.append(((x1 + x2) // 2, length))
+                h_lines.append(((y1 + y2) // 2, float(np.hypot(x2 - x1, y2 - y1))))
 
-    def extract_separators(
-        lines_with_len: List[Tuple[int, float]], total_dim: int
-    ) -> Tuple[List[Tuple[int, int]], float]:
+    v_lines: List[Tuple[int, float]] = []
+    if lines_v is not None:
+        for x1, y1, x2, y2 in lines_v.reshape(-1, 4):
+            if abs(x2 - x1) <= 2:
+                v_lines.append(((x1 + x2) // 2, float(np.hypot(x2 - x1, y2 - y1))))
+
+    def get_bands(lines_with_len: List[Tuple[int, float]]) -> List[Tuple[float, float]]:
         if not lines_with_len:
-            return [], float(min_cell_size)
-
+            return []
         lines_with_len.sort(key=lambda x: x[0])
         clusters: List[List[Tuple[int, float]]] = [[lines_with_len[0]]]
         for item in lines_with_len[1:]:
@@ -66,53 +69,92 @@ def detect_grid_cells(
                 clusters[-1].append(item)
             else:
                 clusters.append([item])
-
         bands: List[Tuple[float, float]] = []
         for cl in clusters:
             tot_len = sum(item[1] for item in cl)
             weights = [item[1] for item in cl]
             coords = [item[0] for item in cl]
-            mean_coord = float(np.average(coords, weights=weights))
-            bands.append((mean_coord, tot_len))
+            bands.append((float(np.average(coords, weights=weights)), tot_len))
+        return bands
 
-        max_support = max(b[1] for b in bands) if bands else 0.0
-        strong_bands = [b[0] for b in bands if b[1] >= max_support * 0.25]
+    h_bands = get_bands(h_lines)
+    v_bands = get_bands(v_lines)
 
-        diffs = [
-            strong_bands[i + 1] - strong_bands[i] for i in range(len(strong_bands) - 1)
-        ]
-        valid_diffs = [d for d in diffs if min_cell_size <= d <= max_cell_size]
-        if not valid_diffs:
-            valid_diffs = [d / 2 for d in diffs if min_cell_size * 2 <= d <= max_cell_size * 2]
-        step = float(np.median(valid_diffs)) if valid_diffs else float(min_cell_size)
+    # In Diablo Immortal inventory grids, cells are square.
+    # Collect all differences between consecutive bands in both directions
+    diffs: List[float] = []
+    for bands in (h_bands, v_bands):
+        for i in range(len(bands) - 1):
+            d = bands[i + 1][0] - bands[i][0]
+            if min_cell_size <= d <= max_cell_size:
+                diffs.append(d)
 
-        filtered: List[float] = [strong_bands[0]]
-        for coord in strong_bands[1:]:
-            d = coord - filtered[-1]
-            k = int(round(d / step))
-            if k >= 1 and abs(d - k * step) <= 15:
-                for _ in range(1, k):
-                    filtered.append(filtered[-1] + step)
-                filtered.append(coord)
+    if not diffs:
+        for bands in (h_bands, v_bands):
+            for i in range(len(bands) - 1):
+                d = bands[i + 1][0] - bands[i][0]
+                if min_cell_size * 2 <= d <= max_cell_size * 2:
+                    diffs.append(d / 2)
 
-        if filtered[0] >= min_fill_ratio * step:
-            filtered.insert(0, 0.0)
+    step = float(np.median(diffs)) if diffs else 116.0
 
-        if (total_dim - filtered[-1]) >= min_fill_ratio * step:
-            filtered.append(float(total_dim))
+    def solve_lattice(
+        bands: List[Tuple[float, float]], total_dim: int, grid_step: float
+    ) -> List[Tuple[int, int]]:
+        if not bands:
+            return []
+
+        coords = [b[0] for b in bands]
+        weights = [b[1] for b in bands]
+
+        angles = [c * 2 * np.pi / grid_step for c in coords]
+        sin_sum = sum(w * np.sin(a) for w, a in zip(weights, angles))
+        cos_sum = sum(w * np.cos(a) for w, a in zip(weights, angles))
+        mean_angle = np.arctan2(sin_sum, cos_sum)
+        if mean_angle < 0:
+            mean_angle += 2 * np.pi
+        best_phase = (mean_angle * grid_step / (2 * np.pi)) % grid_step
+
+        valid_coords: List[float] = []
+        for c in coords:
+            diff = abs((c - best_phase + grid_step / 2) % grid_step - grid_step / 2)
+            if diff <= 15:
+                valid_coords.append(c)
+
+        if not valid_coords:
+            valid_coords = [best_phase]
+
+        ref = valid_coords[0]
+        start_k = int(np.floor(-ref / grid_step))
+        end_k = int(np.ceil((total_dim - ref) / grid_step))
+        lattice = sorted([ref + k * grid_step for k in range(start_k, end_k + 1)])
+
+        adjusted: List[float] = []
+        for l in lattice:
+            close_c = [c for c in valid_coords if abs(c - l) <= 12]
+            if close_c:
+                adjusted.append(float(np.mean(close_c)))
+            else:
+                adjusted.append(l)
 
         intervals: List[Tuple[int, int]] = []
-        for i in range(len(filtered) - 1):
-            p1 = max(0, int(round(filtered[i])))
-            p2 = min(total_dim, int(round(filtered[i + 1])))
-            if (p2 - p1) >= min_fill_ratio * step:
-                intervals.append((p1, p2))
+        for i in range(len(adjusted) - 1):
+            p1 = adjusted[i]
+            p2 = adjusted[i + 1]
+            overlap = min(total_dim, p2) - max(0, p1)
+            if (
+                overlap >= min_fill_ratio * grid_step
+                and p1 >= -0.15 * grid_step
+                and p2 <= total_dim + 0.15 * grid_step
+            ):
+                intervals.append(
+                    (max(0, int(round(p1))), min(total_dim, int(round(p2))))
+                )
+        return intervals
 
-        return intervals, step
-
-    rows, h_step = extract_separators(h_lines, height)
-    cols, v_step = extract_separators(v_lines, width)
-    return rows, cols, (h_step + v_step) / 2
+    rows = solve_lattice(h_bands, height, step)
+    cols = solve_lattice(v_bands, width, step)
+    return rows, cols, step
 
 
 def extract_rank(cell: np.ndarray) -> str:
@@ -137,7 +179,8 @@ def extract_rank(cell: np.ndarray) -> str:
     valid_comps = []
     for i in range(1, num_labels):
         cx, cy, cw, ch, area = stats[i]
-        if ch >= 10 and area >= 25:
+        # Ignore components touching the top boundary (bleeding from gem artwork)
+        if cy > 1 and ch >= 8 and area >= 20:
             clean_mask[labels == i] = 255
             valid_comps.append((cx, cy, cw, ch, area))
 
