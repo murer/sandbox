@@ -400,7 +400,7 @@ def scan_inventory(
 
             # Icons with prefix 'ignored-' are not legendary gems and must be ignored
             if gem_name.startswith("ignored-"):
-                logger.debug(
+                logger.info(
                     "Ignoring non-legendary icon: %s at row %d, col %d",
                     gem_name,
                     r_idx + 1,

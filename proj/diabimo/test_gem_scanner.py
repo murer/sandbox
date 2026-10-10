@@ -153,7 +153,7 @@ class TestGemScanner(unittest.TestCase):
         self.assertFalse(no_save_dir.exists(), "No directory should be created when generate_unknown is None")
 
     def test_ignored_prefix_filters_out_cells(self):
-        """Verify that gem templates with 'ignored-' prefix are excluded from output."""
+        """Verify that gem templates with 'ignored-' prefix are excluded from output and logged."""
         base_dir = TARGET_DIR / "ignored_test_base"
         base_dir.mkdir(parents=True, exist_ok=True)
 
@@ -164,18 +164,32 @@ class TestGemScanner(unittest.TestCase):
         blue_orb_cell = img_less[rows[1][0] : rows[1][1], cols[4][0] : cols[4][1]]
         cv2.imwrite(str(base_dir / "ignored-blue-orb.png"), blue_orb_cell)
 
-        # Scan with this baseimage
-        results = scan_inventory(
-            image_path=SAMPLE_LESS_ROWS,
-            baseimage_dir=base_dir,
-            threshold=0.80,
+        # Run CLI with this baseimage to check both output filtering and logging
+        proc = subprocess.run(
+            [
+                "python3",
+                "gem_scanner.py",
+                str(SAMPLE_LESS_ROWS),
+                "-b",
+                str(base_dir),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
         )
 
+        lines = proc.stdout.strip().split("\n")
         # Total cells in sample-less-rows is 12 (2 rows x 6 cols).
         # Both Cell (1, 4) and Cell (1, 5) are blue orbs and should be ignored!
-        self.assertEqual(len(results), 10, f"Expected 10 cells (2 ignored), got {len(results)}")
-        for item in results:
-            self.assertFalse(item["gem"].startswith("ignored-"), "Ignored gems must not appear in output")
+        self.assertEqual(len(lines), 10, f"Expected 10 cells (2 ignored), got {len(lines)}")
+        for line in lines:
+            data = json.loads(line)
+            self.assertFalse(data["gem"].startswith("ignored-"), "Ignored gems must not appear in output")
+
+        # Verify logging on stderr
+        self.assertIn("Ignoring non-legendary icon: ignored-blue-orb at row 2, col 5", proc.stderr)
+        self.assertIn("Ignoring non-legendary icon: ignored-blue-orb at row 2, col 6", proc.stderr)
 
     def test_configured_gem_matching(self):
         """Verify that known gem icons in baseimage are identified by their kebab-case filename."""
