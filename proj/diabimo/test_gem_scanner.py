@@ -22,7 +22,7 @@ from gem_scanner import (
     scan_inventory,
 )
 
-SAMPLE_IMAGE = Path(__file__).parent / "sample" / "a.jpeg"
+SAMPLE_IMAGE = Path(__file__).parent / "sample" / "basic.jpeg"
 SAMPLE_LESS_ROWS = Path(__file__).parent / "sample" / "sample-less-rows.jpeg"
 SAMPLE_NON_LEGENDARY = Path(__file__).parent / "sample" / "sample-non-legendary-gems.jpeg"
 TARGET_DIR = Path(__file__).parent / "target" / "tests"
@@ -270,7 +270,7 @@ class TestGemScanner(unittest.TestCase):
         )
 
         lines = proc.stdout.strip().split("\n")
-        # 12 cells from sample-less-rows + 36 cells from sample/a.jpeg = 48 total lines
+        # 12 cells from sample-less-rows + 36 cells from sample/basic.jpeg = 48 total lines
         self.assertEqual(len(lines), 48)
         self.assertIn("Scanning image: ", proc.stderr)
 
