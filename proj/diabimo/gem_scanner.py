@@ -368,6 +368,7 @@ def scan_inventory(
     threshold: float = 0.80,
     generate_unknown_dir: Optional[Path] = None,
     verbose: bool = False,
+    db: Optional[GemDatabase] = None,
 ) -> List[Dict[str, Any]]:
     """
     Processes the inventory screenshot and returns detected legendary gems.
@@ -386,11 +387,12 @@ def scan_inventory(
         len(row_intervals) * len(col_intervals),
     )
 
-    db = GemDatabase(
-        baseimage_dir=baseimage_dir,
-        threshold=threshold,
-        generate_unknown_dir=generate_unknown_dir,
-    )
+    if db is None:
+        db = GemDatabase(
+            baseimage_dir=baseimage_dir,
+            threshold=threshold,
+            generate_unknown_dir=generate_unknown_dir,
+        )
 
     results: List[Dict[str, Any]] = []
     for r_idx, (y1, y2) in enumerate(row_intervals):
@@ -427,9 +429,10 @@ def main() -> None:
         description="Scan Diablo Immortal inventory screenshots for legendary gems."
     )
     parser.add_argument(
-        "image",
+        "images",
+        nargs="+",
         type=Path,
-        help="Path to the inventory screenshot image.",
+        help="Paths to one or more inventory screenshot images.",
     )
     parser.add_argument(
         "-b",
@@ -478,27 +481,44 @@ def main() -> None:
         stream=sys.stderr,
     )
 
-    if not args.image.exists():
-        logger.error("Image file '%s' not found.", args.image)
-        sys.exit(1)
+    for img_path in args.images:
+        if not img_path.exists():
+            logger.error("Image file '%s' not found.", img_path)
+            sys.exit(1)
 
-    try:
-        results = scan_inventory(
-            image_path=args.image,
-            baseimage_dir=args.baseimage_dir,
-            threshold=args.threshold,
-            generate_unknown_dir=args.generate_unknown_dir,
-            verbose=args.verbose,
-        )
-    except Exception as e:
-        logger.error("Error processing inventory: %s", e)
-        sys.exit(1)
+    db = GemDatabase(
+        baseimage_dir=args.baseimage_dir,
+        threshold=args.threshold,
+        generate_unknown_dir=args.generate_unknown_dir,
+    )
 
-    if args.format == "jsonl":
-        for item in results:
-            sys.stdout.write(json.dumps(item) + "\n")
-    else:
-        sys.stdout.write(json.dumps(results, indent=2) + "\n")
+    all_results: List[Dict[str, Any]] = []
+    for img_path in args.images:
+        if len(args.images) > 1:
+            logger.info("Scanning image: %s", img_path)
+
+        try:
+            results = scan_inventory(
+                image_path=img_path,
+                baseimage_dir=args.baseimage_dir,
+                threshold=args.threshold,
+                generate_unknown_dir=args.generate_unknown_dir,
+                verbose=args.verbose,
+                db=db,
+            )
+            all_results.extend(results)
+
+            if args.format == "jsonl":
+                for item in results:
+                    sys.stdout.write(json.dumps(item) + "\n")
+                    sys.stdout.flush()
+
+        except Exception as e:
+            logger.error("Error processing %s: %s", img_path, e)
+            sys.exit(1)
+
+    if args.format == "json":
+        sys.stdout.write(json.dumps(all_results, indent=2) + "\n")
 
 
 if __name__ == "__main__":

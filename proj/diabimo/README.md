@@ -33,22 +33,28 @@ Scan a screenshot matching against icons in `baseimage/`:
 ./gem_scanner.py sample/a.jpeg
 ```
 
+### Scan Multiple Screenshots
+You can pass multiple images to scan them sequentially in a single invocation:
+```bash
+./gem_scanner.py sample/sample-less-rows.jpeg sample/a.jpeg
+```
+
 ### Export Unknown Icons
 Export all unrecognized gem icons into a directory so you can configure them:
 ```bash
-./gem_scanner.py sample/a.jpeg --generate-unknown target/unknowns
+./gem_scanner.py --generate-unknown target/unknowns sample/a.jpeg sample/sample-non-legendary-gems.jpeg
 ```
 
 ### Custom Baseimage Directory
 Specify an alternate directory for configured gem templates:
 ```bash
-./gem_scanner.py sample/a.jpeg -b /path/to/custom_baseimage
+./gem_scanner.py -b /path/to/custom_baseimage sample/a.jpeg
 ```
 
 ### Options
 ```text
 positional arguments:
-  image                 Path to the inventory screenshot image.
+  images                Paths to one or more inventory screenshot images.
 
 options:
   -h, --help            Show this help message and exit.

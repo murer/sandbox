@@ -233,6 +233,28 @@ class TestGemScanner(unittest.TestCase):
         self.assertIn("Found unknown icon", proc.stderr)
         self.assertIn("row 1, col 1", proc.stderr)
 
+    def test_cli_multiple_images(self):
+        """Verify CLI can process multiple image files in a single invocation."""
+        proc = subprocess.run(
+            [
+                "python3",
+                "gem_scanner.py",
+                str(SAMPLE_LESS_ROWS),
+                str(SAMPLE_IMAGE),
+                "-b",
+                str(TARGET_DIR / "empty_base"),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+
+        lines = proc.stdout.strip().split("\n")
+        # 12 cells from sample-less-rows + 36 cells from sample/a.jpeg = 48 total lines
+        self.assertEqual(len(lines), 48)
+        self.assertIn("Scanning image: ", proc.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
